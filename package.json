@@ -1,16 +1,16 @@
 {
   "author": "Koni Studio",
-  "bugs": "https://github.com/Koniverse/Subwallet-V2/issues",
-  "homepage": "https://github.com/Koniverse/Subwallet-V2#readme",
+  "bugs": "https://github.com/AstarNativeWallet/ArthWallet-Extension/issues",
+  "homepage": "https://github.com/AstarNativeWallet/ArthWallet-Extension#readme",
   "license": "Apache-2.0",
   "packageManager": "yarn@3.0.1",
   "private": true,
   "repository": {
     "type": "git",
-    "url": "https://github.com/Koniverse/Subwallet-V2.git"
+    "url": "https://github.com/AstarNativeWallet/ArthWallet-Extension.git"
   },
   "sideEffects": false,
-  "version": "0.2.10-1",
+  "version": "0.1",
   "workspaces": [
     "packages/*"
   ],

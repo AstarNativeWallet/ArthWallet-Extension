@@ -1,9 +1,9 @@
 {
-  "author": "Koni Studio",
-  "description": "Web3 Multiverse Gateway for Polkadot & Kusama Ecosystem",
-  "homepage_url": "https://subwallet.app/",
-  "name": "SubWallet - Polkadot Extension Wallet",
-  "short_name": "SubWallet",
+  "author": "ArthWallet Labo",
+  "description": "Web3 Multiverse Gateway for Astar & Shiden Ecosystem",
+  "homepage_url": "https://twitter.com/ArthWallet",
+  "name": "ArthWallet - Astar Extension Wallet",
+  "short_name": "ArthWallet",
   "manifest_version": 2,
   "permissions": [
     "storage",
@@ -16,7 +16,7 @@
     "persistent": true
   },
   "browser_action": {
-    "default_title": "SubWallet",
+    "default_title": "ArthWallet",
     "default_popup": "index.html"
   },
   "content_scripts": [
