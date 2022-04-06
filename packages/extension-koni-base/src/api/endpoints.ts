@@ -61,6 +61,21 @@ const NETWORKS: Record<string, NetWorkInfo> = {
     paraId: 1000,
     nativeToken: 'KSM'
   },
+
+
+  astar: {
+    chain: 'Astar',
+    genesisHash: '0x9eb76c5184c4ab8679d2d5d819fdf90b9c001403e9e17da2e14b6d8aec4029c6',
+    ss58Format: 5,
+    provider: 'wss://astar.api.onfinality.io/public-ws',
+    groups: ['POLKADOT_PARACHAIN'],
+    paraId: 2006,
+    nativeToken: 'ASTR',
+    crowdloanUrl: 'https://crowdloan.astar.network/#/',
+    decimals: 18
+  },
+
+
   acala: {
     chain: 'Acala',
     genesisHash: '0xfc41b9bd8ef8fe53d58c7ea67c794c7ec9a73daf05e6d54b14ff6342c99ba64c',
@@ -81,17 +96,6 @@ const NETWORKS: Record<string, NetWorkInfo> = {
     isEthereum: true,
     nativeToken: 'GLMR',
     crowdloanUrl: 'https://moonbeam.foundation/moonbeam-crowdloan/',
-    decimals: 18
-  },
-  astar: {
-    chain: 'Astar',
-    genesisHash: '0x9eb76c5184c4ab8679d2d5d819fdf90b9c001403e9e17da2e14b6d8aec4029c6',
-    ss58Format: 5,
-    provider: 'wss://astar.api.onfinality.io/public-ws',
-    groups: ['POLKADOT_PARACHAIN'],
-    paraId: 2006,
-    nativeToken: 'ASTR',
-    crowdloanUrl: 'https://crowdloan.astar.network/#/',
     decimals: 18
   },
   parallel: {
