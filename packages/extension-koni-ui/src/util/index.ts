@@ -133,9 +133,15 @@ export function getLogoByNetworkKey (networkKey: string, defaultLogo = 'default'
 }
 
 export const subscanByNetworkKey: Record<string, string> = {
+  astar: 'https://astar.subscan.io',
+  astar_evm: 'https://astar.subscan.io',
+  shiden: 'https://shiden.subscan.io',
+  shiden_evm: 'https://shiden.subscan.io',
+  shibuya: 'https://shibuya.subscan.io',
+  shibuya_evm: 'https://shibuya.subscan.io',
+
   acala: 'https://acala.subscan.io',
   // 'altair': 'https://altair.subscan.io',
-  astar: 'https://astar.subscan.io',
   // 'basilisk': 'https://basilisk.subscan.io',
   bifrost: 'https://bifrost.subscan.io',
   calamari: 'https://calamari.subscan.io',
@@ -171,7 +177,6 @@ export const subscanByNetworkKey: Record<string, string> = {
   quartz: 'https://quartz.subscan.io',
   sakura: 'https://sakura.subscan.io',
   // 'shadow': 'https://shadow.subscan.io',
-  shiden: 'https://shiden.subscan.io',
   sora: 'https://sora.subscan.io',
   statemine: 'https://statemine.subscan.io',
   subgame: 'https://subgame.subscan.io',

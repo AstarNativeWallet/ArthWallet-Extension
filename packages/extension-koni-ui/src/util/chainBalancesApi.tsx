@@ -9,9 +9,15 @@ import { isEmptyArray } from '@polkadot/extension-koni-ui/util/common';
 import { AccountInfoItem, BalanceInfo, BalanceSubInfo } from './types';
 
 export const priceParamByNetworkKeyMap: Record<string, string> = {
+  astar: 'astar',
+  astar_evm: 'astar_evm',
+  shiden: 'shiden',
+  shiden_evm: 'shiden_evm',
+  shibuya: 'shibuya',
+  shibuya_evm: 'shibuya_evm',
+
   acala: 'acala',
   // 'altair':'altair',
-  astar: 'astar',
   // 'basilisk': 'basilisk',
   bifrost: 'bifrost-native-coin',
   calamari: 'calamari-network',
@@ -52,7 +58,6 @@ export const priceParamByNetworkKeyMap: Record<string, string> = {
   // 'rococo':'rococo',
   sakura: 'sakura',
   shadow: 'crust-storage-market',
-  shiden: 'shiden',
   'sora-substrate': 'sora',
   statemine: 'statemine',
   statemint: 'statemint',

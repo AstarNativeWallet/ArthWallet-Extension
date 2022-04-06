@@ -74,6 +74,60 @@ const NETWORKS: Record<string, NetWorkInfo> = {
     crowdloanUrl: 'https://crowdloan.astar.network/#/',
     decimals: 18
   },
+  astar_evm: {
+    chain: 'Astar',
+    genesisHash: '0x9eb76c5184c4ab8679d2d5d819fdf90b9c001403e9e17da2e14b6d8aec4029c6',
+    ss58Format: 5,
+    provider: 'wss://astar.api.onfinality.io/public-ws',
+    groups: ['POLKADOT_PARACHAIN'],
+    paraId: 2006,
+    isEthereum: true,
+    nativeToken: 'ASTR',
+    crowdloanUrl: 'https://crowdloan.astar.network/#/',
+    decimals: 18
+  },
+  shiden: {
+    chain: 'Shiden',
+    genesisHash: '0xf1cf9022c7ebb34b162d5b5e34e705a5a740b2d0ecc1009fb89023e62a488108',
+    ss58Format: 5,
+    provider: 'wss://shiden.api.onfinality.io/public-ws',
+    groups: ['KUSAMA_PARACHAIN'],
+    paraId: 2007,
+    nativeToken: 'SDN',
+    crowdloanUrl: 'https://polkadot.js.org/apps/#/parachains/crowdloan'
+  },
+  shiden_evm: {
+    chain: 'Shiden',
+    genesisHash: '0xf1cf9022c7ebb34b162d5b5e34e705a5a740b2d0ecc1009fb89023e62a488108',
+    ss58Format: 5,
+    provider: 'wss://shiden.api.onfinality.io/public-ws',
+    groups: ['KUSAMA_PARACHAIN'],
+    paraId: 2007,
+    isEthereum: true,
+    nativeToken: 'SDN',
+    crowdloanUrl: 'https://polkadot.js.org/apps/#/parachains/crowdloan'
+  },
+  shibuya: {
+    chain: 'Shibuya',
+    genesisHash: '0xddb89973361a170839f80f152d2e9e38a376a5a7eccefcade763f46a8e567019',
+    ss58Format: 5,
+    provider: 'wss://rpc.shibuya.astar.network',
+    groups: ['KUSAMA_PARACHAIN'],
+    paraId: 2007,
+    nativeToken: 'SDN',
+    crowdloanUrl: 'https://polkadot.js.org/apps/#/parachains/crowdloan'
+  },
+  shibuya_evm: {
+    chain: 'Shibuya',
+    genesisHash: '0xddb89973361a170839f80f152d2e9e38a376a5a7eccefcade763f46a8e567019',
+    ss58Format: 5,
+    provider: 'wss://rpc.shibuya.astar.network',
+    groups: ['KUSAMA_PARACHAIN'],
+    paraId: 2007,
+    isEthereum: true,
+    nativeToken: 'SDN',
+    crowdloanUrl: 'https://polkadot.js.org/apps/#/parachains/crowdloan'
+  },
 
 
   acala: {
@@ -359,16 +413,6 @@ const NETWORKS: Record<string, NetWorkInfo> = {
     paraId: 2023,
     isEthereum: true,
     nativeToken: 'MOVR',
-    crowdloanUrl: 'https://polkadot.js.org/apps/#/parachains/crowdloan'
-  },
-  shiden: {
-    chain: 'Shiden',
-    genesisHash: '0xf1cf9022c7ebb34b162d5b5e34e705a5a740b2d0ecc1009fb89023e62a488108',
-    ss58Format: 5,
-    provider: 'wss://shiden.api.onfinality.io/public-ws',
-    groups: ['KUSAMA_PARACHAIN'],
-    paraId: 2007,
-    nativeToken: 'SDN',
     crowdloanUrl: 'https://polkadot.js.org/apps/#/parachains/crowdloan'
   },
   khala: {

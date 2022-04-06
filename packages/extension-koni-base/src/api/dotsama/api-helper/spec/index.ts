@@ -3,13 +3,19 @@
 
 import type { OverrideBundleDefinition } from '@polkadot/types/types';
 
+import astar from './astar';
+import astar_evm from './astar_evm';
+import shiden from './shiden';
+import shiden_evm from './shiden_evm';
+import shibuya from './shibuya';
+import shibuya_evm from './shibuya_evm';
+
 import acala from './acala';
 import ajuna from './ajuna';
 import altair from './altair';
 import apron from './apron';
 import aresGladios from './ares-gladios';
 import aresParachain from './ares-parachain';
-import astar from './astar';
 import automata from './automata';
 import basilisk from './basilisk';
 import beresheet from './beresheet';
@@ -93,8 +99,6 @@ import quartz from './quartz';
 import realis from './realis';
 import riochain from './riochain';
 import robonomics from './robonomics';
-import shibuya from './shibuya';
-import shiden from './shiden';
 import snowbridge from './snowbridge';
 import soraSubstrate from './soraSubstrate';
 import spanner from './spanner';
@@ -123,6 +127,13 @@ import zero from './zero';
 
 // NOTE: The mapping is done from specName in state.getRuntimeVersion
 const spec: Record<string, OverrideBundleDefinition> = {
+  astar,
+  astar_evm,
+  shiden,
+  shiden_evm,
+  shibuya,
+  shibuya_evm,
+
   Crab: crab,
   Darwinia: darwinia,
   'Darwinia Crab PC2': pangolin,
@@ -141,7 +152,6 @@ const spec: Record<string, OverrideBundleDefinition> = {
   'ares-mars': aresParachain,
   'ares-odyssey': aresParachain,
   asgard: bifrostAsgard,
-  astar,
   automata: automata,
   basilisk,
   beresheet,
@@ -236,8 +246,6 @@ const spec: Record<string, OverrideBundleDefinition> = {
   realis,
   'riochain-runtime': riochain,
   robonomics,
-  shibuya,
-  shiden,
   snowbridge,
   'sora-substrate': soraSubstrate,
   sora_ksm: soraSubstrate,

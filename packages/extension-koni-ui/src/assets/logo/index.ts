@@ -3,6 +3,16 @@
 
 const LogosMap: Record<string, string> = {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  astar: require('./astar.png'),
+  astar_evm: require('./astar.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  shiden: require('./shiden.png'),
+  shiden_evm: require('./shiden.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  shibuya: require('./astar.png'),
+  shibuya_evm: require('./astar.png'),
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   acala: require('./acala.svg'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   ausd: require('./ausd.svg'),
@@ -14,8 +24,6 @@ const LogosMap: Record<string, string> = {
   lcdot: require('./lcdot.svg'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   altair: require('./altair.svg'),
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  astar: require('./astar.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   basilisk: require('./basilisk.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -94,8 +102,6 @@ const LogosMap: Record<string, string> = {
   sakura: require('./sakura.svg'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   shadow: require('./shadow.svg'),
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  shiden: require('./shiden.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   'sora-substrate': require('./sora-substrate.svg'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

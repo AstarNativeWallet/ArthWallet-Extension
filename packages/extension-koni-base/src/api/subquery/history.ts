@@ -15,6 +15,13 @@ import { state } from '@polkadot/extension-koni-base/background/handlers';
 import { isAccountAll, reformatAddress } from '@polkadot/extension-koni-base/utils/utils';
 
 export const HistoryApiMap: Record<string, string> = {
+  astar: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-astar',
+  astar_evm: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-astar',
+  shiden: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-shiden',
+  shiden_evm: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-shiden',
+  shibuya: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-shibuya',
+  shibuya_evm: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-shibuya',
+
   polkadot: 'https://api.subquery.network/sq/nova-wallet/nova-westend',
   kusama: 'https://api.subquery.network/sq/nova-wallet/nova-kusama',
   westend: 'https://api.subquery.network/sq/nova-wallet/nova-westend',
@@ -26,7 +33,6 @@ export const HistoryApiMap: Record<string, string> = {
   clover: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-clover',
   basilisk: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-basilisk',
   acala: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-acala',
-  astar: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-astar',
   karura: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-karura',
   altair: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-altair',
   kilt: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-kilt',
@@ -34,7 +40,6 @@ export const HistoryApiMap: Record<string, string> = {
   statemint: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-statemint',
   quartz: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-quartz',
   zeigeist: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-zeitgeist',
-  shiden: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-shiden',
   statemine: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-statemine',
   moonbeam: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-moonbeam',
   moonriver: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-moonriver',
