@@ -15,6 +15,38 @@ import { categoryAddresses, sumBN } from '@polkadot/extension-koni-base/utils/ut
 import { AccountInfo } from '@polkadot/types/interfaces';
 import { BN } from '@polkadot/util';
 
+import Web3 from 'web3';
+import { u8aToHex } from '@polkadot/util';
+import { addressToEvm } from '@polkadot/util-crypto';
+
+async function getBalanceAstarEvm(networkKey: string) {
+  //let address: string = '0x13622064f9722AF46F29B6f6ee8C7483d85ed365';
+  //let address: string = '0x96cbef157358b7c90b0481ba8b3db8f58e014116';
+  let wssURL = '';
+  if (networkKey === 'astarEvm') {
+    wssURL = 'wss://rpc.astar.network';
+  } else if (networkKey === 'shidenEvm') {
+    wssURL = 'wss://rpc.shiden.astar.network';
+  } else if (networkKey === 'shibuyaEvm') {
+    wssURL = 'wss://rpc.shibuya.astar.network';
+  }
+  let ss58Address: string = 'ZM24FujhBK3XaDsdkpYBf4QQAvRkoMq42aqrUQnxFo3qrAw';
+  let address = u8aToHex(addressToEvm(ss58Address));
+  const web3 = new Web3(new Web3.providers.WebsocketProvider(wssURL));
+  const balance = await web3.eth.getBalance(address);
+  console.log('Arth await balance: ' + networkKey + ', SS58:' + ss58Address + ' -> H160:' + address + ', ' + balance);
+
+  //  const transaction = await api.value.tx.evm.withdraw(address, 1);
+  //  if (!transaction) {
+  //    throw Error('Cannot withdraw the deposit');
+  //  }
+
+  //return balance;
+}
+getBalanceAstarEvm('astarEvm');
+getBalanceAstarEvm('shibuyaEvm');
+  
+
 function subscribeWithDerive (addresses: string[], networkKey: string, networkAPI: ApiProps, callback: (networkKey: string, rs: BalanceItem) => void) {
   const freeMap: Record<string, BN> = {};
   const reservedMap: Record<string, BN> = {};
