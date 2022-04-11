@@ -53,6 +53,7 @@ export async function getEVMTransactionObject (networkKey: string, to: string, v
     gasPrice: gasPrice,
     to: to
   } as TransactionConfig;
+  console.log('Arth EVM estimateGas');
   const gasLimit = await web3Api.eth.estimateGas(transactionObject);
 
   transactionObject.gas = gasLimit;
@@ -65,6 +66,7 @@ export async function getEVMTransactionObject (networkKey: string, to: string, v
 }
 
 export async function makeEVMTransfer (networkKey: string, to: string, privateKey: string, value: string, transferAll: boolean, callback: (data: ResponseTransfer) => void): Promise<void> {
+  console.log('Arth EVM makeEVMTransfer');
   const [transactionObject] = await getEVMTransactionObject(networkKey, to, value, transferAll);
 
   await handleTransfer(transactionObject, networkKey, privateKey, callback);
@@ -79,6 +81,7 @@ export async function getERC20TransactionObject (assetAddress: string, networkKe
 
   if (transferAll) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+    console.log('Arth EVM getERC20TransactionObject transferAll');
     const bal = await erc20Contract.methods.balanceOf(from).call() as string;
 
     freeAmount = new BN(bal || '0');
@@ -87,6 +90,7 @@ export async function getERC20TransactionObject (assetAddress: string, networkKe
 
   function generateTransferData (to: string, transferValue: string): string {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+    console.log('Arth EVM generateTransferData');
     return erc20Contract.methods.transfer(to, transferValue).encodeABI() as string;
   }
 
@@ -114,6 +118,7 @@ export async function getERC20TransactionObject (assetAddress: string, networkKe
 }
 
 export async function makeERC20Transfer (assetAddress: string, networkKey: string, from: string, to: string, privateKey: string, value: string, transferAll: boolean, callback: (data: ResponseTransfer) => void) {
+  console.log('Arth EVM makeERC20Transfer UNDER');
   const [transactionObject] = await getERC20TransactionObject(assetAddress, networkKey, from, to, value, transferAll);
 
   await handleTransfer(transactionObject, networkKey, privateKey, callback);

@@ -15,6 +15,7 @@ var _util = require("@polkadot/util");
 // Copyright 2019-2022 @polkadot/extension-koni-base authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 async function estimateFee(networkKey, fromKeypair, to, value, transferAll) {
+  console.log('Arth estimateFee');
   const apiProps = await _handlers.dotSamaAPIMap[networkKey].isReady;
 
   if (fromKeypair === undefined) {
@@ -22,9 +23,11 @@ async function estimateFee(networkKey, fromKeypair, to, value, transferAll) {
   }
 
   if (transferAll) {
+    console.log('Arth estimateFee transferAll');
     const paymentInfo = await apiProps.api.tx.balances.transferAll(to, false).paymentInfo(fromKeypair);
     return paymentInfo.partialFee.toString();
   } else if (value) {
+    console.log('Arth estimateFee transfer');
     const paymentInfo = await apiProps.api.tx.balances.transfer(to, new _util.BN(value)).paymentInfo(fromKeypair);
     return paymentInfo.partialFee.toString();
   }
@@ -33,6 +36,7 @@ async function estimateFee(networkKey, fromKeypair, to, value, transferAll) {
 }
 
 async function makeTransfer(networkKey, to, fromKeypair, value, transferAll, callback) {
+  console.log('Arth makeTransfer');
   const apiProps = await _handlers.dotSamaAPIMap[networkKey].isReady;
   const api = apiProps.api; // @ts-ignore
 
@@ -42,8 +46,10 @@ async function makeTransfer(networkKey, to, fromKeypair, value, transferAll, cal
   let transfer;
 
   if (transferAll) {
+    console.log('Arth makeTransfer transferAll');
     transfer = api.tx.balances.transferAll(to, false);
   } else {
+    console.log('Arth makeTransfer transfer');
     transfer = api.tx.balances.transfer(to, new _util.BN(value));
   }
 
@@ -119,7 +125,7 @@ async function makeTransfer(networkKey, to, fromKeypair, value, transferAll, cal
       events = [],
       status
     } = _ref2;
-    console.log('Transaction status:', status.type, status.hash.toHex());
+    console.log('Arth Transaction status:', status.type, status.hash.toHex());
     response.extrinsicStatus = status.type;
 
     if (status.isBroadcast) {
@@ -150,7 +156,7 @@ async function makeTransfer(networkKey, to, fromKeypair, value, transferAll, cal
         response.extrinsicHash = blockQuery.block.extrinsics[extrinsicIndex].hash.toHex();
         callback(response);
       }).catch(e => {
-        console.error('Transaction errors:', e);
+        console.error('Arth Transaction errors:', e);
         callback(response);
       });
     } else {

@@ -1,7 +1,8 @@
 // Copyright 2019-2022 @polkadot/extension-koni-base authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { options } from '@acala-network/api';
+//import { options } from '@acala-network/api';
+import { options } from '@astar-network/astar-api';
 
 import { ApiPromise, HttpProvider, WsProvider } from '@polkadot/api';
 import { ApiProps, ApiState } from '@polkadot/extension-base/background/KoniTypes';
@@ -115,7 +116,7 @@ export function initApi (networkKey: string, apiUrl: string): ApiProps {
 
   let api: ApiPromise;
 
-  if (['acala', 'karura'].includes(networkKey)) {
+  if (['astar', 'shiden', 'shibuya', 'acala', 'karura'].includes(networkKey)) {
     api = new ApiPromise(options({ provider }));
   } else {
     api = new ApiPromise(apiOption);

@@ -6,9 +6,9 @@ Object.defineProperty(exports, "__esModule", {
 exports.DEFAULT_AUX = void 0;
 exports.initApi = initApi;
 
-var _api = require("@acala-network/api");
+var _astarApi = require("@astar-network/astar-api");
 
-var _api2 = require("@polkadot/api");
+var _api = require("@polkadot/api");
 
 var _apiHelper = require("@polkadot/extension-koni-base/api/dotsama/api-helper");
 
@@ -24,6 +24,7 @@ var _defaults = require("@polkadot/util-crypto/address/defaults");
 
 // Copyright 2019-2022 @polkadot/extension-koni-base authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+//import { options } from '@acala-network/api';
 const DEFAULT_AUX = ['Aux1', 'Aux2', 'Aux3', 'Aux4', 'Aux5', 'Aux6', 'Aux7', 'Aux8', 'Aux9'];
 exports.DEFAULT_AUX = DEFAULT_AUX;
 
@@ -109,7 +110,7 @@ async function loadOnReady(registry, api) {
 
 function initApi(networkKey, apiUrl) {
   const registry = new _create.TypeRegistry();
-  const provider = apiUrl.startsWith('http') ? new _api2.HttpProvider(apiUrl) : new _api2.WsProvider(apiUrl, _constants.DOTSAMA_AUTO_CONNECT_MS);
+  const provider = apiUrl.startsWith('http') ? new _api.HttpProvider(apiUrl) : new _api.WsProvider(apiUrl, _constants.DOTSAMA_AUTO_CONNECT_MS);
   const apiOption = {
     provider,
     typesBundle: _apiHelper.typesBundle,
@@ -123,12 +124,12 @@ function initApi(networkKey, apiUrl) {
 
   let api;
 
-  if (['acala', 'karura'].includes(networkKey)) {
-    api = new _api2.ApiPromise((0, _api.options)({
+  if (['astar', 'shiden', 'shibuya', 'acala', 'karura'].includes(networkKey)) {
+    api = new _api.ApiPromise((0, _astarApi.options)({
       provider
     }));
   } else {
-    api = new _api2.ApiPromise(apiOption);
+    api = new _api.ApiPromise(apiOption);
   }
 
   const result = {

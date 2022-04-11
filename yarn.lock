@@ -177,6 +177,63 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@astar-network/astar-api-derive@npm:0.1.5-7":
+  version: 0.1.5-7
+  resolution: "@astar-network/astar-api-derive@npm:0.1.5-7"
+  dependencies:
+    "@astar-network/astar-types": 0.1.5-7
+    "@babel/runtime": ^7.10.2
+    "@open-web3/orml-types": ^1.0.2-0
+    "@polkadot/api-derive": ^7.11.1
+  checksum: 43548c2759b88b01860d96b2d316325c33e8bcc7a61630276238b63b4f0c3e57d8704f92e41363b01f20411eaccd58d04e3004d6c8f53382323e2ca0236f7187
+  languageName: node
+  linkType: hard
+
+"@astar-network/astar-api@npm:beta":
+  version: 0.1.5-7
+  resolution: "@astar-network/astar-api@npm:0.1.5-7"
+  dependencies:
+    "@astar-network/astar-api-derive": 0.1.5-7
+    "@astar-network/astar-types": 0.1.5-7
+    "@babel/runtime": ^7.10.2
+    "@open-web3/orml-api-derive": ^1.0.2-0
+    "@polkadot/api": ^7.11.1
+  peerDependencies:
+    "@polkadot/api": ^7.11.1
+    "@polkadot/types": ^7.11.1
+  checksum: 1931ae22ff84aacec8315e935ef5e9cff63526ae6f5d154cb96ec5862c02923ea5bbca747387f5a69615ded5a80727223ae72a6454b8f666af8ad3ee96c922e5
+  languageName: node
+  linkType: hard
+
+"@astar-network/astar-type-definitions@npm:0.1.5-7":
+  version: 0.1.5-7
+  resolution: "@astar-network/astar-type-definitions@npm:0.1.5-7"
+  dependencies:
+    "@babel/runtime": ^7.10.2
+    "@open-web3/orml-type-definitions": ^1.0.2-0
+  checksum: a7400abb2d52ec54b53a650363097db8560623fea3065e5592e77a26dc6e73cb68a2e34757798b11151159d11ee38430f8fc5f3484f37480c7cd930763c7e789
+  languageName: node
+  linkType: hard
+
+"@astar-network/astar-types@npm:0.1.5-7":
+  version: 0.1.5-7
+  resolution: "@astar-network/astar-types@npm:0.1.5-7"
+  dependencies:
+    "@astar-network/astar-type-definitions": 0.1.5-7
+    "@babel/runtime": ^7.10.2
+    "@open-web3/api-mobx": ^1.0.2-0
+    "@open-web3/orml-types": ^1.0.2-0
+    "@polkadot/api": ^7.11.1
+    "@polkadot/typegen": ^7.11.1
+    "@polkadot/types": ^7.11.1
+  peerDependencies:
+    "@polkadot/api": ^6.5.2
+    "@polkadot/typegen": ^6.5.2
+    "@polkadot/types": ^6.5.2
+  checksum: eee51adbd325f81414ac026d65c71f6005083689f1b4fb2e62f02693f844e15c67f6dd29a64ca4d7cef7938d2a5d1ca699211194300426efa3025792454e2831
+  languageName: node
+  linkType: hard
+
 "@babel/cli@npm:^7.17.6":
   version: 7.17.6
   resolution: "@babel/cli@npm:7.17.6"
@@ -3215,7 +3272,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@open-web3/api-mobx@npm:^1.0.2-3":
+"@open-web3/api-mobx@npm:^1.0.2-0, @open-web3/api-mobx@npm:^1.0.2-3":
   version: 1.1.3
   resolution: "@open-web3/api-mobx@npm:1.1.3"
   dependencies:
@@ -3227,7 +3284,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@open-web3/orml-api-derive@npm:^1.0.2-3":
+"@open-web3/orml-api-derive@npm:^1.0.2-0, @open-web3/orml-api-derive@npm:^1.0.2-3":
   version: 1.1.3
   resolution: "@open-web3/orml-api-derive@npm:1.1.3"
   dependencies:
@@ -3264,7 +3321,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@open-web3/orml-types@npm:^1.0.2-3":
+"@open-web3/orml-types@npm:^1.0.2-0, @open-web3/orml-types@npm:^1.0.2-3":
   version: 1.1.3
   resolution: "@open-web3/orml-types@npm:1.1.3"
   dependencies:
@@ -3336,7 +3393,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/api-derive@npm:7.15.1, @polkadot/api-derive@npm:^7.1.1, @polkadot/api-derive@npm:^7.8.1":
+"@polkadot/api-derive@npm:7.15.1, @polkadot/api-derive@npm:^7.1.1, @polkadot/api-derive@npm:^7.11.1, @polkadot/api-derive@npm:^7.8.1":
   version: 7.15.1
   resolution: "@polkadot/api-derive@npm:7.15.1"
   dependencies:
@@ -3978,7 +4035,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/typegen@npm:^7.1.1":
+"@polkadot/typegen@npm:^7.1.1, @polkadot/typegen@npm:^7.11.1":
   version: 7.15.1
   resolution: "@polkadot/typegen@npm:7.15.1"
   dependencies:
@@ -18500,7 +18557,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
+    "@astar-network/astar-api": beta
     "@babel/core": ^7.16.7
+    "@polkadot/api": ^6.5.1
     "@polkadot/dev": ^0.65.23
     "@types/jest": ^27.4.0
     "@types/node": ^17.0.10

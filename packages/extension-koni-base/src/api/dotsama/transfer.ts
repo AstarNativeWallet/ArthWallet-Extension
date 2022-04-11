@@ -8,6 +8,7 @@ import { EventRecord, SignedBlockWithJustifications } from '@polkadot/types/inte
 import { BN } from '@polkadot/util';
 
 export async function estimateFee (networkKey: string, fromKeypair: KeyringPair | undefined, to: string, value: string | undefined, transferAll: boolean): Promise<string> {
+  console.log('Arth estimateFee');
   const apiProps = await dotSamaAPIMap[networkKey].isReady;
 
   if (fromKeypair === undefined) {
@@ -15,10 +16,12 @@ export async function estimateFee (networkKey: string, fromKeypair: KeyringPair 
   }
 
   if (transferAll) {
+    console.log('Arth estimateFee transferAll');
     const paymentInfo = await apiProps.api.tx.balances.transferAll(to, false).paymentInfo(fromKeypair);
 
     return paymentInfo.partialFee.toString();
   } else if (value) {
+    console.log('Arth estimateFee transfer');
     const paymentInfo = await apiProps.api.tx.balances.transfer(to, new BN(value)).paymentInfo(fromKeypair);
 
     return paymentInfo.partialFee.toString();
@@ -28,6 +31,7 @@ export async function estimateFee (networkKey: string, fromKeypair: KeyringPair 
 }
 
 export async function makeTransfer (networkKey: string, to: string, fromKeypair: KeyringPair, value: string, transferAll: boolean, callback: (data: ResponseTransfer) => void): Promise<void> {
+  console.log('Arth makeTransfer');
   const apiProps = await dotSamaAPIMap[networkKey].isReady;
   const api = apiProps.api;
   // @ts-ignore
@@ -36,8 +40,10 @@ export async function makeTransfer (networkKey: string, to: string, fromKeypair:
   let transfer;
 
   if (transferAll) {
+    console.log('Arth makeTransfer transferAll');
     transfer = api.tx.balances.transferAll(to, false);
   } else {
+    console.log('Arth makeTransfer transfer');
     transfer = api.tx.balances.transfer(to, new BN(value));
   }
 
@@ -96,7 +102,7 @@ export async function makeTransfer (networkKey: string, to: string, fromKeypair:
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   await transfer.signAndSend(fromKeypair, { nonce }, ({ events = [], status }) => {
-    console.log('Transaction status:', status.type, status.hash.toHex());
+    console.log('Arth Transaction status:', status.type, status.hash.toHex());
     response.extrinsicStatus = status.type;
 
     if (status.isBroadcast) {
@@ -133,7 +139,7 @@ export async function makeTransfer (networkKey: string, to: string, fromKeypair:
           callback(response);
         })
         .catch((e) => {
-          console.error('Transaction errors:', e);
+          console.error('Arth Transaction errors:', e);
           callback(response);
         });
     } else {
