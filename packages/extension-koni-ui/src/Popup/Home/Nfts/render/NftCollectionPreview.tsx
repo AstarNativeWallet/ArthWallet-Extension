@@ -6,15 +6,15 @@ import React, { useCallback, useState } from 'react';
 import LazyLoad from 'react-lazyload';
 import styled from 'styled-components';
 
-import { NftCollection } from '@polkadot/extension-base/background/KoniTypes';
 import logo from '@polkadot/extension-koni-ui/assets/sub-wallet-logo.svg';
 import Spinner from '@polkadot/extension-koni-ui/components/Spinner';
+import { _NftCollection } from '@polkadot/extension-koni-ui/Popup/Home/Nfts/types';
 import { ThemeProps } from '@polkadot/extension-koni-ui/types';
 
 interface Props {
   className?: string;
-  data: NftCollection;
-  onClick: (data: NftCollection) => void;
+  data: _NftCollection;
+  onClick: (data: _NftCollection) => void;
 }
 
 function NftCollectionPreview ({ className, data, onClick }: Props): React.ReactElement<Props> {
@@ -70,12 +70,10 @@ function NftCollectionPreview ({ className, data, onClick }: Props): React.React
 export default React.memo(styled(NftCollectionPreview)(({ theme }: ThemeProps) => `
   .img-container {
     position: relative;
-    height: 124px;
-    width: 124px;
   }
 
   .img-spinner {
-    top: 50%;
+    position: absolute;
   }
 
   .nft-preview {
@@ -89,7 +87,7 @@ export default React.memo(styled(NftCollectionPreview)(({ theme }: ThemeProps) =
       display: block;
       height: 124px;
       width: 124px;
-      object-fit: cover;
+      object-fit: contain;
     }
 
     .collection-name {

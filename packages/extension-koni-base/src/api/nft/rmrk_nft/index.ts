@@ -7,10 +7,13 @@ import { NftCollection, NftItem, RMRK_VER } from '@polkadot/extension-base/backg
 import { BaseNftApi } from '@polkadot/extension-koni-base/api/nft/nft';
 import { isUrl, reformatAddress } from '@polkadot/extension-koni-base/utils/utils';
 
-import { KANARIA_ENDPOINT, KANARIA_EXTERNAL_SERVER, PINATA_SERVER, SINGULAR_V1_COLLECTION_ENDPOINT, SINGULAR_V1_ENDPOINT, SINGULAR_V1_EXTERNAL_SERVER, SINGULAR_V2_COLLECTION_ENDPOINT, SINGULAR_V2_ENDPOINT, SINGULAR_V2_EXTERNAL_SERVER } from '../config';
+import { KANARIA_ENDPOINT, KANARIA_EXTERNAL_SERVER, RMRK_PINATA_SERVER, SINGULAR_V1_COLLECTION_ENDPOINT, SINGULAR_V1_ENDPOINT, SINGULAR_V1_EXTERNAL_SERVER, SINGULAR_V2_COLLECTION_ENDPOINT, SINGULAR_V2_ENDPOINT, SINGULAR_V2_EXTERNAL_SERVER } from '../config';
 
 const headers = {
-  'Content-Type': 'application/json'
+  'Content-Type': 'application/json',
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': '*',
+  'Access-Control-Allow-Headers': '*'
 };
 
 enum RMRK_SOURCE {
@@ -58,13 +61,19 @@ export class RmrkNftApi extends BaseNftApi {
   }
 
   override parseUrl (input: string): string | undefined {
-    if (!input || input.length === 0) return undefined;
+    if (!input || input.length === 0) {
+      return undefined;
+    }
 
-    if (isUrl(input) || input.includes('https://') || input.includes('http')) return input;
+    if (isUrl(input) || input.includes('https://') || input.includes('http')) {
+      return input;
+    }
 
-    if (!input.includes('ipfs://ipfs/')) { return PINATA_SERVER + input; }
+    if (!input.includes('ipfs://ipfs/')) {
+      return RMRK_PINATA_SERVER + input;
+    }
 
-    return PINATA_SERVER + input.split('ipfs://ipfs/')[1];
+    return RMRK_PINATA_SERVER + input.split('ipfs://ipfs/')[1];
   }
 
   private async getMetadata (metadataUrl: string): Promise<NFTMetadata | undefined> {
@@ -72,7 +81,10 @@ export class RmrkNftApi extends BaseNftApi {
 
     if (!isUrl(metadataUrl)) {
       url = this.parseUrl(metadataUrl);
-      if (!url || url.length === 0) return undefined;
+
+      if (!url || url.length === 0) {
+        return undefined;
+      }
     }
 
     return await fetch(url, {
@@ -99,7 +111,9 @@ export class RmrkNftApi extends BaseNftApi {
       })
         .then((res) => res.json()) as Record<number | string, number | string | NFTResource>[];
 
-      _data = _data.map((item) => { return { ...item, source }; });
+      _data = _data.map((item) => {
+        return { ...item, source };
+      });
 
       data = data.concat(_data);
     }));
@@ -161,11 +175,11 @@ export class RmrkNftApi extends BaseNftApi {
     return nfts;
   }
 
-  public async handleNfts () {
+  public async handleNfts (updateItem: (data: NftItem) => void, updateCollection: (data: NftCollection) => void, updateReady: (ready: boolean) => void) {
     // const start = performance.now();
 
     let allNfts: Record<string | number, any>[] = [];
-    let allCollections: NftCollection[] = [];
+    const allCollections: NftCollection[] = [];
 
     try {
       await Promise.all(this.addresses.map(async (address) => {
@@ -174,64 +188,11 @@ export class RmrkNftApi extends BaseNftApi {
         allNfts = allNfts.concat(nfts);
       }));
 
-      const collectionInfoUrl: string[] = [];
-
-      for (const item of allNfts) {
-        let url = '';
-
-        if (item.source === RMRK_SOURCE.SINGULAR_V1) {
-          url = SINGULAR_V1_COLLECTION_ENDPOINT + (item.collectionId as string);
-        } else {
-          url = SINGULAR_V2_COLLECTION_ENDPOINT + (item.collectionId as string);
-        }
-
-        if (!collectionInfoUrl.includes(url)) {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          allCollections.push({ collectionId: item.collectionId });
-          collectionInfoUrl.push(url.replace(' ', '%20'));
-        }
+      if (allNfts.length <= 0) {
+        updateReady(true);
       }
 
-      const allCollectionMetaUrl: Record<string, any>[] = [];
-
-      await Promise.all(collectionInfoUrl.map(async (url) => {
-        const data = await fetch(url)
-          .then((resp) => resp.json()) as Record<string | number, string | number>[];
-        const result = data[0];
-
-        if (result && 'metadata' in result) {
-          allCollectionMetaUrl.push({
-            url: this.parseUrl(result?.metadata as string),
-            id: result?.id
-          });
-        }
-
-        if (data.length > 0) return result;
-        else return {};
-      }));
-
-      const allCollectionMeta: Record<string | number, any> = {};
-
-      await Promise.all(allCollectionMetaUrl.map(async (item) => {
-        let data: Record<string, any> = {};
-
-        if (item.url) {
-          data = await fetch(item?.url as string)
-            .then((resp) => resp.json()) as Record<string, any>;
-        }
-
-        if ('mediaUri' in data) { // rmrk v2.0
-          // @ts-ignore
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          allCollectionMeta[item?.id as string] = { ...data, image: data.mediaUri };
-        } else {
-          allCollectionMeta[item?.id as string] = { ...data };
-        }
-      }));
-
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      // const collectionInfoDict = Object.assign({}, ...collectionInfo.map((item) => ({ [item.id]: item.name })));
-      const nftDict: Record<string | number, any> = {};
+      const collectionInfoUrl: string[] = [];
 
       for (const item of allNfts) {
         const parsedItem = {
@@ -252,47 +213,91 @@ export class RmrkNftApi extends BaseNftApi {
           rmrk_ver: item.source && item.source === RMRK_SOURCE.SINGULAR_V1 ? RMRK_VER.VER_1 : RMRK_VER.VER_2
         } as NftItem;
 
-        if (item.collectionId in nftDict) {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          nftDict[item.collectionId as string] = [...nftDict[item.collectionId as string], parsedItem];
+        updateItem(parsedItem);
+
+        let url = '';
+
+        if (item.source === RMRK_SOURCE.SINGULAR_V1) {
+          url = SINGULAR_V1_COLLECTION_ENDPOINT + (item.collectionId as string);
         } else {
-          nftDict[item.collectionId as string] = [parsedItem];
+          url = SINGULAR_V2_COLLECTION_ENDPOINT + (item.collectionId as string);
+        }
+
+        if (!collectionInfoUrl.includes(url)) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          allCollections.push({ collectionId: item.collectionId });
+          collectionInfoUrl.push(url.replace(' ', '%20'));
         }
       }
 
-      allCollections = allCollections.map((item) => {
-        return {
+      const allCollectionMetaUrl: Record<string, any>[] = [];
+
+      await Promise.all(collectionInfoUrl.map(async (url) => {
+        const data = await fetch(url, {
+          method: 'get',
+          headers
+        })
+          .then((resp) => resp.json()) as Record<string | number, string | number>[];
+        const result = data[0];
+
+        if (result && 'metadata' in result) {
+          allCollectionMetaUrl.push({
+            url: this.parseUrl(result?.metadata as string),
+            id: result?.id
+          });
+        }
+
+        if (data.length > 0) {
+          return result;
+        } else {
+          return {};
+        }
+      }));
+
+      const allCollectionMeta: Record<string | number, any> = {};
+
+      await Promise.all(allCollectionMetaUrl.map(async (item) => {
+        let data: Record<string, any> = {};
+
+        if (item.url) {
+          data = await fetch(item?.url as string, {
+            method: 'get',
+            headers
+          })
+            .then((resp) => resp.json()) as Record<string, any>;
+        }
+
+        if ('mediaUri' in data) { // rmrk v2.0
+          // @ts-ignore
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          allCollectionMeta[item?.id as string] = { ...data, image: data.mediaUri };
+        } else {
+          allCollectionMeta[item?.id as string] = { ...data };
+        }
+      }));
+
+      allCollections.forEach((item) => {
+        const parsedCollection = {
           collectionId: item.collectionId,
           // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
           collectionName: allCollectionMeta[item.collectionId] ? allCollectionMeta[item.collectionId].name as string : null,
           // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
           image: allCollectionMeta[item.collectionId] ? this.parseUrl(allCollectionMeta[item.collectionId].image as string) : null,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-          nftItems: nftDict[item.collectionId] as NftItem[]
+          chain: 'kusama'
         } as NftCollection;
+
+        updateCollection(parsedCollection);
+        updateReady(true);
       });
     } catch (e) {
-      console.log('Failed to fetch rmrk nft', e);
-
-      return;
+      console.error('Failed to fetch rmrk nft', e);
     }
-
-    this.total = allNfts.length;
-    this.data = allCollections;
-
-    // const end = performance.now();
-    //
-    // console.log(`Fetched ${allNfts.length} nfts from rmrk`);
-    //
-    // console.log(`rmrk took ${end - start}ms`);
   }
 
-  public async fetchNfts (): Promise<number> {
+  public async fetchNfts (updateItem: (data: NftItem) => void, updateCollection: (data: NftCollection) => void, updateReady: (ready: boolean) => void): Promise<number> {
     try {
-      await this.handleNfts();
+      await this.handleNfts(updateItem, updateCollection, updateReady);
     } catch (e) {
-      console.log(`error fetching nft from ${this.getChain() as string}`);
-
       return 0;
     }
 

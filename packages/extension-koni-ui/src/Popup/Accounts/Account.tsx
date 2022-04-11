@@ -7,6 +7,7 @@ import React, { useCallback, useContext, useEffect, useRef, useState } from 'rea
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
+import { CurrentAccountInfo } from '@polkadot/extension-base/background/KoniTypes';
 import check from '@polkadot/extension-koni-ui/assets/check.svg';
 import changeAvatar from '@polkadot/extension-koni-ui/assets/icon/camera.svg';
 import changeAvatarHover from '@polkadot/extension-koni-ui/assets/icon/camera-hover.svg';
@@ -14,7 +15,7 @@ import { AccountContext, AccountInfoEl, ActionContext } from '@polkadot/extensio
 import useIsPopup from '@polkadot/extension-koni-ui/hooks/useIsPopup';
 import useToast from '@polkadot/extension-koni-ui/hooks/useToast';
 import useTranslation from '@polkadot/extension-koni-ui/hooks/useTranslation';
-import { saveCurrentAccountAddress, triggerAccountsSubscription, windowOpen } from '@polkadot/extension-koni-ui/messaging';
+import { saveCurrentAccountAddress, triggerAccountsSubscription } from '@polkadot/extension-koni-ui/messaging';
 import { RootState } from '@polkadot/extension-koni-ui/stores';
 import { ThemeProps } from '@polkadot/extension-koni-ui/types';
 import { findAccountByAddress, isAccountAll } from '@polkadot/extension-koni-ui/util';
@@ -24,11 +25,9 @@ interface Props extends AccountJson {
   parentName?: string;
   closeSetting?: () => void;
   changeAccountCallback?: (address: string) => void;
-  imgSelected?: string | null;
-  setImgSelected?: (imgSelected: string | null) => void;
 }
 
-function Account ({ address, changeAccountCallback, className, closeSetting, genesisHash, imgSelected, name, parentName, setImgSelected, suri, type }: Props): React.ReactElement<Props> {
+function Account ({ address, changeAccountCallback, className, closeSetting, genesisHash, name, parentName, suri, type }: Props): React.ReactElement<Props> {
   const [isSelected, setSelected] = useState(false);
   const { accounts } = useContext(AccountContext);
   const onAction = useContext(ActionContext);
@@ -57,7 +56,11 @@ function Account ({ address, changeAccountCallback, className, closeSetting, gen
         const accountByAddress = findAccountByAddress(accounts, address);
 
         if (accountByAddress) {
-          saveCurrentAccountAddress(address).then(() => {
+          const accountInfo = {
+            address: address
+          } as CurrentAccountInfo;
+
+          saveCurrentAccountAddress(accountInfo, () => {
             window.localStorage.removeItem('accountAllNetworkGenesisHash');
             triggerAccountsSubscription().catch((e) => {
               console.error('There is a problem when trigger Accounts Subscription', e);
@@ -76,42 +79,54 @@ function Account ({ address, changeAccountCallback, className, closeSetting, gen
       onAction('/');
     }, [accounts, address, changeAccountCallback, closeSetting, onAction]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const updateAvatar = (file: Blob) => {
+  const updateAvatar = useCallback((file: Blob) => {
     const reader = new FileReader();
 
     reader.readAsDataURL(file);
 
     reader.onload = function () {
-      setImgSelected && setImgSelected(reader.result as string);
-      localStorage.setItem('allAccountLogo', reader.result as string);
+      if (currentAccount) {
+        const accountInfo = {
+          address: currentAccount.address,
+          isShowBalance: false,
+          allAccountLogo: reader.result as string
+        } as CurrentAccountInfo;
+
+        saveCurrentAccountAddress(accountInfo, () => {
+          triggerAccountsSubscription().catch((e: any) => {
+            console.error('There is a problem when trigger Accounts Subscription', e);
+          });
+        }).catch((e) => {
+          console.error('There is a problem when set Current Account', e);
+        });
+      }
     };
 
     reader.onerror = function (error) {
       console.log('Error: ', error);
     };
-  };
+  }, [currentAccount]);
 
   const fileSelectedChange = useCallback(
     (event: any): void => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
       const size = event.target.files[0].size;
 
-      if (size < 3670016) {
+      if (size < 512000) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
         updateAvatar(event.target.files[0]);
       } else {
         setToastError(true);
-        show(t('File is too large (limited 3.5MB)'));
+        show(t('File is too large (limited 500KB)'));
       }
     }, [updateAvatar, setToastError, show, t]);
 
-  const onSelectImg = useCallback(() => {
-    if (isPopup && (isFirefox || isLinux)) {
-      windowOpen('/').catch(console.error);
-    }
+  const onSelectImg = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
 
-    inputRef.current && inputRef.current.click();
+    if (!(isPopup && (isFirefox || isLinux))) {
+      inputRef.current && inputRef.current.click();
+    }
   }, [isFirefox, isLinux, isPopup]);
 
   return (
@@ -134,7 +149,6 @@ function Account ({ address, changeAccountCallback, className, closeSetting, gen
         address={address}
         className='account__account-item'
         genesisHash={genesisHash}
-        imgSelected={imgSelected}
         name={name}
         parentName={parentName}
         showCopyBtn={false}
@@ -144,7 +158,7 @@ function Account ({ address, changeAccountCallback, className, closeSetting, gen
 
       {_isAllAccount && (
         <div
-          className='account__change-avatar'
+          className={`account__change-avatar ${(isPopup && (isFirefox || isLinux)) ? 'account__change-avatar-is-disabled' : ''}`}
           onClick={onSelectImg}
         >
           <input
@@ -199,6 +213,11 @@ export default styled(Account)(({ theme }: ThemeProps) => `
     align-items: center;
     right: 15px;
     height: 100%;
+  }
+
+  .account__change-avatar-is-disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
   }
 
   .account__change-avatar-icon-btn {

@@ -3,16 +3,56 @@
 
 import { ApiPromise } from '@polkadot/api';
 import { SubmittableExtrinsicFunction } from '@polkadot/api/promise/types';
-import { AccountJson, RequestAccountSubscribe, RequestBatchRestore, RequestCurrentAccountAddress, RequestDeriveCreate, RequestJsonRestore, SeedLengths } from '@polkadot/extension-base/background/types';
-import { MetadataDefBase } from '@polkadot/extension-inject/types';
+import { AuthUrls, Resolver } from '@polkadot/extension-base/background/handlers/State';
+import { AccountJson, AuthorizeRequest, RequestAccountList, RequestAccountSubscribe, RequestAuthorizeReject, RequestAuthorizeSubscribe, RequestAuthorizeTab, RequestBatchRestore, RequestCurrentAccountAddress, RequestDeriveCreate, RequestJsonRestore, ResponseAuthorizeList, SeedLengths } from '@polkadot/extension-base/background/types';
+import { InjectedAccount, MetadataDefBase } from '@polkadot/extension-inject/types';
 import { Registry } from '@polkadot/types/types';
 import { Keyring } from '@polkadot/ui-keyring';
+import { BN } from '@polkadot/util';
 import { KeypairType } from '@polkadot/util-crypto/types';
 
 export enum ApiInitStatus {
   SUCCESS,
   ALREADY_EXIST,
   NOT_SUPPORT
+}
+
+export interface AuthRequestV2 extends Resolver<ResultResolver> {
+  id: string;
+  idStr: string;
+  request: RequestAuthorizeTab;
+  url: string;
+}
+
+export interface RequestAuthorizeApproveV2 {
+  id: string;
+  accounts: string[];
+}
+
+export interface RequestAuthorizationAll {
+  connectValue: boolean;
+}
+
+export interface RequestAuthorization extends RequestAuthorizationAll {
+  url: string;
+}
+
+export interface RequestAuthorizationPerAccount extends RequestAuthorization {
+  address: string;
+}
+
+export interface ResultResolver {
+  result: boolean;
+  accounts: string[];
+}
+
+export interface RejectResolver {
+  error: Error;
+  accounts: string[];
+}
+
+export interface RequestForgetSite {
+  url: string;
 }
 
 export interface StakingRewardItem {
@@ -73,10 +113,11 @@ export interface NftTransferExtra {
   cronUpdate: boolean;
   forceUpdate: boolean;
   selectedNftCollection?: NftCollection; // for rendering
+  nftItems?: NftItem[]; // for rendering, remaining nfts
 }
 
 export interface NftItem {
-  id: string;
+  id?: string;
   name?: string;
   image?: string;
   external_url?: string;
@@ -92,13 +133,24 @@ export interface NftCollection {
   collectionId: string;
   collectionName?: string;
   image?: string;
-  nftItems?: Array<NftItem>;
+  chain?: string;
+  itemCount?: number;
 }
 
 export interface NftJson {
-  ready?: boolean;
   total: number;
-  nftList: Array<NftCollection>;
+  nftList: Array<NftItem>;
+}
+
+export interface NftCollectionJson {
+  ready: boolean;
+  nftCollectionList: Array<NftCollection>;
+}
+
+export interface TokenBalanceRaw {
+  reserved: BN,
+  frozen: BN,
+  free: BN
 }
 
 export interface BalanceChildItem {
@@ -134,6 +186,7 @@ export interface CrowdloanJson {
 export interface ChainRegistry {
   chainDecimals: number[];
   chainTokens: string[];
+  tokenMap: Record<string, TokenInfo>
 }
 
 export interface DefaultFormatBalance {
@@ -213,14 +266,28 @@ export type CurrentNetworkInfo = {
   isEthereum: boolean;
 }
 
+export type TokenInfo = {
+  isMainToken: boolean,
+  symbol: string,
+  erc20Address?: string,
+  decimals: number,
+  name: string,
+  coinGeckoKey?: string,
+  specialOption?: object
+}
+
 // all Accounts and the address of the current Account
 export interface AccountsWithCurrentAddress {
   accounts: AccountJson[];
   currentAddress?: string;
+  isShowBalance?: boolean;
+  allAccountLogo?: string;
 }
 
 export interface CurrentAccountInfo {
   address: string;
+  isShowBalance?: boolean;
+  allAccountLogo?: string;
 }
 
 export interface RandomTestRequest {
@@ -245,15 +312,6 @@ export interface TransactionHistoryItemType {
   isSuccess: boolean;
   action: 'send' | 'received';
   extrinsicHash: string
-}
-
-export interface MoonAsset {
-  deposit: number,
-  name: string,
-  symbol: string,
-  decimals: number,
-  isFrozen: boolean,
-  address: string
 }
 
 export interface RequestTransactionHistoryGet {
@@ -315,6 +373,7 @@ export interface RequestCheckTransfer {
   to: string,
   value?: string,
   transferAll?: boolean
+  token?: string
 }
 
 export interface RequestTransfer extends RequestCheckTransfer {
@@ -338,7 +397,8 @@ export type RequestSubscribeStakingReward = null
 export type RequestNftForceUpdate = {
   collectionId: string,
   nft: NftItem,
-  isSendingSelf: boolean
+  isSendingSelf: boolean,
+  chain: string
 }
 
 export enum TransferErrorCode {
@@ -346,6 +406,7 @@ export enum TransferErrorCode {
   INVALID_TO_ADDRESS = 'invalidToAccount',
   NOT_ENOUGH_VALUE = 'notEnoughValue',
   INVALID_VALUE = 'invalidValue',
+  INVALID_TOKEN = 'invalidToken',
   KEYRING_ERROR = 'keyringError',
   TRANSFER_ERROR = 'transferError',
   TIMEOUT = 'timeout'
@@ -380,7 +441,38 @@ export interface ResponseTransfer {
   data?: object
 }
 
+export interface EvmNftTransactionRequest {
+  networkKey: string,
+  senderAddress: string,
+  recipientAddress: string,
+  params: Record<string, any>
+}
+
+export interface EvmNftTransaction {
+  tx: Record<string, any> | null,
+  estimatedFee: string | null
+}
+
+export interface EvmNftSubmitTransaction {
+  senderAddress: string,
+  password: string,
+  recipientAddress: string,
+  networkKey: string,
+  rawTransaction: Record<string, any>
+}
+
+export interface EvmNftTransactionResponse {
+  passwordError?: string | null,
+  callHash?: string,
+  status?: boolean,
+  transactionHash?: string,
+  txError?: boolean,
+  isSendingSelf: boolean
+}
+
 export interface KoniRequestSignatures {
+  'pri(evmNft.submitTransaction)': [EvmNftSubmitTransaction, EvmNftTransactionResponse, EvmNftTransactionResponse];
+  'pri(evmNft.getTransaction)': [EvmNftTransactionRequest, EvmNftTransaction];
   'pri(nftTransfer.setNftTransfer)': [NftTransferExtra, boolean];
   'pri(nftTransfer.getNftTransfer)': [null, NftTransferExtra];
   'pri(nftTransfer.getSubscription)': [null, NftTransferExtra, NftTransferExtra];
@@ -392,12 +484,23 @@ export interface KoniRequestSignatures {
   'pri(stakingReward.getSubscription)': [RequestSubscribeStakingReward, StakingRewardJson, StakingRewardJson];
   'pri(nft.getNft)': [null, NftJson];
   'pri(nft.getSubscription)': [RequestSubscribeNft, NftJson, NftJson];
+  'pri(nftCollection.getNftCollection)': [null, NftCollectionJson];
+  'pri(nftCollection.getSubscription)': [null, NftCollectionJson, NftCollectionJson];
   'pri(price.getPrice)': [RequestPrice, PriceJson];
   'pri(price.getSubscription)': [RequestSubscribePrice, PriceJson, PriceJson];
   'pri(balance.getBalance)': [RequestBalance, BalanceJson];
   'pri(balance.getSubscription)': [RequestSubscribeBalance, BalanceJson, BalanceJson];
   'pri(crowdloan.getCrowdloan)': [RequestCrowdloan, CrowdloanJson];
   'pri(crowdloan.getSubscription)': [RequestSubscribeCrowdloan, CrowdloanJson, CrowdloanJson];
+  'pri(authorize.listV2)': [null, ResponseAuthorizeList];
+  'pri(authorize.requestsV2)': [RequestAuthorizeSubscribe, boolean, AuthorizeRequest[]];
+  'pri(authorize.approveV2)': [RequestAuthorizeApproveV2, boolean];
+  'pri(authorize.changeSiteAll)': [RequestAuthorizationAll, boolean, AuthUrls];
+  'pri(authorize.changeSite)': [RequestAuthorization, boolean, AuthUrls];
+  'pri(authorize.changeSitePerAccount)': [RequestAuthorizationPerAccount, boolean, AuthUrls];
+  'pri(authorize.forgetSite)': [RequestForgetSite, boolean, AuthUrls];
+  'pri(authorize.forgetAllSite)': [null, boolean, AuthUrls];
+  'pri(authorize.rejectV2)': [RequestAuthorizeReject, boolean];
   'pri(seed.createV2)': [RequestSeedCreateV2, ResponseSeedCreateV2];
   'pri(seed.validateV2)': [RequestSeedValidateV2, ResponseSeedValidateV2];
   'pri(accounts.create.suriV2)': [RequestAccountCreateSuriV2, ResponseAccountCreateSuriV2];
@@ -409,10 +512,12 @@ export interface KoniRequestSignatures {
   'pri(accounts.exportPrivateKey)': [RequestAccountExportPrivateKey, ResponseAccountExportPrivateKey];
   'pri(accounts.subscribeWithCurrentAddress)': [RequestAccountSubscribe, boolean, AccountsWithCurrentAddress];
   'pri(accounts.triggerSubscription)': [null, boolean];
-  'pri(currentAccount.saveAddress)': [RequestCurrentAccountAddress, boolean];
+  'pri(currentAccount.saveAddress)': [RequestCurrentAccountAddress, boolean, CurrentAccountInfo];
   'pri(networkMetadata.list)': [null, NetWorkMetadataDef[]];
   'pri(chainRegistry.getSubscription)': [null, Record<string, ChainRegistry>, Record<string, ChainRegistry>];
   'pri(transaction.history.getSubscription)': [null, Record<string, TransactionHistoryItemType[]>, Record<string, TransactionHistoryItemType[]>];
   'pri(transaction.history.add)': [RequestTransactionHistoryAdd, boolean, TransactionHistoryItemType[]];
   'pub(utils.getRandom)': [RandomTestRequest, number];
+  'pub(accounts.listV2)': [RequestAccountList, InjectedAccount[]];
+  'pub(accounts.subscribeV2)': [RequestAccountSubscribe, boolean, InjectedAccount[]];
 }

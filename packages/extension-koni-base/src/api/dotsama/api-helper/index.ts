@@ -12,11 +12,15 @@ export function getChainTypes (_specName: string, chainName: string): Record<str
   };
 }
 
+export const moonbeamBaseChains = ['moonbase', 'moonbeam', 'moonriver'];
+
 export const ethereumChains = [
   'moonbase',
   'moonbeam',
   'moonriver',
   'moonshadow',
+  'astarEvm',
+  'shidenEvm',
   'origintrail-parachain'
 ];
 

@@ -9,21 +9,25 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
 import { Route, Switch } from 'react-router';
 
-import { AccountsWithCurrentAddress } from '@polkadot/extension-base/background/KoniTypes';
+import { AccountsWithCurrentAddress, CurrentAccountInfo } from '@polkadot/extension-base/background/KoniTypes';
 import { PHISHING_PAGE_REDIRECT } from '@polkadot/extension-base/defaults';
 import { canDerive } from '@polkadot/extension-base/utils';
 import LoadingContainer from '@polkadot/extension-koni-ui/components/LoadingContainer';
 import useSetupStore from '@polkadot/extension-koni-ui/hooks/store/useSetupStore';
 import TransferNftContainer from '@polkadot/extension-koni-ui/Popup/Home/Nfts/transfer/TransferNftContainer';
+import ImportLedger from '@polkadot/extension-koni-ui/Popup/ImportLedger';
 import Donate from '@polkadot/extension-koni-ui/Popup/Sending/old/Donate';
 import SendFund from '@polkadot/extension-koni-ui/Popup/Sending/old/SendFund';
 import Settings from '@polkadot/extension-koni-ui/Popup/Settings';
+import GeneralSetting from '@polkadot/extension-koni-ui/Popup/Settings/GeneralSetting';
+import NetworkEdit from '@polkadot/extension-koni-ui/Popup/Settings/NetworkEdit';
+import Networks from '@polkadot/extension-koni-ui/Popup/Settings/Networks';
 import uiSettings from '@polkadot/ui-settings';
 
 import { ErrorBoundary } from '../components';
 import { AccountContext, ActionContext, AuthorizeReqContext, MediaContext, MetadataReqContext, SettingsContext, SigningReqContext } from '../components/contexts';
 import ToastProvider from '../components/Toast/ToastProvider';
-import { saveCurrentAccountAddress, subscribeAccountsWithCurrentAddress, subscribeAuthorizeRequests, subscribeMetadataRequests, subscribeSigningRequests } from '../messaging';
+import { saveCurrentAccountAddress, subscribeAccountsWithCurrentAddress, subscribeAuthorizeRequestsV2, subscribeMetadataRequests, subscribeSigningRequests } from '../messaging';
 import { store } from '../stores';
 import { buildHierarchy } from '../util/buildHierarchy';
 import AuthList from './AuthManagement';
@@ -77,6 +81,14 @@ function updateCurrentAccount (currentAcc: AccountJson): void {
   store.dispatch({ type: 'currentAccount/update', payload: currentAcc });
 }
 
+function updateBalanceStatus (isShowBalance: boolean): void {
+  store.dispatch({ type: 'balanceStatus/update', payload: { isShowBalance: isShowBalance } });
+}
+
+function updateAllAccount (allAccountLogo: string): void {
+  store.dispatch({ type: 'allAccount/update', payload: { allAccountLogo: allAccountLogo } });
+}
+
 export default function Popup (): React.ReactElement {
   const [accounts, setAccounts] = useState<null | AccountJson[]>(null);
   const [accountCtx, setAccountCtx] = useState<AccountsContext>({ accounts: [], hierarchy: [] });
@@ -107,7 +119,7 @@ export default function Popup (): React.ReactElement {
 
   // @ts-ignore
   const handleGetAccountsWithCurrentAddress = (data: AccountsWithCurrentAddress) => {
-    const { accounts, currentAddress } = data;
+    const { accounts, allAccountLogo, currentAddress, isShowBalance } = data;
 
     setAccounts(accounts);
 
@@ -116,7 +128,11 @@ export default function Popup (): React.ReactElement {
 
       if (!selectedAcc) {
         selectedAcc = accounts[0];
-        saveCurrentAccountAddress(selectedAcc.address).then(() => {
+        const accountInfo = {
+          address: selectedAcc.address
+        } as CurrentAccountInfo;
+
+        saveCurrentAccountAddress(accountInfo, () => {
           updateCurrentAccount(selectedAcc as AccountJson);
         }).catch((e) => {
           console.error('There is a problem when set Current Account', e);
@@ -125,6 +141,9 @@ export default function Popup (): React.ReactElement {
         updateCurrentAccount(selectedAcc);
       }
     }
+
+    allAccountLogo && updateAllAccount(allAccountLogo);
+    updateBalanceStatus(!!isShowBalance);
   };
 
   useEffect((): void => {
@@ -146,7 +165,7 @@ export default function Popup (): React.ReactElement {
     Promise.all([
       // subscribeAccounts(setAccounts),
       subscribeAccountsWithCurrentAddress(handleGetAccountsWithCurrentAddress),
-      subscribeAuthorizeRequests(setAuthRequests),
+      subscribeAuthorizeRequestsV2(setAuthRequests),
       subscribeMetadataRequests(setMetaRequests),
       subscribeSigningRequests(setSignRequests)
     ]).catch(console.error);
@@ -201,6 +220,7 @@ export default function Popup (): React.ReactElement {
                           <Route path='/account/forget/:address'>{wrapWithErrorBoundary(<Forget />, 'forget-address')}</Route>
                           <Route path='/account/export/:address'>{wrapWithErrorBoundary(<Export />, 'export-address')}</Route>
                           {/* <Route path='/account/export-all'>{wrapWithErrorBoundary(<ExportAll />, 'export-all-address')}</Route> */}
+                          <Route path='/account/import-ledger'>{wrapWithErrorBoundary(<ImportLedger />, 'import-ledger')}</Route>
                           <Route path='/account/import-qr'>{wrapWithErrorBoundary(<ImportQr />, 'import-qr')}</Route>
                           <Route path='/account/import-seed'>{wrapWithErrorBoundary(<ImportSeed />, 'import-seed')}</Route>
                           <Route path='/account/import-metamask-private-key'>{wrapWithErrorBoundary(<ImportMetamaskPrivateKey />, 'import-metamask-private-key')}</Route>
@@ -208,6 +228,9 @@ export default function Popup (): React.ReactElement {
                           <Route path='/account/derive/:address/locked'>{wrapWithErrorBoundary(<Derive isLocked />, 'derived-address-locked')}</Route>
                           <Route path='/account/derive/:address'>{wrapWithErrorBoundary(<Derive />, 'derive-address')}</Route>
                           <Route path='/account/settings'>{wrapWithErrorBoundary(<Settings />, 'account-settings')}</Route>
+                          <Route path='/account/general-setting'>{wrapWithErrorBoundary(<GeneralSetting />, 'account-general-settings')}</Route>
+                          <Route path='/account/networks'>{wrapWithErrorBoundary(<Networks />, 'account-networks')}</Route>
+                          <Route path='/account/network-edit'>{wrapWithErrorBoundary(<NetworkEdit />, 'account-network-edit')}</Route>
                           <Route path='/account/send-fund'>{wrapWithErrorBoundary(<SendFund />, 'send-fund')}</Route>
                           <Route path='/account/donate'>{wrapWithErrorBoundary(<Donate />, 'donate')}</Route>
                           <Route path='/account/send-nft'>{wrapWithErrorBoundary(<TransferNftContainer />, 'send-nft')}</Route>

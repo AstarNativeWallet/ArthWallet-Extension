@@ -9,7 +9,7 @@ import { TFunction } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import { ChainRegistry, CurrentNetworkInfo, NftCollection as _NftCollection, NftItem as _NftItem, TransactionHistoryItemType } from '@polkadot/extension-base/background/KoniTypes';
+import { ChainRegistry, CurrentAccountInfo, CurrentNetworkInfo, NftCollection as _NftCollection, NftItem as _NftItem, TransactionHistoryItemType } from '@polkadot/extension-base/background/KoniTypes';
 import { AccountJson } from '@polkadot/extension-base/background/types';
 import crowdloans from '@polkadot/extension-koni-ui/assets/home-tab-icon/crowdloans.svg';
 import crowdloansActive from '@polkadot/extension-koni-ui/assets/home-tab-icon/crowdloans-active.svg';
@@ -30,6 +30,7 @@ import useFetchNft from '@polkadot/extension-koni-ui/hooks/screen/home/useFetchN
 import useFetchStaking from '@polkadot/extension-koni-ui/hooks/screen/home/useFetchStaking';
 import useShowedNetworks from '@polkadot/extension-koni-ui/hooks/screen/home/useShowedNetworks';
 import useTranslation from '@polkadot/extension-koni-ui/hooks/useTranslation';
+import { saveCurrentAccountAddress, triggerAccountsSubscription } from '@polkadot/extension-koni-ui/messaging';
 import { Header } from '@polkadot/extension-koni-ui/partials';
 import AddAccount from '@polkadot/extension-koni-ui/Popup/Accounts/AddAccount';
 import NftContainer from '@polkadot/extension-koni-ui/Popup/Home/Nfts/render/NftContainer';
@@ -38,7 +39,7 @@ import TabHeaders from '@polkadot/extension-koni-ui/Popup/Home/Tabs/TabHeaders';
 import { TabHeaderItemType } from '@polkadot/extension-koni-ui/Popup/Home/types';
 import { RootState } from '@polkadot/extension-koni-ui/stores';
 import { ThemeProps } from '@polkadot/extension-koni-ui/types';
-import { BN_ZERO, isAccountAll } from '@polkadot/extension-koni-ui/util';
+import { BN_ZERO, isAccountAll, NFT_DEFAULT_GRID_SIZE, NFT_GRID_HEIGHT_THRESHOLD, NFT_HEADER_HEIGHT, NFT_PER_ROW, NFT_PREVIEW_HEIGHT } from '@polkadot/extension-koni-ui/util';
 
 import buyIcon from '../../assets/buy-icon.svg';
 import donateIcon from '../../assets/donate-icon.svg';
@@ -157,7 +158,6 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
     window.localStorage.getItem('show_zero_balances') === '1'
   );
   const [isQrModalOpen, setQrModalOpen] = useState<boolean>(false);
-  const [isShowBalances, setShowBalances] = useState<boolean>(false);
   const [selectedNetworkBalance, setSelectedNetworkBalance] = useState<BigN>(BN_ZERO);
   const [trigger] = useState(() => `home-balances-${++tooltipId}`);
   const [
@@ -171,8 +171,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
     showExportButton: true
   });
   const { accounts } = useContext(AccountContext);
-  const { networkMetadata: networkMetadataMap } = useSelector((state: RootState) => state);
-
+  const { balanceStatus: { isShowBalance }, networkMetadata: networkMetadataMap } = useSelector((state: RootState) => state);
   const showedNetworks = useShowedNetworks(networkKey, address, accounts);
   const crowdloanNetworks = useCrowdloanNetworks(networkKey);
 
@@ -186,8 +185,20 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
 
   const [showTransferredCollection, setShowTransferredCollection] = useState(false);
   const [showForcedCollection, setShowForcedCollection] = useState(false);
-  const { loading: loadingNft, nftList, totalCollection, totalItems } = useFetchNft(nftPage);
-  const { data: stakingData, loading: loadingStaking, priceMap: stakingPriceMap } = useFetchStaking();
+
+  const parseNftGridSize = useCallback(() => {
+    if (window.innerHeight > NFT_GRID_HEIGHT_THRESHOLD) {
+      const nftContainerHeight = window.innerHeight - NFT_HEADER_HEIGHT;
+      const rowCount = Math.floor(nftContainerHeight / NFT_PREVIEW_HEIGHT);
+
+      return rowCount * NFT_PER_ROW;
+    } else {
+      return NFT_DEFAULT_GRID_SIZE;
+    }
+  }, []);
+  const nftGridSize = parseNftGridSize();
+  const { loading: loadingNft, nftList, totalCollection, totalItems } = useFetchNft(nftPage, networkKey, nftGridSize);
+  const { data: stakingData, loading: loadingStaking, priceMap: stakingPriceMap } = useFetchStaking(networkKey);
 
   const handleNftPage = useCallback((page: number) => {
     setNftPage(page);
@@ -233,8 +244,19 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
   }, [address, t]);
 
   const _toggleBalances = useCallback(() => {
-    setShowBalances(!isShowBalances);
-  }, [isShowBalances]);
+    const accountInfo = {
+      address: address,
+      isShowBalance: !isShowBalance
+    } as CurrentAccountInfo;
+
+    saveCurrentAccountAddress(accountInfo, () => {
+      triggerAccountsSubscription().catch((e) => {
+        console.error('There is a problem when trigger Accounts Subscription', e);
+      });
+    }).catch((e) => {
+      console.error('There is a problem when set Current Account', e);
+    });
+  }, [address, isShowBalance]);
 
   const _backToHome = useCallback(() => {
     setShowBalanceDetail(false);
@@ -267,7 +289,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
             data-tip={true}
             onClick={_toggleBalances}
           >
-            {isShowBalances
+            {isShowBalance
               ? <BalanceVal
                 startWithSymbol
                 symbol={'$'}
@@ -374,7 +396,9 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
           <NftContainer
             chosenCollection={chosenNftCollection}
             chosenItem={chosenNftItem}
+            currentNetwork={networkKey}
             loading={loadingNft}
+            nftGridSize={nftGridSize}
             nftList={nftList}
             page={nftPage}
             setChosenCollection={setChosenNftCollection}
@@ -440,7 +464,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
 
       <Tooltip
         offset={{ top: 8 }}
-        text={isShowBalances ? 'Hide balance' : 'Show balance'}
+        text={isShowBalance ? 'Hide balance' : 'Show balance'}
         trigger={trigger}
       />
     </div>

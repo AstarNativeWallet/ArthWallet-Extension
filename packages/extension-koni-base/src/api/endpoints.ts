@@ -44,7 +44,7 @@ const NETWORKS: Record<string, NetWorkInfo> = {
     nativeToken: 'ROC'
   },
   rmrk: {
-    chain: 'RMRK test',
+    chain: 'RMRK Test',
     genesisHash: '0x55b88a59dded27563391d619d805572dd6b6b89d302b0dd792d01b3c41cfe5b1',
     icon: 'polkadot',
     ss58Format: 0,
@@ -92,6 +92,16 @@ const NETWORKS: Record<string, NetWorkInfo> = {
     paraId: 2006,
     nativeToken: 'ASTR',
     crowdloanUrl: 'https://crowdloan.astar.network/#/',
+    decimals: 18
+  },
+  astarEvm: {
+    chain: 'Astar - EVM',
+    genesisHash: '0x9eb76c5184c4ab8679d2d5d819fdf90b9c001403e9e17da2e14b6d8aec4029c6___EVM',
+    ss58Format: 5,
+    provider: 'wss://rpc.astar.network',
+    groups: ['POLKADOT_PARACHAIN'],
+    isEthereum: true,
+    nativeToken: 'ASTR',
     decimals: 18
   },
   parallel: {
@@ -193,6 +203,14 @@ const NETWORKS: Record<string, NetWorkInfo> = {
     nativeToken: 'MANTA',
     crowdloanUrl: 'https://crowdloan.manta.network/'
   },
+  dolphin: {
+    chain: 'Dolphin Testnet',
+    genesisHash: '0xa3e43f6bb8cc5767147764709d6353f8654a7ef31d0577758c0e8ced0bb43087',
+    ss58Format: 42,
+    provider: 'wss://trillian.dolphin.red',
+    groups: ['TEST_NET'],
+    nativeToken: 'DOL'
+  },
   'sora-substrate': {
     chain: 'SORA',
     genesisHash: '0x7e4e32d0feafd4f9c9414b0be86373f9a1efa904809b683453a9af6856d38ad5',
@@ -228,7 +246,7 @@ const NETWORKS: Record<string, NetWorkInfo> = {
     ss58Format: 88,
     provider: 'wss://mainnet.polkadex.trade',
     groups: ['POLKADOT_PARACHAIN'],
-    paraId: 2036,
+    paraId: 2040,
     nativeToken: 'PDEX',
     crowdloanUrl: 'https://www.polkadex.trade/crowdloans'
   },
@@ -261,7 +279,7 @@ const NETWORKS: Record<string, NetWorkInfo> = {
     chain: 'Moonbase Alpha',
     genesisHash: '0x91bc6e169807aaa54802737e1c504b2577d4fafedd5a02c10293b1cd60e39527',
     ss58Format: 1287,
-    provider: 'wss://moonbeam-alpha.api.onfinality.io/public-ws',
+    provider: 'wss://wss.api.moonbase.moonbeam.network',
     groups: ['TEST_NET'],
     nativeToken: 'DEV',
     isEthereum: true
@@ -297,10 +315,10 @@ const NETWORKS: Record<string, NetWorkInfo> = {
     crowdloanUrl: 'https://crowdloan.litentry.com/'
   },
   phala: {
-    chain: 'Phala Network',
-    genesisHash: 'UNKNOWN',
-    ss58Format: -1,
-    provider: 'PROVIDER',
+    chain: 'Phala',
+    genesisHash: '0x1bb969d85965e4bb5a651abbedf21a54b6b31a21f66b5401cc3f1e286268d736',
+    ss58Format: 30,
+    provider: 'wss://api.phala.network/ws',
     groups: ['POLKADOT_PARACHAIN'],
     paraId: 2035,
     nativeToken: 'PHA',
@@ -350,7 +368,7 @@ const NETWORKS: Record<string, NetWorkInfo> = {
     chain: 'Moonriver',
     genesisHash: '0x401a1f9dca3da46f5c4091016c8a2f26dcea05865116b286f60f668207d1474b',
     ss58Format: 1285,
-    provider: 'wss://moonriver.api.onfinality.io/public-ws',
+    provider: 'wss://wss.api.moonriver.moonbeam.network',
     groups: ['KUSAMA_PARACHAIN'],
     paraId: 2023,
     isEthereum: true,
@@ -366,6 +384,15 @@ const NETWORKS: Record<string, NetWorkInfo> = {
     paraId: 2007,
     nativeToken: 'SDN',
     crowdloanUrl: 'https://polkadot.js.org/apps/#/parachains/crowdloan'
+  },
+  shidenEvm: {
+    chain: 'Shiden - EVM',
+    genesisHash: '0xf1cf9022c7ebb34b162d5b5e34e705a5a740b2d0ecc1009fb89023e62a488108___EVM',
+    ss58Format: 5,
+    provider: 'wss://rpc.shiden.astar.network',
+    groups: ['KUSAMA_PARACHAIN'],
+    nativeToken: 'SDN',
+    isEthereum: true
   },
   khala: {
     chain: 'Khala',
@@ -455,6 +482,14 @@ const NETWORKS: Record<string, NetWorkInfo> = {
     nativeToken: 'KINT',
     crowdloanUrl: 'https://kintsugi.interlay.io/'
   },
+  kintsugi_test: {
+    chain: 'Kintsugi Testnet',
+    genesisHash: '0x364dd762ee3fa02f63548f579f185e64932fc1a29052d7d9a588d2a57b191abf',
+    ss58Format: 42,
+    provider: 'wss://api-testnet.interlay.io:443/parachain',
+    groups: ['TEST_NET'],
+    nativeToken: 'KINT'
+  },
   picasso: {
     chain: 'Picasso',
     genesisHash: '0x6811a339673c9daa897944dcdac99c6e2939cc88245ed21951a0a3c9a2be75bc',
@@ -495,15 +530,23 @@ const NETWORKS: Record<string, NetWorkInfo> = {
     nativeToken: 'GENS',
     crowdloanUrl: 'https://genshiro.equilibrium.io/en'
   },
-  subsocial: {
-    chain: 'Subsocial',
-    genesisHash: '0x0bd72c1c305172e1275278aaeb3f161e02eccb7a819e63f62d47bd53a28189f8',
+  subsocial_x: {
+    chain: 'SubsocialX',
+    genesisHash: '0x4a12be580bb959937a1c7a61d5cf24428ed67fa571974b4007645d1886e7c89f',
     ss58Format: 28,
     provider: 'wss://para.subsocial.network',
     groups: ['KUSAMA_PARACHAIN'],
     paraId: 2100,
     nativeToken: 'SUB',
     crowdloanUrl: 'https://app.subsocial.network/crowdloan'
+  },
+  subsocial: {
+    chain: 'Subsocial Solochain',
+    genesisHash: '0x0bd72c1c305172e1275278aaeb3f161e02eccb7a819e63f62d47bd53a28189f8',
+    ss58Format: 28,
+    provider: 'wss://rpc.subsocial.network',
+    groups: ['MAIN_NET'],
+    nativeToken: 'SUB'
   },
   zeitgeist: {
     chain: 'Zeitgeist',
@@ -574,23 +617,39 @@ const NETWORKS: Record<string, NetWorkInfo> = {
     nativeToken: 'CRAB',
     crowdloanUrl: 'https://crab.network/plo'
   },
-  pichiu: {
-    chain: 'Pichiu',
-    genesisHash: '0xb14149220320bdc127278f8055b96c1d27750337694e920c4b8053c15145d3b1',
-    ss58Format: 42,
-    provider: 'wss://kusama.kylin-node.co.uk',
-    groups: ['KUSAMA_PARACHAIN'],
-    paraId: 2102,
-    nativeToken: 'PCHU',
-    crowdloanUrl: 'https://polkadot.js.org/apps/#/parachains/crowdloan'
-  },
   bitcountry: {
-    chain: 'Bit.Country - Testnet',
+    chain: 'Bit.Country - Alpha Net',
     genesisHash: '0xfff6fd94251f570d4c9cdf25a0475da0d7ad35160290da19dad8f9caf8bf31b5',
     ss58Format: 42,
-    provider: 'wss://tewai-rpc.bit.country',
+    provider: 'wss://alphanet-rpc.bit.country',
     groups: ['TEST_NET'],
     nativeToken: 'NUUM'
+  },
+  neumann: {
+    chain: 'Neumann Network',
+    genesisHash: '0x68577f68a47847fb974c220189333c46e83a899b6e375abf50b9a615d9019c20',
+    ss58Format: 51,
+    provider: 'wss://neumann.api.onfinality.io/public-ws',
+    groups: ['TEST_NET'],
+    nativeToken: 'NEU'
+  },
+  turing: {
+    chain: 'Turing Network',
+    genesisHash: 'UNKNOWN',
+    ss58Format: 51,
+    provider: 'wss://neumann.api.onfinality.io/public-ws',
+    groups: ['KUSAMA_PARACHAIN'],
+    paraId: 2114,
+    nativeToken: 'TUR',
+    crowdloanUrl: 'https://oak.tech/turing/check-reward/'
+  },
+  mangatax: {
+    chain: 'MangataX Public Testnet',
+    genesisHash: '0x8032ad7a75a2b9732315592c672ec6d0ddf95308de03a19878ed8627ae8796cc',
+    ss58Format: 42,
+    provider: 'wss://v4-prod-collator-01.mangatafinance.cloud',
+    groups: ['TEST_NET'],
+    nativeToken: 'MGAT'
   }
 };
 

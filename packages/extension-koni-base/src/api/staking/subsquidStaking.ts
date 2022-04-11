@@ -17,7 +17,7 @@ interface RewardResponseItem {
 interface StakingResponseItem {
   totalReward: string,
   totalSlash: string,
-  totalStake: string,
+  totalBond: string,
   rewards: RewardResponseItem[]
 }
 
@@ -25,7 +25,7 @@ interface StakingAmount {
   smartContract?: string;
   totalReward?: number,
   totalSlash?: number,
-  totalStake?: number,
+  totalBond?: number,
   latestReward?: number
 }
 
@@ -35,7 +35,7 @@ const getSubsquidQuery = (account: string, chain: string) => {
     query MyQuery {
       accountById(id: "${account}") {
         totalReward
-        totalStake
+        totalBond
         rewards(limit: 1, orderBy: blockNumber_DESC) {
           amount
           smartContract
@@ -49,7 +49,7 @@ const getSubsquidQuery = (account: string, chain: string) => {
     accountById(id: "${account}") {
       totalReward
       totalSlash
-      totalStake
+      totalBond
       rewards(limit: 1, orderBy: blockNumber_DESC) {
         amount
       }
@@ -77,11 +77,25 @@ const getSubsquidStaking = async (accounts: string[], chain: string, callback: (
         if (rewardItem) {
           const latestReward = rewardItem.rewards[0];
 
-          if (rewardItem.totalReward) result.totalReward = parseFloat(rewardItem.totalReward);
-          if (rewardItem.totalSlash) result.totalSlash = parseFloat(rewardItem.totalSlash);
-          if (rewardItem.totalStake) result.totalStake = parseFloat(rewardItem.totalStake);
-          if (latestReward && latestReward.amount) result.latestReward = parseFloat(latestReward.amount);
-          if (latestReward && latestReward.smartContract) result.smartContract = latestReward.smartContract;
+          if (rewardItem.totalReward) {
+            result.totalReward = parseFloat(rewardItem.totalReward);
+          }
+
+          if (rewardItem.totalSlash) {
+            result.totalSlash = parseFloat(rewardItem.totalSlash);
+          }
+
+          if (rewardItem.totalBond) {
+            result.totalBond = parseFloat(rewardItem.totalBond);
+          }
+
+          if (latestReward && latestReward.amount) {
+            result.latestReward = parseFloat(latestReward.amount);
+          }
+
+          if (latestReward && latestReward.smartContract) {
+            result.smartContract = latestReward.smartContract;
+          }
         }
       }
 
@@ -89,7 +103,9 @@ const getSubsquidStaking = async (accounts: string[], chain: string, callback: (
     }));
 
     for (const reward of rewards) {
-      if (reward.smartContract) parsedResult.smartContract = reward.smartContract;
+      if (reward.smartContract) {
+        parsedResult.smartContract = reward.smartContract;
+      }
 
       if (reward.totalReward) {
         if (parsedResult.totalReward) {
@@ -107,11 +123,11 @@ const getSubsquidStaking = async (accounts: string[], chain: string, callback: (
         }
       }
 
-      if (reward.totalStake) {
-        if (parsedResult.totalStake) {
-          parsedResult.totalStake += toUnit(reward.totalStake, NETWORKS[chain].decimals as number);
+      if (reward.totalBond) {
+        if (parsedResult.totalBond) {
+          parsedResult.totalBond += toUnit(reward.totalBond, NETWORKS[chain].decimals as number);
         } else {
-          parsedResult.totalStake = toUnit(reward.totalStake, NETWORKS[chain].decimals as number);
+          parsedResult.totalBond = toUnit(reward.totalBond, NETWORKS[chain].decimals as number);
         }
       }
 
@@ -127,7 +143,7 @@ const getSubsquidStaking = async (accounts: string[], chain: string, callback: (
     callback(chain, {
       name: NETWORKS[chain].chain,
       chainId: chain,
-      balance: parsedResult.totalStake ? parsedResult.totalStake.toString() : '0',
+      balance: parsedResult.totalBond ? parsedResult.totalBond.toString() : '0',
       nativeToken: NETWORKS[chain].nativeToken,
       unit: NETWORKS[chain].nativeToken,
       state: APIItemState.READY
@@ -156,7 +172,7 @@ const getSubsquidStaking = async (accounts: string[], chain: string, callback: (
   }
 };
 
-export const getAllSubsquidStakingReward = async (accounts: string[], callback: (networkKey: string, rs: StakingItem) => void): Promise<StakingRewardJson> => {
+export const getAllSubsquidStaking = async (accounts: string[], callback: (networkKey: string, rs: StakingItem) => void): Promise<StakingRewardJson> => {
   let rewardList: StakingRewardItem[] = [];
 
   const rewardItems = await Promise.all(SUPPORTED_STAKING_CHAINS.map(async (network) => {

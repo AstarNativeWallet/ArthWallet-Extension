@@ -11,6 +11,7 @@ const alternativeNameMap: Record<string, string> = {
   calamari: 'calamari-network',
   crab: 'darwinia-crab-network',
   crust: 'crust-network',
+  aleph: 'aleph-zero',
   darwinia: 'darwinia-network-native-token',
   kilt: 'kilt-protocol',
   kintsugi: 'kintsugi',
@@ -19,7 +20,9 @@ const alternativeNameMap: Record<string, string> = {
   picasso: 'pica',
   robonomics: 'robonomics-network',
   shadow: 'crust-storage-market',
-  'sora-substrate': 'sora'
+  'sora-substrate': 'sora',
+  astarEvm: 'astar',
+  shidenEvm: 'shiden'
 };
 
 interface GeckoItem {
@@ -58,11 +61,11 @@ export const getTokenPrice = async (chains: Array<string> = Object.keys(NETWORKS
     const tokenPriceMap: Record<string, number> = {};
 
     responseData.forEach((val) => {
+      priceMap[val.id] = val.current_price;
+
       if (inverseMap[val.id]) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         priceMap[inverseMap[val.id]] = val.current_price;
-      } else {
-        priceMap[val.id] = val.current_price;
       }
 
       tokenPriceMap[val.symbol] = val.current_price;

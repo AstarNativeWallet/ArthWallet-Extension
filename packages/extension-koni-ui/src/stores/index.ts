@@ -3,13 +3,16 @@
 
 import { configureStore } from '@reduxjs/toolkit/dist';
 
+import AllAccountReducer from './AllAccount';
 import BalanceReducer from './Balance';
+import BalanceStatusReducer from './BalanceStatus';
 import ChainRegistryReducer from './ChainRegistry';
 import CrowdloanReducer from './Crowdloan';
 import CurrentAccountReducer from './CurrentAccount';
 import CurrentNetworkReducer from './CurrentNetwork';
 import NetworkMetadataReducer from './NetworkMetadata';
 import NftReducer from './Nft';
+import NftCollectionReducer from './NftCollection';
 import PriceReducer from './Price';
 import StakingReducer from './Staking';
 import StakingRewardReducer from './StakingReward';
@@ -22,6 +25,7 @@ const reducers = {
   transferNftParams: TransferNftParamsReducer,
   stakingReward: StakingRewardReducer,
   staking: StakingReducer,
+  nftCollection: NftCollectionReducer,
   nft: NftReducer,
   price: PriceReducer,
   balance: BalanceReducer,
@@ -30,7 +34,9 @@ const reducers = {
   currentAccount: CurrentAccountReducer,
   currentNetwork: CurrentNetworkReducer,
   chainRegistry: ChainRegistryReducer,
-  networkMetadata: NetworkMetadataReducer
+  networkMetadata: NetworkMetadataReducer,
+  balanceStatus: BalanceStatusReducer,
+  allAccount: AllAccountReducer
 };
 
 export const store = configureStore({

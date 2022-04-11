@@ -4,14 +4,14 @@
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 
-import { NftItem } from '@polkadot/extension-base/background/KoniTypes';
 import logo from '@polkadot/extension-koni-ui/assets/sub-wallet-logo.svg';
 import Spinner from '@polkadot/extension-koni-ui/components/Spinner';
+import { _NftItem } from '@polkadot/extension-koni-ui/Popup/Home/Nfts/types';
 import { ThemeProps } from '@polkadot/extension-koni-ui/types';
 
 interface Props {
   className?: string;
-  data: NftItem;
+  data: _NftItem;
   onClick: (data: any) => void;
   collectionImage?: string;
 }
@@ -40,8 +40,11 @@ function NftItemPreview ({ className, collectionImage, data, onClick }: Props): 
   }, []);
 
   const getItemImage = useCallback(() => {
-    if (data.image && !imageError) return data.image;
-    else if (collectionImage) return collectionImage;
+    if (data.image && !imageError) {
+      return data.image;
+    } else if (collectionImage) {
+      return collectionImage;
+    }
 
     return logo;
   }, [collectionImage, data.image, imageError]);
@@ -51,7 +54,7 @@ function NftItemPreview ({ className, collectionImage, data, onClick }: Props): 
       <div
         className={'nft-preview'}
         onClick={handleOnClick}
-        style={{ height: '124px' }}
+        style={{ height: '164px' }}
       >
         <div className={'img-container'}>
           {
@@ -66,7 +69,7 @@ function NftItemPreview ({ className, collectionImage, data, onClick }: Props): 
                 onError={handleImageError}
                 onLoad={handleOnLoad}
                 src={getItemImage()}
-                style={{ borderRadius: '5px' }}
+                style={{ borderRadius: '5px 5px 0 0' }}
               />
               : <video
                 autoPlay
@@ -81,14 +84,15 @@ function NftItemPreview ({ className, collectionImage, data, onClick }: Props): 
                 />
               </video>
           }
-          {/* // <img */}
-          {/* //   alt={'collection-thumbnail'} */}
-          {/* //   className={'collection-thumbnail'} */}
-          {/* //   onLoad={() => handleOnLoad()} */}
-          {/* //   onError={() => handleImageError()} */}
-          {/* //   src={data.image ? data?.image : logo} */}
-          {/* //   style={{ borderRadius: '5px' }} */}
-          {/* // /> */}
+        </div>
+
+        <div className={'collection-title'}>
+          <div
+            className={'collection-name'}
+            title={data.name ? data.name : `#${data?.id as string}`}
+          >
+            {data.name ? data.name : `#${data?.id as string}`}
+          </div>
         </div>
       </div>
     </div>
@@ -98,12 +102,10 @@ function NftItemPreview ({ className, collectionImage, data, onClick }: Props): 
 export default React.memo(styled(NftItemPreview)(({ theme }: ThemeProps) => `
   .img-container {
     position: relative;
-    height: 124px;
-    width: 124px;
   }
 
   .img-spinner {
-    top: 50%;
+    position: absolute;
   }
 
   .nft-preview {
@@ -117,7 +119,7 @@ export default React.memo(styled(NftItemPreview)(({ theme }: ThemeProps) => `
       display: block;
       height: 124px;
       width: 124px;
-      object-fit: cover;
+      object-fit: contain;
     }
 
     .collection-name {

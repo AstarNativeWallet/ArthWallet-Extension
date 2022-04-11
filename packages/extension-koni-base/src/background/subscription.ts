@@ -3,10 +3,11 @@
 
 import { take } from 'rxjs';
 
+import { AuthUrls } from '@polkadot/extension-base/background/handlers/State';
 import { NftTransferExtra } from '@polkadot/extension-base/background/KoniTypes';
 import { subscribeBalance } from '@polkadot/extension-koni-base/api/dotsama/balance';
 import { subscribeCrowdloan } from '@polkadot/extension-koni-base/api/dotsama/crowdloan';
-import { getAllSubsquidStakingReward } from '@polkadot/extension-koni-base/api/staking/subsquidStaking';
+import { getAllSubsquidStaking } from '@polkadot/extension-koni-base/api/staking/subsquidStaking';
 import { dotSamaAPIMap, nftHandler, state } from '@polkadot/extension-koni-base/background/handlers';
 import { ALL_ACCOUNT_KEY } from '@polkadot/extension-koni-base/constants';
 import { accounts as accountsObservable } from '@polkadot/ui-keyring/observable/accounts';
@@ -31,8 +32,27 @@ export class KoniSubcription {
   }
 
   init () {
+    state.getAuthorize((value) => {
+      const authString = localStorage.getItem('authUrls') || '{}';
+      const previousAuth = JSON.parse(authString) as AuthUrls;
+
+      if (previousAuth && Object.keys(previousAuth).length) {
+        Object.keys(previousAuth).forEach((url) => {
+          if (previousAuth[url].isAllowed) {
+            previousAuth[url].isAllowedMap = state.getAddressList(true);
+          } else {
+            previousAuth[url].isAllowedMap = state.getAddressList();
+          }
+        });
+      }
+
+      const migrateValue = { ...previousAuth, ...value };
+
+      state.setAuthorize(migrateValue);
+      localStorage.setItem('authUrls', '{}');
+    });
+
     state.fetchCrowdloanFundMap().then(console.log).catch(console.error);
-    this.initChainRegistrySubscription();
 
     state.getCurrentAccount((currentAccountInfo) => {
       if (currentAccountInfo) {
@@ -73,19 +93,6 @@ export class KoniSubcription {
         this.unsubCrowdloans = this.initCrowdloanSubscription(addresses);
       })
       .catch(console.error);
-  }
-
-  initChainRegistrySubscription () {
-    Object.entries(dotSamaAPIMap).map(async ([networkKey, apiProps]) => {
-      const networkAPI = await apiProps.isReady;
-
-      const { chainDecimals, chainTokens } = networkAPI.api.registry;
-
-      state.setChainRegistryItem(networkKey, {
-        chainDecimals,
-        chainTokens
-      });
-    });
   }
 
   initBalanceSubscription (addresses: string[]) {
@@ -142,46 +149,29 @@ export class KoniSubcription {
         selectedNftCollection
       } as NftTransferExtra);
       nftHandler.setAddresses(addresses);
-      nftHandler.handleNfts()
-        .then((r) => {
-          state.setNft(nftHandler.getNftJson());
-          // console.log('set nft state done for address', addresses);
+      nftHandler.handleNfts(
+        (data) => {
+          state.updateNft(data);
+        },
+        (data) => {
+          if (data !== null) {
+            state.updateNftCollection(data);
+          }
+        },
+        (ready) => {
+          state.updateNftReady(ready);
+        })
+        .then(() => {
+          console.log('nft state updated');
         })
         .catch(console.log);
     }
   }
 
-  // subscribeStaking (address: string) {
-  //   this.unsubStaking && this.unsubStaking();
-  //   state.resetStakingMap();
-  //   this.detectAddresses(address)
-  //     .then((addresses) => {
-  //       this.unsubStaking = this.initStakingSubscription(addresses);
-  //     })
-  //     .catch(console.error);
-  // }
-  //
-  // initStakingSubscription (addresses: string[]) {
-  //   const subscriptionPromises = subscribeStaking(['5CCic55XtXUM2gWiHXfNeKxwcYugFifNGJXA962AU7jMrCJB'], dotSamaAPIMap, (networkKey, rs) => {
-  //     state.setStakingItem(networkKey, rs);
-  //     // console.log('set new staking item', rs);
-  //   });
-  //
-  //   return () => {
-  //     // @ts-ignore
-  //     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  //     subscriptionPromises
-  //       .then((unsub) => {
-  //         unsub && unsub();
-  //       })
-  //       .catch(console.error);
-  //   };
-  // }
-
   async subscribeStakingReward (address: string) {
     const addresses = await this.detectAddresses(address);
 
-    await getAllSubsquidStakingReward(addresses, (networkKey, rs) => {
+    await getAllSubsquidStaking(addresses, (networkKey, rs) => {
       state.setStakingItem(networkKey, rs);
       console.log('set staking item', rs);
     })

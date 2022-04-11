@@ -7,10 +7,12 @@ import React, { useCallback, useContext, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import { CurrentNetworkInfo, NetWorkMetadataDef, NftItem as _NftItem } from '@polkadot/extension-base/background/KoniTypes';
+import { CurrentNetworkInfo, NetWorkMetadataDef } from '@polkadot/extension-base/background/KoniTypes';
 import { ActionContext } from '@polkadot/extension-koni-ui/components';
 import Spinner from '@polkadot/extension-koni-ui/components/Spinner';
+import useToast from '@polkadot/extension-koni-ui/hooks/useToast';
 import { tieAccount } from '@polkadot/extension-koni-ui/messaging';
+import { _NftItem, SUPPORTED_TRANSFER_EVM_CHAIN, SUPPORTED_TRANSFER_SUBSTRATE_CHAIN } from '@polkadot/extension-koni-ui/Popup/Home/Nfts/types';
 import { RootState, store } from '@polkadot/extension-koni-ui/stores';
 import { TransferNftParams } from '@polkadot/extension-koni-ui/stores/types';
 import { ThemeProps } from '@polkadot/extension-koni-ui/types';
@@ -49,21 +51,34 @@ function NftItem ({ className, collectionId, collectionImage, data, onClickBack 
   const { currentAccount: account, currentNetwork, networkMetadata } = useSelector((state: RootState) => state);
 
   const navigate = useContext(ActionContext);
+  const { show } = useToast();
 
-  const propDetail = (title: string, value: string, key: number) => {
+  const propDetail = (title: string, value: string, rarity: number, key: number) => {
     return (
       <div
         className={'prop-detail'}
         key={key}
       >
         <div className={'prop-title'}>{title}</div>
-        <div className={'prop-value'}>{value}</div>
+        <div className={'prop-value'}>{value}
+          {/* {rarity && `(~${Math.round((rarity + Number.EPSILON) * 100) / 100}%)`} */}
+        </div>
       </div>
     );
   };
 
   const handleClickTransfer = useCallback(async () => {
-    if (!account.account || account.account.address === 'ALL' || !data.chain) return;
+    if (!account.account || account.account.address === 'ALL' || !data.chain) {
+      show('An error has occurred.');
+
+      return;
+    }
+
+    if (SUPPORTED_TRANSFER_SUBSTRATE_CHAIN.indexOf(data.chain) <= -1 && SUPPORTED_TRANSFER_EVM_CHAIN.indexOf(data.chain) <= -1) {
+      show(`Transferring is not supported for ${data.chain.toUpperCase()} network`);
+
+      return;
+    }
 
     if (data.chain !== currentNetwork.networkKey) {
       const targetNetwork = networkMetadata[data?.chain];
@@ -79,7 +94,7 @@ function NftItem ({ className, collectionId, collectionImage, data, onClickBack 
 
     updateTransferNftParams(data, collectionImage, collectionId);
     navigate('/account/send-nft');
-  }, [account.account, collectionId, collectionImage, currentNetwork.networkKey, data, navigate, networkMetadata]);
+  }, [account.account, collectionId, collectionImage, currentNetwork.networkKey, data, navigate, networkMetadata, show]);
 
   const handleClickBack = useCallback(() => {
     onClickBack();
@@ -107,8 +122,11 @@ function NftItem ({ className, collectionId, collectionImage, data, onClickBack 
   }, [data]);
 
   const getItemImage = useCallback(() => {
-    if (data.image && !imageError) return data.image;
-    else if (collectionImage) return collectionImage;
+    if (data.image && !imageError) {
+      return data.image;
+    } else if (collectionImage) {
+      return collectionImage;
+    }
 
     return logo;
   }, [collectionImage, data, imageError]);
@@ -129,9 +147,11 @@ function NftItem ({ className, collectionId, collectionImage, data, onClickBack 
           </div>
           <div
             className={'header-title'}
+            // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
             title={data.name ? data.name : '#' + data.id}
           >
             <div className={'collection-name'}>
+              {/* eslint-disable-next-line @typescript-eslint/restrict-plus-operands */}
               {data.name ? data.name : '#' + data.id}
             </div>
           </div>
@@ -139,34 +159,36 @@ function NftItem ({ className, collectionId, collectionImage, data, onClickBack 
         </div>
 
         <div className={'detail-container'}>
-          {
-            loading &&
-            <Spinner className={'img-spinner'} />
-          }
-          {
-            showImage
-              ? <img
-                alt={'item-img'}
-                className={'item-img'}
-                onClick={handleOnClick}
-                onError={handleImageError}
-                onLoad={handleOnLoad}
-                src={getItemImage()}
-                style={{ borderRadius: '5px' }}
-              />
-              : <video
-                autoPlay
-                height='416'
-                loop={true}
-                onError={handleVideoError}
-                width='100%'
-              >
-                <source
+          <div className={'img-container'}>
+            {
+              loading &&
+              <Spinner className={'img-spinner'} />
+            }
+            {
+              showImage
+                ? <img
+                  alt={'item-img'}
+                  className={'item-img'}
+                  onClick={handleOnClick}
+                  onError={handleImageError}
+                  onLoad={handleOnLoad}
                   src={getItemImage()}
-                  type='video/mp4'
+                  style={{ borderRadius: '5px' }}
                 />
-              </video>
-          }
+                : <video
+                  autoPlay
+                  height='416'
+                  loop={true}
+                  onError={handleVideoError}
+                  width='100%'
+                >
+                  <source
+                    src={getItemImage()}
+                    type='video/mp4'
+                  />
+                </video>
+            }
+          </div>
 
           {
             // @ts-ignore
@@ -206,7 +228,7 @@ function NftItem ({ className, collectionId, collectionImage, data, onClickBack 
                     // eslint-disable @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
                     // @ts-ignore
                     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
-                    return propDetail(key, data?.properties[key]?.value, index);
+                    return propDetail(key, data?.properties[key]?.value, data?.properties[key]?.rarity, index);
                     // eslint-enable @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
                   })
                 }
@@ -227,10 +249,12 @@ export default React.memo(styled(NftItem)(({ theme }: ThemeProps) => `
     word-break: keep-all;
   }
 
+  .img-spinner {
+    position: absolute;
+  }
+
   .img-container {
     position: relative;
-    height: 124px;
-    width: 124px;
   }
 
   .back-icon:hover {
@@ -289,6 +313,7 @@ export default React.memo(styled(NftItem)(({ theme }: ThemeProps) => `
     width: 100%;
     border-radius: 5px;
     cursor: pointer;
+    object-fit: contain;
   }
 
   .att-title {

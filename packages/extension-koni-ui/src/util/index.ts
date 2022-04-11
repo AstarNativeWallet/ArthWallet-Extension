@@ -117,7 +117,15 @@ export function getGenesisOptionsByAddressType (address: string | null | undefin
 
 export const defaultRecoded: Recoded = { account: null, formatted: null, prefix: 42, isEthereum: false };
 
-export const NFT_GRID_SIZE = 6;
+export const NFT_DEFAULT_GRID_SIZE = 6;
+
+export const NFT_PREVIEW_HEIGHT = 184;
+
+export const NFT_GRID_HEIGHT_THRESHOLD = 600;
+
+export const NFT_HEADER_HEIGHT = 202;
+
+export const NFT_PER_ROW = 3;
 
 export const accountAllRecoded: Recoded = {
   account: {
@@ -177,7 +185,7 @@ export const subscanByNetworkKey: Record<string, string> = {
   subgame: 'https://subgame.subscan.io',
   // 'statemint': 'https://statemint.subscan.io',
   // 'subsocial': 'https://subsocial.subscan.io',
-  // 'zeitgeist': 'https://zeitgeist.subscan.io',
+  zeitgeist: 'https://zeitgeist.subscan.io',
   westend: 'https://westend.subscan.io',
   rococo: 'https://rococo.subscan.io',
   robonomics: 'https://robonomics.subscan.io',

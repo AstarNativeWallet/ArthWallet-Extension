@@ -26,6 +26,7 @@ function transformAccounts (accounts: SubjectInfo, anyType = false): InjectedAcc
     .values(accounts)
     .filter(({ json: { meta: { isHidden } } }) => !isHidden)
     .filter(({ type }) => anyType ? true : canDerive(type))
+    .filter(({ type }) => (type !== 'ethereum')) // Quick fix DApp not allow EVM
     .sort((a, b) => (a.json.meta.whenCreated || 0) - (b.json.meta.whenCreated || 0))
     .map(({ json: { address, meta: { genesisHash, name } }, type }): InjectedAccount => ({
       address,
@@ -172,10 +173,6 @@ export default class Tabs {
   public async handle<TMessageType extends MessageTypes> (id: string, type: TMessageType, request: RequestTypes[TMessageType], url: string, port: chrome.runtime.Port): Promise<ResponseTypes[keyof ResponseTypes]> {
     if (type === 'pub(phishing.redirectIfDenied)') {
       return this.redirectIfPhishing(url);
-    }
-
-    if (type !== 'pub(authorize.tab)') {
-      this.#state.ensureUrlAuthorized(url);
     }
 
     switch (type) {

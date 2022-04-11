@@ -55,6 +55,9 @@ function Upload ({ className }: Props): React.ReactElement {
 
   const _onChangeFile = useCallback(
     (file: Uint8Array): void => {
+      setFileError(false);
+      setIsPasswordError(false);
+      setPassword('');
       setAccountsInfo(() => []);
 
       let json: KeyringPair$Json | KeyringPairs$Json | undefined;
@@ -68,26 +71,33 @@ function Upload ({ className }: Props): React.ReactElement {
       }
 
       if (json === undefined) {
+        setFileError(true);
+
         return;
       }
 
-      if (isKeyringPairs$Json(json)) {
-        setRequirePassword(true);
-        json.accounts.forEach((account) => {
-          setAccountsInfo((old) => [...old, {
-            address: account.address,
-            genesisHash: account.meta.genesisHash,
-            name: account.meta.name
-          } as ResponseJsonGetAccountInfo]);
-        });
-      } else {
-        setRequirePassword(true);
-        jsonGetAccountInfo(json)
-          .then((accountInfo) => setAccountsInfo((old) => [...old, accountInfo]))
-          .catch((e) => {
-            setFileError(true);
-            console.error(e);
+      try {
+        if (isKeyringPairs$Json(json)) {
+          setRequirePassword(true);
+          json.accounts.forEach((account) => {
+            setAccountsInfo((old) => [...old, {
+              address: account.address,
+              genesisHash: account.meta.genesisHash,
+              name: account.meta.name
+            } as ResponseJsonGetAccountInfo]);
           });
+        } else {
+          setRequirePassword(true);
+          jsonGetAccountInfo(json)
+            .then((accountInfo) => setAccountsInfo((old) => [...old, accountInfo]))
+            .catch((e) => {
+              setFileError(true);
+              console.error(e);
+            });
+        }
+      } catch (e) {
+        console.error(e);
+        setFileError(true);
       }
     }, []
   );
@@ -128,21 +138,6 @@ function Upload ({ className }: Props): React.ReactElement {
         subHeaderName={t<string>('Restore from JSON')}
       />
       <div className={className}>
-        <div className='restore-from-json-wrapper'>
-          {accountsInfo.map(({ address, genesisHash, name, type = DEFAULT_TYPE }, index) => (
-            <div
-              className={`account-info-container ${themeContext.id === 'dark' ? '-dark' : '-light'} restore-json__account-info`}
-              key={`${index}:${address}`}
-            >
-              <AccountInfoEl
-                address={address}
-                genesisHash={genesisHash}
-                name={name}
-                type={type}
-              />
-            </div>
-          ))}
-        </div>
         <InputFileWithLabel
           accept={acceptedFormats}
           isError={isFileError}
@@ -164,6 +159,7 @@ function Upload ({ className }: Props): React.ReactElement {
               label={t<string>('Password for this file')}
               onChange={_onChangePass}
               type='password'
+              value={password}
             />
             {isPasswordError && (
               <Warning
@@ -176,6 +172,22 @@ function Upload ({ className }: Props): React.ReactElement {
             )}
           </div>
         )}
+
+        <div className='restore-from-json-wrapper'>
+          {accountsInfo.map(({ address, genesisHash, name, type = DEFAULT_TYPE }, index) => (
+            <div
+              className={`account-info-container ${themeContext.id === 'dark' ? '-dark' : '-light'} restore-json__account-info`}
+              key={`${index}:${address}`}
+            >
+              <AccountInfoEl
+                address={address}
+                genesisHash={genesisHash}
+                name={name}
+                type={type}
+              />
+            </div>
+          ))}
+        </div>
         <ButtonArea className='restore-json-button-area'>
           <Button
             className='restoreButton'
@@ -196,8 +208,8 @@ export default styled(Upload)(({ theme }: ThemeProps) => `
   height: 100%;
   overflow-y: auto;
   .restore-from-json-wrapper {
-    max-height: 188px;
-    overflow-y: auto;
+    overflow: hidden;
+    margin-top: 16px;
   }
 
   .restore-json__account-info {
@@ -210,6 +222,7 @@ export default styled(Upload)(({ theme }: ThemeProps) => `
 
   .restore-json-button-area {
     bottom: 0;
+    z-index: 1;
   }
 
   .input-file__sub-label {

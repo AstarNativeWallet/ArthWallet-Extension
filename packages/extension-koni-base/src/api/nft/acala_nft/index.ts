@@ -4,7 +4,7 @@
 import fetch from 'cross-fetch';
 
 import { ApiProps, NftCollection, NftItem } from '@polkadot/extension-base/background/KoniTypes';
-import { CLOUDFLARE_SERVER } from '@polkadot/extension-koni-base/api/nft/config';
+import { CLOUDFLARE_SERVER, SUPPORTED_NFT_NETWORKS } from '@polkadot/extension-koni-base/api/nft/config';
 import { BaseNftApi } from '@polkadot/extension-koni-base/api/nft/nft';
 import { isUrl } from '@polkadot/extension-koni-base/utils/utils';
 
@@ -32,16 +32,22 @@ const acalaExternalBaseUrl = 'https://apps.acala.network/portfolio/nft/';
 
 export class AcalaNftApi extends BaseNftApi {
   // eslint-disable-next-line no-useless-constructor
-  constructor (api: ApiProps, addresses: string[], chain?: string) {
+  constructor (api: ApiProps | null, addresses: string[], chain?: string) {
     super(api, addresses, chain);
   }
 
   override parseUrl (input: string): string | undefined {
-    if (!input || input.length === 0) return undefined;
+    if (!input || input.length === 0) {
+      return undefined;
+    }
 
-    if (isUrl(input)) return input;
+    if (isUrl(input)) {
+      return input;
+    }
 
-    if (!input.includes('ipfs://')) { return CLOUDFLARE_SERVER + input; }
+    if (!input.includes('ipfs://')) {
+      return CLOUDFLARE_SERVER + input;
+    }
 
     return CLOUDFLARE_SERVER + input.split('ipfs://')[1];
   }
@@ -53,7 +59,9 @@ export class AcalaNftApi extends BaseNftApi {
    * @param addresses
    */
   private async getNfts (addresses: string[]): Promise<AssetId[]> {
-    if (!this.dotSamaApi) return [];
+    if (!this.dotSamaApi) {
+      return [];
+    }
 
     let accountAssets: any[] = [];
 
@@ -77,11 +85,15 @@ export class AcalaNftApi extends BaseNftApi {
   }
 
   private async getCollectionDetails (collectionId: number | string): Promise<Record<string, any> | null> {
-    if (!this.dotSamaApi) return null;
+    if (!this.dotSamaApi) {
+      return null;
+    }
 
     const metadataCollection = (await this.dotSamaApi.api.query.ormlNFT.classes(collectionId)).toHuman() as Record<string, any>;
 
-    if (!metadataCollection?.metadata) return null;
+    if (!metadataCollection?.metadata) {
+      return null;
+    }
 
     const data = await getMetadata(metadataCollection?.metadata as string) as unknown as Collection;
 
@@ -89,53 +101,32 @@ export class AcalaNftApi extends BaseNftApi {
   }
 
   private async getTokenDetails (assetId: AssetId): Promise<Token | null> {
-    if (!this.dotSamaApi) return null;
+    if (!this.dotSamaApi) {
+      return null;
+    }
 
     return (await this.dotSamaApi.api.query.ormlNFT.tokens(assetId.classId, assetId.tokenId)).toHuman() as unknown as Token;
   }
 
-  public async handleNfts () {
+  public async handleNfts (updateItem: (data: NftItem) => void, updateCollection: (data: NftCollection) => void, updateReady: (ready: boolean) => void) {
     // const start = performance.now();
-
-    const allCollections: NftCollection[] = [];
     const assetIds = await this.getNfts(this.addresses);
-    const allItems: NftItem[] = [];
-    const collectionMetaDict: Record<any, any> = {};
 
     try {
       if (!assetIds || assetIds.length === 0) {
-        this.total = 0;
-        this.data = allCollections;
+        updateReady(true);
 
         return;
       }
 
-      assetIds.forEach((asset) => {
-        const parsedClassId = this.parseTokenId(asset.classId.toString());
-        const newCollection = {
-          collectionId: parsedClassId,
-          nftItems: []
-        } as NftCollection;
-
-        if (!allCollections.some((collection) => collection.collectionId === parsedClassId)) { allCollections.push(newCollection); }
-      });
-
       await Promise.all(assetIds.map(async (assetId) => {
-        let tokenInfo: Token = {};
-        let collectionMeta: any;
         const parsedClassId = this.parseTokenId(assetId.classId as string);
         const parsedTokenId = this.parseTokenId(assetId.tokenId as string);
 
-        if (!(parsedClassId in collectionMetaDict)) {
-          const [_tokenInfo, collectionMeta] = await Promise.all([
-            this.getTokenDetails(assetId),
-            this.getCollectionDetails(parseInt(parsedClassId))
-          ]);
-
-          tokenInfo = _tokenInfo as Token;
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          collectionMetaDict[parsedClassId] = collectionMeta;
-        }
+        const [tokenInfo, collectionMeta] = await Promise.all([
+          this.getTokenDetails(assetId),
+          this.getCollectionDetails(parseInt(parsedClassId))
+        ]);
 
         const parsedNft = {
           id: parsedTokenId,
@@ -146,52 +137,32 @@ export class AcalaNftApi extends BaseNftApi {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
           image: tokenInfo && tokenInfo.image ? this.parseUrl(tokenInfo?.image) : collectionMeta?.image,
           collectionId: parsedClassId,
-          chain: 'acala'
+          chain: SUPPORTED_NFT_NETWORKS.acala
         } as NftItem;
 
-        allItems.push(parsedNft);
+        const parsedCollection = {
+          collectionId: parsedClassId,
+          chain: SUPPORTED_NFT_NETWORKS.acala,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+          collectionName: collectionMeta?.name,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+          image: collectionMeta?.image
+        } as NftCollection;
+
+        updateItem(parsedNft);
+        updateCollection(parsedCollection);
+        updateReady(true);
       }));
-
-      for (const collection of allCollections) {
-        const collectionMeta = collectionMetaDict[collection.collectionId] as Record<string, any>;
-
-        if (collectionMeta) {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          collection.collectionName = collectionMeta?.name;
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          collection.image = collectionMeta.image;
-        }
-
-        for (const item of allItems) {
-          if (collection.collectionId === item.collectionId) {
-            // @ts-ignore
-            collection.nftItems.push(item);
-          }
-        }
-      }
     } catch (e) {
-      console.log('Failed to fetch acala nft', e);
-
-      return;
+      console.error('Failed to fetch acala nft', e);
     }
-
-    this.total = assetIds.length;
-    this.data = allCollections;
-
-    // const end = performance.now();
-
-    // console.log(`acala took ${end - start}ms`);
-    //
-    // console.log(`Fetched ${assetIds.length} nfts from acala`);
   }
 
-  public async fetchNfts (): Promise<number> {
+  public async fetchNfts (updateItem: (data: NftItem) => void, updateCollection: (data: NftCollection) => void, updateReady: (ready: boolean) => void): Promise<number> {
     try {
       await this.connect();
-      await this.handleNfts();
+      await this.handleNfts(updateItem, updateCollection, updateReady);
     } catch (e) {
-      console.log(`error fetching nft from ${this.getChain() as string}`);
-
       return 0;
     }
 
@@ -206,7 +177,10 @@ const headers = {
 const getMetadata = (metadataUrl: string) => {
   let url: string | null = metadataUrl;
 
-  if (!metadataUrl) return null;
+  if (!metadataUrl) {
+    return null;
+  }
+
   url = CLOUDFLARE_SERVER + metadataUrl + '/metadata.json';
 
   return fetch(url, {

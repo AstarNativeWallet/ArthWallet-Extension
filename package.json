@@ -10,7 +10,7 @@
     "url": "https://github.com/AstarNativeWallet/ArthWallet-Extension.git"
   },
   "sideEffects": false,
-  "version": "0.1",
+  "version": "0.3.3",
   "workspaces": [
     "packages/*"
   ],
