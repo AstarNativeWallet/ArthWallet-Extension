@@ -14,8 +14,11 @@ var _util = require("@polkadot/util");
 
 // Copyright 2019-2022 @polkadot/extension-koni-base authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+console.log('Arth TEST tranfer!!!');
+
 async function estimateFee(networkKey, fromKeypair, to, value, transferAll) {
   const apiProps = await _handlers.dotSamaAPIMap[networkKey].isReady;
+  console.log('Arth estimateFee');
 
   if (fromKeypair === undefined) {
     return '0';
@@ -33,6 +36,7 @@ async function estimateFee(networkKey, fromKeypair, to, value, transferAll) {
 }
 
 async function makeTransfer(networkKey, to, fromKeypair, value, transferAll, callback) {
+  console.log('Arth makeTransfer');
   const apiProps = await _handlers.dotSamaAPIMap[networkKey].isReady;
   const api = apiProps.api; // @ts-ignore
 
@@ -42,9 +46,13 @@ async function makeTransfer(networkKey, to, fromKeypair, value, transferAll, cal
   let transfer;
 
   if (transferAll) {
-    transfer = api.tx.balances.transferAll(to, false);
+    transfer = api.tx.evm.withdraw('0x96cbef157358b7c90b0481ba8b3db8f58e014116', 1); //api.tx.balances.transferAll(to, false);
   } else {
-    transfer = api.tx.balances.transfer(to, new _util.BN(value));
+    if (networkKey === 'astar') {
+      transfer = api.tx.evm.withdraw('0x96cbef157358b7c90b0481ba8b3db8f58e014116', 1);
+    } else {
+      transfer = api.tx.balances.transfer(to, new _util.BN(value));
+    }
   }
 
   const response = {
@@ -67,7 +75,7 @@ async function makeTransfer(networkKey, to, fromKeypair, value, transferAll, cal
       const isFailed = section === 'system' && method === 'ExtrinsicFailed'; // @ts-ignore
 
       const isSuccess = section === 'system' && method === 'ExtrinsicSuccess';
-      console.log('Transaction final: ', isFailed, isSuccess);
+      console.log('Arth Transaction final: ', isFailed, isSuccess);
 
       if (isFailed) {
         response.step = _KoniTypes.TransferStep.ERROR; // @ts-ignore
@@ -119,14 +127,16 @@ async function makeTransfer(networkKey, to, fromKeypair, value, transferAll, cal
       events = [],
       status
     } = _ref2;
-    console.log('Transaction status:', status.type, status.hash.toHex());
+    console.log('Arth transfer.signAndSend Transaction status:', status.type, status.hash.toHex());
     response.extrinsicStatus = status.type;
 
     if (status.isBroadcast) {
+      console.log('Arth TransferStep.START');
       response.step = _KoniTypes.TransferStep.START;
     }
 
     if (status.isInBlock) {
+      console.log('Arth TransferStep.PROCESSING');
       const blockHash = status.asInBlock.toHex();
       response.step = _KoniTypes.TransferStep.PROCESSING;
       response.data = {
@@ -138,6 +148,7 @@ async function makeTransfer(networkKey, to, fromKeypair, value, transferAll, cal
     } else if (status.isFinalized) {
       var _events$;
 
+      console.log('Arth status.isFinalized');
       const blockHash = status.asFinalized.toHex();
       response.data = {
         block: blockHash,
@@ -150,10 +161,11 @@ async function makeTransfer(networkKey, to, fromKeypair, value, transferAll, cal
         response.extrinsicHash = blockQuery.block.extrinsics[extrinsicIndex].hash.toHex();
         callback(response);
       }).catch(e => {
-        console.error('Transaction errors:', e);
+        console.error('Arth Transaction errors:', e);
         callback(response);
       });
     } else {
+      console.error('Arth Transaction response:', response);
       callback(response);
     }
   });

@@ -209,7 +209,7 @@
   "Tip (optional)": "",
   "The action is not supported for the current network. Please switch to another network.": "",
   "The action is not supported for the current account. Please switch to another account.": "",
-  "Send fund": "",
+  "Send fund": "Send Fund Arth TEST",
   "The account you will send funds from.": "",
   "Send from account": "",
   "Transferable": "",
@@ -298,5 +298,7 @@
   "Connect All": "",
   "Forget All": "",
   "Forget Site": "",
-  "Choose the account(s) you’d like to connect": ""
+  "Choose the account(s) you’d like to connect": "",
+  "Send fund TEST": "Arth Send fund TEST",
+  "Arth Cancel": ""
 }

@@ -68,7 +68,7 @@ function SendFund ({ className }: Props): React.ReactElement {
             showSearch
             showSettings
             showSubHeader
-            subHeaderName={t<string>('Send fund')}
+            subHeaderName={t<string>('Send fund TEST')}
           />
           <div className='send-fund-container'>
             <InputAddress
@@ -158,19 +158,23 @@ export default React.memo(styled(SendFund)(({ theme }: Props) => `
     flex: 1;
     padding-top: 25px;
     overflow-y: auto;
+    background-color: red !important;
   }
 
   .send-fund-item {
     margin-bottom: 10px;
+    background-color: red !important;
   }
 
   .static-container {
     display: block;
+    background-color: red !important;
   }
 
   .send-fund-balance-item {
     margin-top: 20px;
     margin-bottom: 10px;
+    background-color: red !important;
   }
 
   .submit-btn-wrapper {
@@ -181,5 +185,6 @@ export default React.memo(styled(SendFund)(({ theme }: Props) => `
     margin-bottom: -15px;
     margin-right: -15px;
     background-color: ${theme.background};
+    background-color: red !important;
   }
 `));

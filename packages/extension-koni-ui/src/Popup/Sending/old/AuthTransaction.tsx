@@ -1,6 +1,8 @@
 // Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+console.log('Arth load AuthTransaction.tsx');
+
 import type { SignerOptions } from '@polkadot/api/submittable/types';
 
 import React, { useCallback, useEffect, useState } from 'react';
@@ -71,9 +73,9 @@ export function handleTxResults (tx: SubmittableExtrinsic<'promise'>,
       return;
     }
 
-    console.log(`: status :: ${JSON.stringify(result)}`);
-    console.log('result============', result);
-    console.log('tx.toHash()', tx.hash.toHex());
+    console.log(`Arth : status :: ${JSON.stringify(result)}`);
+    console.log('Arth result============', result);
+    console.log('Arth tx.toHash()', tx.hash.toHex());
 
     onTxUpdate && onTxUpdate(result);
 
@@ -105,13 +107,13 @@ async function signAndSend (txHandler: TxHandler, tx: SubmittableExtrinsic<'prom
   try {
     await tx.signAsync(pairOrAddress, options);
 
-    console.info('sending', tx.toHex());
+    console.info('Arth sending', tx.toHex());
 
     const unsubscribe = await tx.send(handleTxResults(tx, txHandler, (): void => {
       unsubscribe();
     }));
   } catch (error) {
-    console.error('signAndSend: error:', error);
+    console.error('Arth signAndSend: error:', error);
 
     txHandler.onTxFail && txHandler.onTxFail(null, error as Error);
   }
@@ -213,7 +215,7 @@ function AuthTransaction ({ api, apiUrl, className, extrinsic, onCancel, request
   );
 
   if (error) {
-    console.log('error in Auth::', error);
+    console.log('Arth error in Auth::', error);
   }
 
   return (
@@ -227,13 +229,13 @@ function AuthTransaction ({ api, apiUrl, className, extrinsic, onCancel, request
           <div className='kn-l-header__part-3'>
             {isBusy
               ? (
-                <span className={'kn-l-close-btn -disabled'}>{t('Cancel')}</span>
+                <span className={'kn-l-close-btn -disabled'}>{t('Arth Cancel')}</span>
               )
               : (
                 <span
                   className={'kn-l-close-btn'}
                   onClick={_onCancel}
-                >{t('Cancel')}</span>
+                >{t('Arth Cancel')}</span>
               )
             }
           </div>
@@ -370,6 +372,6 @@ export default React.memo(styled(AuthTransaction)(({ theme }: ThemeProps) => `
     margin-left: -15px;
     margin-bottom: -15px;
     margin-right: -15px;
-    background-color: ${theme.background};
+    background-color: red;  ${theme.background};
   }
 `));

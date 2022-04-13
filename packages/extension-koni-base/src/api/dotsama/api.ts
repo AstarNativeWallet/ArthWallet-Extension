@@ -1,7 +1,10 @@
 // Copyright 2019-2022 @polkadot/extension-koni-base authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { options } from '@acala-network/api';
+console.log('Arth load api.ts');
+
+//import { options } from '@acala-network/api';
+import { options } from '@astar-network/astar-api';
 
 import { ApiPromise, HttpProvider, WsProvider } from '@polkadot/api';
 import { ApiProps, ApiState } from '@polkadot/extension-base/background/KoniTypes';
@@ -115,9 +118,14 @@ export function initApi (networkKey: string, apiUrl: string): ApiProps {
 
   let api: ApiPromise;
 
-  if (['acala', 'karura'].includes(networkKey)) {
+  if (['astar'].includes(networkKey)) {
+    console.log('Arth new ApiPromise with options: ', networkKey, ', provider: ', provider);
+    api = new ApiPromise(options({ provider }));
+  } else if (['acala', 'karura'].includes(networkKey)) {
+    console.log('new ApiPromise with options: ', networkKey, ', provider: ', provider);
     api = new ApiPromise(options({ provider }));
   } else {
+    console.log('new ApiPromise ', networkKey);
     api = new ApiPromise(apiOption);
   }
 
@@ -172,6 +180,11 @@ export function initApi (networkKey: string, apiUrl: string): ApiProps {
     console.log('DotSamaAPI connected to', apiUrl);
     result.apiRetry = 0;
 
+    if (networkKey === 'astar') {
+      console.log('Arth DotSamaAPI connected to', apiUrl);
+      //api.tx.evm.withdraw('0x96cbef157358b7c90b0481ba8b3db8f58e014116', 1);
+    }
+
     if (result.isApiReadyOnce) {
       result.isApiReady = true;
     }
@@ -195,10 +208,20 @@ export function initApi (networkKey: string, apiUrl: string): ApiProps {
   });
 
   api.on('ready', () => {
+    if (networkKey === 'astar') {
+      console.log('Arth DotSamaAPI ready with', apiUrl);
+//      api.tx.evm.withdraw('0x96cbef157358b7c90b0481ba8b3db8f58e014116', 1);
+    }
+
     console.log('DotSamaAPI ready with', apiUrl);
     loadOnReady(registry, api)
       .then((rs) => {
         objectSpread(result, rs);
+        if (networkKey === 'astar') {
+          console.log('Arth DotSamaAPI ready 2');
+          //api.tx.evm.withdraw('0x96cbef157358b7c90b0481ba8b3db8f58e014116', 1);
+        }
+    
       })
       .catch((error): void => {
         result.apiError = (error as Error).message;

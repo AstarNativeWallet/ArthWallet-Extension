@@ -84,7 +84,7 @@ export default function useApi (networkKey: string): ApiProps {
         setValue(apiInfo);
       }
     })().catch((e) => {
-      console.log('Error in useAPI: ', e);
+      console.log('Arth Error in useAPI: ', e);
     });
 
     return () => {

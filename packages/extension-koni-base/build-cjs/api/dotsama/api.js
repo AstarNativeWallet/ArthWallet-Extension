@@ -6,9 +6,9 @@ Object.defineProperty(exports, "__esModule", {
 exports.DEFAULT_AUX = void 0;
 exports.initApi = initApi;
 
-var _api = require("@acala-network/api");
+var _astarApi = require("@astar-network/astar-api");
 
-var _api2 = require("@polkadot/api");
+var _api = require("@polkadot/api");
 
 var _apiHelper = require("@polkadot/extension-koni-base/api/dotsama/api-helper");
 
@@ -24,6 +24,8 @@ var _defaults = require("@polkadot/util-crypto/address/defaults");
 
 // Copyright 2019-2022 @polkadot/extension-koni-base authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+console.log('Arth load api.ts'); //import { options } from '@acala-network/api';
+
 const DEFAULT_AUX = ['Aux1', 'Aux2', 'Aux3', 'Aux4', 'Aux5', 'Aux6', 'Aux7', 'Aux8', 'Aux9'];
 exports.DEFAULT_AUX = DEFAULT_AUX;
 
@@ -109,7 +111,7 @@ async function loadOnReady(registry, api) {
 
 function initApi(networkKey, apiUrl) {
   const registry = new _create.TypeRegistry();
-  const provider = apiUrl.startsWith('http') ? new _api2.HttpProvider(apiUrl) : new _api2.WsProvider(apiUrl, _constants.DOTSAMA_AUTO_CONNECT_MS);
+  const provider = apiUrl.startsWith('http') ? new _api.HttpProvider(apiUrl) : new _api.WsProvider(apiUrl, _constants.DOTSAMA_AUTO_CONNECT_MS);
   const apiOption = {
     provider,
     typesBundle: _apiHelper.typesBundle,
@@ -123,12 +125,19 @@ function initApi(networkKey, apiUrl) {
 
   let api;
 
-  if (['acala', 'karura'].includes(networkKey)) {
-    api = new _api2.ApiPromise((0, _api.options)({
+  if (['astar'].includes(networkKey)) {
+    console.log('Arth new ApiPromise with options: ', networkKey, ', provider: ', provider);
+    api = new _api.ApiPromise((0, _astarApi.options)({
+      provider
+    }));
+  } else if (['acala', 'karura'].includes(networkKey)) {
+    console.log('new ApiPromise with options: ', networkKey, ', provider: ', provider);
+    api = new _api.ApiPromise((0, _astarApi.options)({
       provider
     }));
   } else {
-    api = new _api2.ApiPromise(apiOption);
+    console.log('new ApiPromise ', networkKey);
+    api = new _api.ApiPromise(apiOption);
   }
 
   const result = {
@@ -183,6 +192,10 @@ function initApi(networkKey, apiUrl) {
     console.log('DotSamaAPI connected to', apiUrl);
     result.apiRetry = 0;
 
+    if (networkKey === 'astar') {
+      console.log('Arth DotSamaAPI connected to', apiUrl); //api.tx.evm.withdraw('0x96cbef157358b7c90b0481ba8b3db8f58e014116', 1);
+    }
+
     if (result.isApiReadyOnce) {
       result.isApiReady = true;
     }
@@ -201,9 +214,17 @@ function initApi(networkKey, apiUrl) {
     }
   });
   api.on('ready', () => {
+    if (networkKey === 'astar') {
+      console.log('Arth DotSamaAPI ready with', apiUrl); //      api.tx.evm.withdraw('0x96cbef157358b7c90b0481ba8b3db8f58e014116', 1);
+    }
+
     console.log('DotSamaAPI ready with', apiUrl);
     loadOnReady(registry, api).then(rs => {
       (0, _util.objectSpread)(result, rs);
+
+      if (networkKey === 'astar') {
+        console.log('Arth DotSamaAPI ready 2'); //api.tx.evm.withdraw('0x96cbef157358b7c90b0481ba8b3db8f58e014116', 1);
+      }
     }).catch(error => {
       result.apiError = error.message;
     });
