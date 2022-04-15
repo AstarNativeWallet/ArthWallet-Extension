@@ -148,7 +148,6 @@ function AccountQrModal ({ accountName, address, className,
               </div>
             </div>
           </CopyToClipboard>
-
           {isSupportScanExplorer(networkKey)
             ? (
               <a
@@ -169,7 +168,6 @@ function AccountQrModal ({ accountName, address, className,
                 </div>
               </span>
             )}
-
           {showExportButton && (
             <Link
               className='account-qr-modal-button'

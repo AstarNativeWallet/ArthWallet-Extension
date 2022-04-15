@@ -328,7 +328,6 @@ function Header ({ changeAccountCallback, children, className = '', isBusy, isCo
                 size='sm'
               />
             </div>
-
             {!isWelcomeScreen && (
               <div
                 className={`setting-icon-wrapper ${isSettingsOpen ? 'pointer-events-none' : ''}`}
@@ -369,7 +368,6 @@ function Header ({ changeAccountCallback, children, className = '', isBusy, isCo
               </div>
             )}
           </div>
-
           {isNetworkSelectOpen && (
             <NetworkMenu
               currentNetwork={localGenesisHash}
@@ -378,7 +376,6 @@ function Header ({ changeAccountCallback, children, className = '', isBusy, isCo
               selectNetwork={_onChangeGenesis}
             />
           )}
-
           {isSettingsOpen && (
             <AccountMenuSettings
               changeAccountCallback={changeAccountCallback}
@@ -411,7 +408,6 @@ function Header ({ changeAccountCallback, children, className = '', isBusy, isCo
             toggleZeroBalances={_toggleZeroBalances}
           />
         }
-
         {showSubHeader &&
           <SubHeader
             isBusy={isBusy}
@@ -421,7 +417,6 @@ function Header ({ changeAccountCallback, children, className = '', isBusy, isCo
             to={to}
           />
         }
-
         {children}
       </div>
     </div>

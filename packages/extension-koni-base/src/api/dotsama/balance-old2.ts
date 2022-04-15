@@ -1,3 +1,9 @@
+/* eslint-disable header/header */
+/* eslint-disable no-inner-declarations */
+/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // Copyright 2019-2022 @polkadot/extension-koni-base authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
@@ -25,34 +31,37 @@ import { addressToEvm } from '@polkadot/util-crypto';
 console.log('ethereumChains: '); console.log(ethereumChains);
 console.log('moonbeamBaseChains: '); console.log(moonbeamBaseChains);
 
-async function getBalanceAstarEvm (networkKey: string) {
-  //  let address: string = '0x3908f5b9f831c1e74C0B1312D0f06126a58f4Ac0';
-  // let address: string = '0x46ebddef8cd9bb167dc30878d7113b7e168e6f06';
-  let wssURL = '';
+// async function getBalanceAstarEvm (networkKey: string) {
+//   //  let address: string = '0x3908f5b9f831c1e74C0B1312D0f06126a58f4Ac0';
+//   // let address: string = '0x46ebddef8cd9bb167dc30878d7113b7e168e6f06';
+//   let wssURL = '';
 
-  if (networkKey === 'astarEvm') {
-    wssURL = 'wss://rpc.astar.network';
-  } else if (networkKey === 'shidenEvm') {
-    wssURL = 'wss://rpc.shiden.astar.network';
-  } else if (networkKey === 'shibuyaEvm') {
-    wssURL = 'wss://rpc.shibuya.astar.network';
-  }
+//   if (networkKey === 'astarEvm') {
+//     wssURL = 'wss://rpc.astar.network';
+//   } else if (networkKey === 'shidenEvm') {
+//     wssURL = 'wss://rpc.shiden.astar.network';
+//   } else if (networkKey === 'shibuyaEvm') {
+//     wssURL = 'wss://rpc.shibuya.astar.network';
+//   }
 
-  const ss58Address = 'ZM24FujhBK3XaDsdkpYBf4QQAvRkoMq42aqrUQnxFo3qrAw'; // test address
-  const address = u8aToHex(addressToEvm(ss58Address));
-  const web3 = new Web3(new Web3.providers.WebsocketProvider(wssURL));
-  const balance = await web3.eth.getBalance(address);
+//   const ss58Address = 'ZM24FujhBK3XaDsdkpYBf4QQAvRkoMq42aqrUQnxFo3qrAw'; // test address
+//   const address = u8aToHex(addressToEvm(ss58Address));
+//   const web3 = new Web3(new Web3.providers.WebsocketProvider(wssURL));
+//   const balance = await web3.eth.getBalance(address);
 
-  console.log('Arth await balance: ' + networkKey + ', SS58:' + ss58Address + ' -> H160:' + address + ', ' + balance);
+//   console.log('Arth await balance: ' + networkKey + ', SS58:' + ss58Address + ' -> H160:' + address + ', ' + balance);
 
-  return balance;
-}
+//   return balance;
+// }
 
-getBalanceAstarEvm('astarEvm');
-getBalanceAstarEvm('shibuyaEvm');
+// getBalanceAstarEvm('astarEvm');
+// getBalanceAstarEvm('shibuyaEvm');
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 // @ts-ignore
+
+console.log('Arth TEST 123456!!!!');
+
 function subscribeWithDerive (addresses: string[], networkKey: string, networkAPI: ApiProps, callback: (networkKey: string, rs: BalanceItem) => void) {
   const freeMap: Record<string, BN> = {};
   const reservedMap: Record<string, BN> = {};
@@ -233,22 +242,6 @@ function subscribeWithAccountMulti (addresses: string[], networkKey: string, net
         feeFrozen = feeFrozen.add(balance.data?.feeFrozen?.toBn() || new BN(0));
       });
 
-      if (networkKey === 'astar') {
-        async function getBalanceAstarEvm (networkKey: string) {
-          const wssURL = 'wss://rpc.astar.network';
-          const ss58Address = addresses[0]; // 'ZM24FujhBK3XaDsdkpYBf4QQAvRkoMq42aqrUQnxFo3qrAw'; // test address
-          const address = u8aToHex(addressToEvm(ss58Address));
-          const web3 = new Web3(new Web3.providers.WebsocketProvider(wssURL));
-
-          balanceItem.feeFrozen = await web3.eth.getBalance(address);
-          console.log('Arth subscribeWithAccountMulti');
-        }
-
-        getBalanceAstarEvm('astar');
-      } else {
-        balanceItem.feeFrozen = feeFrozen.toString();
-      }
-
       balanceItem.state = APIItemState.READY;
       balanceItem.free = free.toString();
       balanceItem.reserved = reserved.toString();
@@ -257,6 +250,25 @@ function subscribeWithAccountMulti (addresses: string[], networkKey: string, net
 
       callback(networkKey, balanceItem);
     });
+  }
+
+  async function getBalanceAstarEvm (_networkKey: string) {
+    const wssURL = 'wss://rpc.astar.network';
+    const ss58Address = addresses[0]; // 'ZM24FujhBK3XaDsdkpYBf4QQAvRkoMq42aqrUQnxFo3qrAw'; // test address
+    const address = u8aToHex(addressToEvm(ss58Address));
+    const web3 = new Web3(new Web3.providers.WebsocketProvider(wssURL));
+
+    balanceItem.feeFrozen = await web3.eth.getBalance(address);
+    console.log('Arth subscribeWithAccountMulti');
+  }
+
+  if (networkKey === 'astar') {
+    getBalanceAstarEvm('astar');
+  } else {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    // balanceItem.feeFrozen = feeFrozen.toString();
   }
 
   let unsub2: () => void;

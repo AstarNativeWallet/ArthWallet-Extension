@@ -172,7 +172,6 @@ function Upload ({ className }: Props): React.ReactElement {
             )}
           </div>
         )}
-
         <div className='restore-from-json-wrapper'>
           {accountsInfo.map(({ address, genesisHash, name, type = DEFAULT_TYPE }, index) => (
             <div

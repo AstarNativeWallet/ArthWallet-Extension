@@ -111,7 +111,6 @@ function SignArea ({ buttonText, children, className, error, isExternal, isFirst
             />
           )}
           <RememberPasswordCheckbox />
-
           <div className='sign-button-container'>
             <Button
               className='sign-button'

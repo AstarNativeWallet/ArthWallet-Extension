@@ -38,10 +38,11 @@ function HomeActionButton ({ className, iconSrc, isDisabled = false, onClick, to
         data-tip={true}
         onClick={onClick}
       >
-        <img
+        <a>withdraw</a>
+        {/* <img
           alt='Icon'
           src={iconSrc}
-        />
+        /> */}
       </div>
       {tooltipContent && (
         <Tooltip

@@ -47,7 +47,6 @@ function AccountNamePasswordCreation ({ address, buttonLabel, children, classNam
                 name={name}
               />
             }
-
             {keyTypes.includes(EVM_ACCOUNT_TYPE) &&
               <AccountInfoEl
                 address={evmAddress}

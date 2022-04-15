@@ -94,7 +94,6 @@ function NftCollection ({ chosenItem, className, currentNetwork, data, onClickBa
           </div>
         </div>
       }
-
       {
         showItemDetail &&
         <NftItem

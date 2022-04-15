@@ -44,7 +44,6 @@ function ChainBalanceDetail ({ accountInfo, balanceInfo, className, setQrModalOp
         setQrModalProps={setQrModalProps}
         toggleBalanceDetail={toggleBalanceDetail}
       />
-
       {balanceInfo && balanceInfo.childrenBalances.length
         ? balanceInfo.childrenBalances.map((child) => (
           <ChainBalanceChildrenItem

@@ -138,7 +138,6 @@ function Mnemonic ({ address, className, evmAddress, evmName, name, onNextStep, 
             />
           </div>
         </div>
-
         <ButtonArea className='kn-next-area'>
           <NextStepButton
             className='next-step-btn'

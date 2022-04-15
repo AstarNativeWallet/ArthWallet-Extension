@@ -262,12 +262,10 @@ function AuthTransfer ({ chain, className, collectionId, nftItem, recipientAddre
               x
             </div>
           </div>
-
           <div
             className={'auth-container'}
           >
             <div className={'fee'}>Fees of {txInfo?.partialFee.toHuman() || web3Gas} will be applied to the submission</div>
-
             <Address
               className={'sender-container'}
               onChange={setSenderInfoSubstrate}
@@ -275,7 +273,6 @@ function AuthTransfer ({ chain, className, collectionId, nftItem, recipientAddre
               passwordError={passwordError}
               requestAddress={senderAccount.address}
             />
-
             {
               callHash &&
               <Output
@@ -287,7 +284,6 @@ function AuthTransfer ({ chain, className, collectionId, nftItem, recipientAddre
                 withCopy
               />
             }
-
             {
               balanceError &&
               <div
@@ -297,7 +293,6 @@ function AuthTransfer ({ chain, className, collectionId, nftItem, recipientAddre
                 Your balance is too low to cover fees.
               </div>
             }
-
             <div
               className={'submit-btn'}
               // eslint-disable-next-line @typescript-eslint/no-misused-promises

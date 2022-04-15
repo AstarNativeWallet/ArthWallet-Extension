@@ -49,6 +49,7 @@ import ChainBalances from './ChainBalances/ChainBalances';
 import Crowdloans from './Crowdloans/Crowdloans';
 import TransactionHistory from './TransactionHistory/TransactionHistory';
 import ActionButton from './ActionButton';
+import WithdrawButton from "./WithdrawButton";
 
 interface WrapperProps extends ThemeProps {
   className?: string;
@@ -280,7 +281,6 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
         text={t<string>('Accounts')}
         toggleZeroBalances={_toggleZeroBalances}
       />
-
       <div className={'home-action-block'}>
         <div className='account-total-balance'>
           <div
@@ -299,9 +299,15 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
             }
           </div>
         </div>
-
         {!_isAccountAll && (
           <div className='home-account-button-container'>
+            <div className='action-button-wrapper'>
+              <WithdrawButton
+                // iconSrc={buyIcon}
+                onClick={_showQrModal}
+                tooltipContent={t<string>('Receive')}
+              />
+            </div>
             <div className='action-button-wrapper'>
               <ActionButton
                 iconSrc={buyIcon}
@@ -309,7 +315,6 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                 tooltipContent={t<string>('Receive')}
               />
             </div>
-
             <Link
               className={'action-button-wrapper'}
               to={'/account/send-fund'}
@@ -319,7 +324,6 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                 tooltipContent={t<string>('Send')}
               />
             </Link>
-
             <Link
               className={'action-button-wrapper'}
               to={'/account/donate'}
@@ -331,7 +335,6 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
             </Link>
           </div>
         )}
-
         {_isAccountAll && (
           <div className='home-account-button-container'>
             <div className='action-button-wrapper'>
@@ -341,7 +344,6 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                 tooltipContent={t<string>('Receive')}
               />
             </div>
-
             <div className='action-button-wrapper'>
               <ActionButton
                 iconSrc={sendIcon}
@@ -349,7 +351,6 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                 tooltipContent={t<string>('Send')}
               />
             </div>
-
             <div className='action-button-wrapper'>
               <ActionButton
                 iconSrc={donateIcon}
@@ -360,7 +361,6 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
           </div>
         )}
       </div>
-
       {isShowBalanceDetail &&
         <div
           className='home__back-btn'
@@ -374,7 +374,6 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
           <span>{t<string>('Back to home')}</span>
         </div>
       }
-
       <div className={'home-tab-contents'}>
         {activatedTab === 1 && (
           <ChainBalances
@@ -391,7 +390,6 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
             setShowBalanceDetail={setShowBalanceDetail}
           />
         )}
-
         {activatedTab === 2 && (
           <NftContainer
             chosenCollection={chosenNftCollection}
@@ -416,7 +414,6 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
             totalItems={totalItems}
           />
         )}
-
         {activatedTab === 3 && (
           <Crowdloans
             crowdloanContributeMap={crowdloanContributeMap}
@@ -424,7 +421,6 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
             networkMetadataMap={networkMetadataMap}
           />
         )}
-
         {activatedTab === 4 && (
           <StakingContainer
             data={stakingData}
@@ -432,7 +428,6 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
             priceMap={stakingPriceMap}
           />
         )}
-
         {activatedTab === 5 && (
           <TransactionHistory
             historyMap={historyMap}
@@ -441,14 +436,12 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
           />
         )}
       </div>
-
       <TabHeaders
         activatedItem={activatedTab}
         className={'home-tab-headers'}
         items={tabItems}
         onSelectItem={_setActiveTab}
       />
-
       {isQrModalOpen && (
         <AccountQrModal
           accountName={currentAccount.name}
@@ -461,7 +454,6 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
           showExportButton={qrModalShowExportButton}
         />
       )}
-
       <Tooltip
         offset={{ top: 8 }}
         text={isShowBalance ? 'Hide balance' : 'Show balance'}

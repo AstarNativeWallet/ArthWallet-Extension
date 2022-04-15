@@ -160,7 +160,6 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
         showSubHeader
         subHeaderName={t<string>('Send fund')}
       />
-
       {renderContent()}
     </div>
   );
@@ -487,7 +486,6 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
               {t<string>('The transaction, after application of the transfer fees, will drop the available balance below the existential deposit. As such the transfer will fail. The account needs more free funds to cover the transaction fees.')}
             </Warning>
           )}
-
           <div className={'kn-l-submit-wrapper'}>
             <Button
               className={'kn-submit-btn'}
@@ -505,7 +503,6 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
           txResult={txResult}
         />
       )}
-
       {extrinsic && isShowTxModal && (
         <AuthTransaction
           api={api}

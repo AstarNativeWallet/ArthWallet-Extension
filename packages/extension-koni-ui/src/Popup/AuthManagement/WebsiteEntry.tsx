@@ -63,11 +63,9 @@ function WebsiteEntry ({ changeConnectSite, className = '', info, setList, url }
         <div className='origin'>
           {info.origin}
         </div>
-
         <div className='url'>
           {url}
         </div>
-
         <div className='website-entry__right-content'>
           <div className='website-entry__account-length'>{accountSelectedLength}</div>
           <div className='website-entry__toggle' />

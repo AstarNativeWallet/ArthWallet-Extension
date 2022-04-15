@@ -85,7 +85,6 @@ function NftItemPreview ({ className, collectionImage, data, onClick }: Props): 
               </video>
           }
         </div>
-
         <div className={'collection-title'}>
           <div
             className={'collection-name'}

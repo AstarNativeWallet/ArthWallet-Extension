@@ -96,7 +96,6 @@ function Networks ({ className }: Props): React.ReactElement {
           withReset
         />
       </Header>
-
       <div className='networks__button-area'>
         <div className='networks__btn networks__disconnect-btn'>
           {t<string>('Disconnect All')}
@@ -105,7 +104,6 @@ function Networks ({ className }: Props): React.ReactElement {
           {t<string>('Connect All')}
         </div>
       </div>
-
       <div className='networks-list'>
         {networks.map((item) => renderNetworkItem(item))}
       </div>

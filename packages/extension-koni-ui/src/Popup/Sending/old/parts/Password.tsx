@@ -42,7 +42,6 @@ function Unlock ({ address, className, error, onChange, onEnter, tabIndex }: Pro
         value={password}
       >
       </Password>
-
       <div className={'kn-toggle-wrapper'}>
         <Toggle
           isOverlay

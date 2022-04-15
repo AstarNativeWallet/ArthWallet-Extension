@@ -85,7 +85,6 @@ function MetamaskPrivateKeyImport ({ account, className, keyTypes, name, onAccou
             name={`${name} - EVM`}
             type={EVM_ACCOUNT_TYPE}
           />
-
           <TextAreaWithLabel
             className='seed-and-path__seed-input'
             isError={!!error}

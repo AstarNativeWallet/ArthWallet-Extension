@@ -50,7 +50,6 @@ function Wrapper ({ className = '' }: Props): React.ReactElement<Props> {
         showSubHeader
         subHeaderName={'Send NFT'}
       />
-
       {
         isApiReady || currentNetwork.isEthereum
           ? (
@@ -215,7 +214,6 @@ function TransferNftContainer ({ api, className, collectionId, collectionImage, 
                 </video>
             }
           </div>
-
           <InputAddress
             autoPrefill={false}
             className={'kn-field -field-2'}
@@ -227,20 +225,17 @@ function TransferNftContainer ({ api, className, collectionId, collectionImage, 
             type='allPlus'
             withEllipsis
           />
-
           <div className={'transfer-meta'}>
             <div className={'meta-title'}>
               <div>NFT</div>
               <div>Chain</div>
             </div>
-
             <div className={'meta-value'}>
               {/* eslint-disable-next-line @typescript-eslint/restrict-plus-operands */}
               <div>{nftItem.name ? nftItem.name : '#' + nftItem.id}</div>
               <div style={{ textTransform: 'uppercase' }}>{nftItem?.chain}</div>
             </div>
           </div>
-
           <div
             className={'send-button-default ' + (addressError ? 'inactive-button' : 'active-button')}
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -254,7 +249,6 @@ function TransferNftContainer ({ api, className, collectionId, collectionImage, 
           </div>
         </div>
       }
-
       {
         showConfirm && isApiReady && (substrateTransferParams || web3TransferParams) &&
           <AuthTransfer
@@ -273,7 +267,6 @@ function TransferNftContainer ({ api, className, collectionId, collectionImage, 
             web3TransferParams={web3TransferParams}
           />
       }
-
       {
         showTransferResult && extrinsicHash !== '' &&
         <TransferResult
