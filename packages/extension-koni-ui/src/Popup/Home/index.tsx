@@ -315,7 +315,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
               <WithdrawButton
                 // iconSrc={buyIcon}
                 onClick={_showQrModal}
-                tooltipContent={t<string>('Receive')}
+                tooltipContent={t<string>('Withdraw EVM Deposit')}
               />
             </div>
             }

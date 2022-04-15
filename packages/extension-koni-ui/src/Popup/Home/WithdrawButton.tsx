@@ -27,7 +27,7 @@ function getContainerClassName (isDisabled: boolean, extraClassName = ''): strin
   return className;
 }
 
-function HomeActionButton ({ className, iconSrc, isDisabled = false, onClick, tooltipContent }: Props): React.ReactElement {
+function HomeActionButton ({ className, isDisabled = false, onClick, tooltipContent }: Props): React.ReactElement {
   const [trigger] = useState(() => `home-action-button-${++tooltipId}`);
 
   return (
