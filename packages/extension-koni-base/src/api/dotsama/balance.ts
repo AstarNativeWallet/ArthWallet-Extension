@@ -242,11 +242,12 @@ function subscribeWithAccountMulti (addresses: string[], networkKey: string, net
 
           balanceItem.feeFrozen = await web3.eth.getBalance(address);
 
-          if(parseFloat(balanceItem.feeFrozen) > 0) {
-            chrome.storage.local.set({isEvmDeposit: true});
+          if (parseFloat(balanceItem.feeFrozen) > 0) {
+            chrome.storage.local.set({ isEvmDeposit: true });
           } else {
-            chrome.storage.local.set({isEvmDeposit: false});
+            chrome.storage.local.set({ isEvmDeposit: false });
           }
+
           console.log('Arth subscribeWithAccountMulti');
         }
 

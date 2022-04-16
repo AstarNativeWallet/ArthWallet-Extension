@@ -13,7 +13,7 @@ interface Props extends ThemeProps {
   className?: string;
   onClick?: () => void;
   tooltipContent?: string;
-  iconSrc: string;
+  iconSrc?: string;
   isDisabled?: boolean;
 }
 

@@ -1,8 +1,6 @@
 // Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-console.log('Arth load SendFund.tsx');
-
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -29,8 +27,7 @@ import { ThemeProps } from '@polkadot/extension-koni-ui/types';
 import { isAccountAll } from '@polkadot/extension-koni-ui/util';
 import { checkAddress } from '@polkadot/phishing';
 import { AccountInfoWithProviders, AccountInfoWithRefCount } from '@polkadot/types/interfaces';
-//import { BN, BN_HUNDRED, BN_ZERO, isFunction } from '@polkadot/util';
-import { BN, BN_ZERO, isFunction } from '@polkadot/util';
+import { BN, BN_HUNDRED, BN_ZERO, isFunction } from '@polkadot/util';
 
 import Available from './component/Available';
 import InputAddress from './component/InputAddress';
@@ -65,10 +62,8 @@ function extractTxResult (result: SubmittableResult): ExtractTxResultType {
   const { events } = result;
 
   const transferEvent = events.find((e) =>
-//    e.event.section === 'balances' &&
-//    e.event.method.toLowerCase() === 'transfer'
-    e.event.section === 'evm' &&
-    e.event.method.toLowerCase() === 'withdraw'
+    e.event.section === 'balances' &&
+    e.event.method.toLowerCase() === 'transfer'
   );
 
   if (transferEvent) {
@@ -111,8 +106,7 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
   const [wrapperClass, setWrapperClass] = useState<string>('');
   const { api, apiUrl, isApiReady, isNotSupport } = useApi(networkKey);
 
-  //const isProviderSupportSendFund = !!api && !!api.tx && !!api.tx.balances && !!api.tx.evm;
-  const isProviderSupportSendFund = !!api && !!api.tx && !!api.tx.evm;
+  const isProviderSupportSendFund = !!api && !!api.tx && !!api.tx.balances;
 
   const notSupportSendFund = (supportType: SupportType = 'NETWORK') => {
     return (
@@ -130,8 +124,6 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
   };
 
   const renderContent = () => {
-    console.log('Arth SendFund renderContent');
-
     if (currentAccount && isAccountAll(currentAccount.address)) {
       return notSupportSendFund('ACCOUNT');
     }
@@ -140,7 +132,7 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
       isApiReady
         ? isProviderSupportSendFund
           ? (
-            <SendFund
+            <WithdrawEvmDeposit
               api={api}
               apiUrl={apiUrl}
               className={'send-fund-container'}
@@ -166,17 +158,14 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
         showSearch
         showSettings
         showSubHeader
-        subHeaderName={t<string>('Send fund TEST')}
+        subHeaderName={t<string>('Send fund')}
       />
-
       {renderContent()}
     </div>
   );
 }
 
-//function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, networkKey, setWrapperClass }: ContentProps): React.ReactElement {
-
-function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, networkKey, setWrapperClass }: ContentProps): React.ReactElement {
+function WithdrawEvmDeposit ({ api, apiUrl, className = '', currentAccount, isEthereum, networkKey, setWrapperClass }: ContentProps): React.ReactElement {
   const { t } = useTranslation();
   const propSenderId = currentAccount?.address;
   const [amount, setAmount] = useState<BN | undefined>(BN_ZERO);
@@ -195,19 +184,15 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
   const { isShowTxResult } = txResult;
 
   useEffect(() => {
-//    const fromId = senderId as string;
-//    const toId = recipientId as string;
-//    let isSync = true;
+    const fromId = senderId as string;
+    const toId = recipientId as string;
+    let isSync = true;
 
     // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    //if (balances && balances.accountId.eq(fromId) && fromId && toId && isFunction(api.rpc.payment?.queryInfo)) {
-    if (balances) {
-        setTimeout((): void => {
+    if (balances && balances.accountId.eq(fromId) && fromId && toId && isFunction(api.rpc.payment?.queryInfo)) {
+      setTimeout((): void => {
         try {
-          api.tx.evm.withdraw('0x96cbef157358b7c90b0481ba8b3db8f58e014116', new BN('3'));
-
-          /*
           api.tx.balances
             .transfer(toId, balances.availableBalance)
             .paymentInfo(fromId)
@@ -224,8 +209,7 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
               }
             })
             .catch(console.error);
-*/
-          } catch (error) {
+        } catch (error) {
           console.error((error as Error).message);
         }
       }, 0);
@@ -234,7 +218,7 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
     }
 
     return () => {
-//      isSync = false;
+      isSync = false;
     };
   }, [api, balances, propSenderId, recipientId, senderId]);
 
@@ -266,11 +250,9 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
     ? api.tx.balances.transferAll
     : isProtected
       ? api.tx.balances.transferKeepAlive
-      : api.tx.evm.withdraw;
-      //: api.tx.balances.transfer;
+      : api.tx.balances.transfer;
 
   const _onSend = useCallback(() => {
-    console.log('Arth SendFund _onSend');
     if (tx) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       setExtrinsic(tx(...(
@@ -284,7 +266,6 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
   }, [txParams, tx]);
 
   const _onCancelTx = useCallback(() => {
-    console.log('Arth SendFund _onCancelTx');
     setExtrinsic(null);
     setShowTxModal(true);
   }, []);
@@ -394,7 +375,7 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
             autoPrefill={false}
             className={'kn-field -field-2'}
             help={t<string>('Select a contact or paste the address you want to send funds to.')}
-            isEtherium={true}
+            isEtherium={isEthereum}
             label={t<string>('Send to address')}
             // isDisabled={!!propRecipientId}
             labelExtra={
@@ -505,7 +486,6 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
               {t<string>('The transaction, after application of the transfer fees, will drop the available balance below the existential deposit. As such the transfer will fail. The account needs more free funds to cover the transaction fees.')}
             </Warning>
           )}
-
           <div className={'kn-l-submit-wrapper'}>
             <Button
               className={'kn-submit-btn'}
@@ -523,7 +503,6 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
           txResult={txResult}
         />
       )}
-
       {extrinsic && isShowTxModal && (
         <AuthTransaction
           api={api}
@@ -624,6 +603,6 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
     margin-left: -15px;
     margin-bottom: -15px;
     margin-right: -15px;
-    background-color: red; ${theme.background};
+    background-color: ${theme.background};
   }
 `));

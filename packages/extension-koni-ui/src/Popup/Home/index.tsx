@@ -49,7 +49,7 @@ import ChainBalances from './ChainBalances/ChainBalances';
 import Crowdloans from './Crowdloans/Crowdloans';
 import TransactionHistory from './TransactionHistory/TransactionHistory';
 import ActionButton from './ActionButton';
-import WithdrawButton from "./WithdrawButton";
+import WithdrawButton from './WithdrawButton';
 
 interface WrapperProps extends ThemeProps {
   className?: string;
@@ -268,7 +268,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
     setShowBalanceDetail(false);
   }, []);
 
-  chrome.storage.local.get(['isEvmDeposit'], function(result) {
+  chrome.storage.local.get(['isEvmDeposit'], function (result) {
     if (typeof result.isEvmDeposit === 'boolean') {
       setIsEvmDeposit(result.isEvmDeposit);
     }
@@ -310,14 +310,15 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
         </div>
         {!_isAccountAll && (
           <div className='home-account-button-container'>
-            {isEvmDeposit && 
-            <div className='action-button-wrapper'>
+            {isEvmDeposit &&
+            <Link
+              className='action-button-wrapper'
+              to={'/account/withdraw-evm-deposit'}
+            >
               <WithdrawButton
-                // iconSrc={buyIcon}
-                onClick={_showQrModal}
                 tooltipContent={t<string>('Withdraw EVM Deposit')}
               />
-            </div>
+            </Link>
             }
             <div className='action-button-wrapper'>
               <ActionButton
