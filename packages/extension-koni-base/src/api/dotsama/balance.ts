@@ -5,6 +5,7 @@
 
 import { Observable } from 'rxjs';
 import Web3 from 'web3';
+import { ethers } from 'ethers';
 import { Contract } from 'web3-eth-contract';
 
 import { ApiPromise } from '@polkadot/api';
@@ -233,24 +234,32 @@ function subscribeWithAccountMulti (addresses: string[], networkKey: string, net
         feeFrozen = feeFrozen.add(balance.data?.feeFrozen?.toBn() || new BN(0));
       });
 
-      if (networkKey === 'astar') {
-        async function getBalanceAstarEvm (networkKey: string) {
-          const wssURL = 'wss://rpc.astar.network';
-          const ss58Address = addresses[0]; // 'ZM24FujhBK3XaDsdkpYBf4QQAvRkoMq42aqrUQnxFo3qrAw'; // test address
-          const address = u8aToHex(addressToEvm(ss58Address));
-          const web3 = new Web3(new Web3.providers.WebsocketProvider(wssURL));
+      async function getBalanceAstarEvm (networkKey: string) {
+        const wssURL = 'wss://rpc.astar.network';
+        const ss58Address = addresses[0]; // 'ZM24FujhBK3XaDsdkpYBf4QQAvRkoMq42aqrUQnxFo3qrAw'; // test address
+        const address = u8aToHex(addressToEvm(ss58Address));
+        const web3 = new Web3(new Web3.providers.WebsocketProvider(wssURL));
 
-          balanceItem.feeFrozen = await web3.eth.getBalance(address);
+        balanceItem.feeFrozen = await web3.eth.getBalance(address);
+        const deposit = await web3.eth.getBalance(address);
+ 
+        // const evmDepositAmount = Math.ceil(balanceItem.feeFrozen / 1000000000000000000) - 1;
+        const displayEvmDepositAmount = Number(ethers.utils.formatEther(deposit.toString()));
+        const evmDepositAmount = Number(deposit);
 
-          if (parseFloat(balanceItem.feeFrozen) > 0) {
-            chrome.storage.local.set({ isEvmDeposit: true });
-          } else {
-            chrome.storage.local.set({ isEvmDeposit: false });
-          }
+        chrome.storage.local.set({ displayEvmDepositAmount: displayEvmDepositAmount });
+        chrome.storage.local.set({ evmDepositAmount: evmDepositAmount });
 
-          console.log('Arth subscribeWithAccountMulti');
+        if (parseFloat(balanceItem.feeFrozen) > 0) {
+          chrome.storage.local.set({ isEvmDeposit: true });
+        } else {
+          chrome.storage.local.set({ isEvmDeposit: false });
         }
 
+        console.log('Arth subscribeWithAccountMulti');
+      }
+
+      if (networkKey === 'astar') {
         getBalanceAstarEvm('astar');
       } else {
         balanceItem.feeFrozen = feeFrozen.toString();
