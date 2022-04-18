@@ -333,10 +333,19 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
             >
               <ActionButton
                 iconSrc={sendIcon}
-                tooltipContent={t<string>('Send')}
+                tooltipContent={t<string>('Substrate Send')}
               />
             </Link>
             <Link
+              className={'action-button-wrapper'}
+              to={'/account/send-evm-fund'}
+            >
+              <ActionButton
+                iconSrc={sendIcon}
+                tooltipContent={t<string>('EVM Send')}
+              />
+            </Link>
+            {/* <Link
               className={'action-button-wrapper'}
               to={'/account/donate'}
             >
@@ -344,7 +353,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                 iconSrc={donateIcon}
                 tooltipContent={t<string>('Donate')}
               />
-            </Link>
+            </Link> */}
           </div>
         )}
         {_isAccountAll && (

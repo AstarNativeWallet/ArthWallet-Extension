@@ -31,6 +31,7 @@ import ToastProvider from '../components/Toast/ToastProvider';
 import { saveCurrentAccountAddress, subscribeAccountsWithCurrentAddress, subscribeAuthorizeRequestsV2, subscribeMetadataRequests, subscribeSigningRequests } from '../messaging';
 import { store } from '../stores';
 import { buildHierarchy } from '../util/buildHierarchy';
+import SendEvmFund from './Sending/old/SendEvmFund';
 import AuthList from './AuthManagement';
 import Authorize from './Authorize';
 import CreateAccount from './CreateAccount';
@@ -234,6 +235,7 @@ export default function Popup (): React.ReactElement {
                           <Route path='/account/network-edit'>{wrapWithErrorBoundary(<NetworkEdit />, 'account-network-edit')}</Route>
                           <Route path='/account/withdraw-evm-deposit'>{wrapWithErrorBoundary(<WithdrawEvmDeposit />, 'withdraw-evm-deposit')}</Route>
                           <Route path='/account/send-fund'>{wrapWithErrorBoundary(<SendFund />, 'send-fund')}</Route>
+                          <Route path='/account/send-evm-fund'>{wrapWithErrorBoundary(<SendEvmFund />, 'send-evm-fund')}</Route>
                           <Route path='/account/donate'>{wrapWithErrorBoundary(<Donate />, 'donate')}</Route>
                           <Route path='/account/send-nft'>{wrapWithErrorBoundary(<TransferNftContainer />, 'send-nft')}</Route>
                           <Route path={`${PHISHING_PAGE_REDIRECT}/:website`}>{wrapWithErrorBoundary(<PhishingDetected />, 'phishing-page-redirect')}</Route>
