@@ -32,6 +32,12 @@ import { BN, BN_HUNDRED, BN_ZERO, isFunction } from '@polkadot/util';
 import Available from './component/Available';
 import InputAddress from './component/InputAddress';
 
+console.log('Arth SendFund TOP');
+
+// import Web3 from 'web3';
+// import { u8aToHex } from '@polkadot/util';
+// import { addressToEvm } from '@polkadot/util-crypto';
+
 interface Props extends ThemeProps {
   className?: string;
 }
@@ -158,7 +164,7 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
         showSearch
         showSettings
         showSubHeader
-        subHeaderName={t<string>('Send fund')}
+        subHeaderName={t<string>('Send fund test')}
       />
 
       {renderContent()}
@@ -184,6 +190,8 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
   const [txResult, setTxResult] = useState<TxResult>({ isShowTxResult: false, isTxSuccess: false });
   const { isShowTxResult } = txResult;
 
+  console.log('Arth SendFund');
+
   useEffect(() => {
     const fromId = senderId as string;
     const toId = recipientId as string;
@@ -194,6 +202,31 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
     if (balances && balances.accountId.eq(fromId) && fromId && toId && isFunction(api.rpc.payment?.queryInfo)) {
       setTimeout((): void => {
         try {
+          /*
+    //async function sendAstarEvm () {
+      const wssURL = 'wss://rpc.astar.network';
+      const web3 = new Web3(new Web3.providers.WebsocketProvider(wssURL));
+      await web3.eth.sendTransaction({
+        to: '0x96cbef157358b7c90b0481ba8b3db8f58e014116',
+        from: '0x741b69c425a140290a638cb1f9b3ca79c29f98c0',
+        value: '1'
+      });
+
+      console.log('Arth signAndSend');
+    //}
+    //sendAstarEvm();
+  */
+
+          //    let wssURL = 'wss://rpc.astar.network';
+
+          //    async function sendAstarEvm() {
+          //    const ss58Address = 'ZM24FujhBK3XaDsdkpYBf4QQAvRkoMq42aqrUQnxFo3qrAw'; // test address
+          //    const address = u8aToHex(addressToEvm(ss58Address));
+          //    const web3 = new Web3(new Web3.providers.WebsocketProvider(wssURL));
+          //    const balance = await web3.eth.getBalance(address);
+          //    }
+          //    sendAstarEvm();
+
           api.tx.balances
             .transfer(toId, balances.availableBalance)
             .paymentInfo(fromId)

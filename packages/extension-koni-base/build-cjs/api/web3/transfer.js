@@ -17,6 +17,8 @@ var _util = require("@polkadot/util");
 
 // Copyright 2019-2022 @polkadot/extension-koni-base authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+console.log('Arth TEST 220418 222222222!!!!!!');
+
 async function handleTransfer(transactionObject, networkKey, privateKey, callback) {
   const web3Api = (0, _web.getWeb3Api)(networkKey);
   const signedTransaction = await web3Api.eth.accounts.signTransaction(transactionObject, privateKey);

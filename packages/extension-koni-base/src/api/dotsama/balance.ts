@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Observable } from 'rxjs';
+import Web3 from 'web3';
 import { Contract } from 'web3-eth-contract';
 
 import { ApiPromise } from '@polkadot/api';
@@ -16,7 +17,193 @@ import { dotSamaAPIMap } from '@polkadot/extension-koni-base/background/handlers
 import { ASTAR_REFRESH_BALANCE_INTERVAL, IGNORE_GET_SUBSTRATE_FEATURES_LIST, MOONBEAM_REFRESH_BALANCE_INTERVAL } from '@polkadot/extension-koni-base/constants';
 import { categoryAddresses, sumBN } from '@polkadot/extension-koni-base/utils/utils';
 import { AccountInfo } from '@polkadot/types/interfaces';
-import { BN } from '@polkadot/util';
+import { BN, u8aToHex } from '@polkadot/util';
+import { addressToEvm } from '@polkadot/util-crypto';
+
+/*
+import { ethers } from 'ethers';
+export const ABI = require('erc20.abi.json');
+
+//import { ABI } from '/home/cielo/Web3Wallet/ArthWallet-Extension/packages/extension-koni-base/src/api/dotsama/erc20.abi.json';
+//const ABI = require('erc20.abi.json');  //from './erc20.abi.json';
+console.log('Arth TEST 220418!!!!!!');
+
+console.log('Arth ethers.version', ethers.version);
+
+async function sendEvm () {
+
+  let contractAddress = '0x1326BF7D66858662B0897f500C45F55E8D0691ab';
+  console.log('Arth Call sendEvm');
+  const web3 = new Web3('wss://rpc.astar.network');
+  const contract = new web3.eth.Contract(ABI as AbiItem[], contractAddress);
+
+  const gasPrice = await web3.eth.getGasPrice();
+  console.log('Arth gasPrice: ', gasPrice);
+
+};
+
+sendEvm();
+*/
+
+/*
+let private_key = "dcd825c5b20e7f317ad644746b76cb5938234d2c65f29a9a61079571ef488d50";
+let ethersProvider = new ethers.providers.InfuraProvider("ropsten");
+let wallet = new ethers.Wallet(private_key);
+let walletSigner = wallet.connect(ethersProvider);
+console.log('Arth ethersProvider.getGasPrice', ethersProvider.getGasPrice());
+*/
+
+
+/*
+let wallet = new ethers.Wallet.createRandom();
+
+// ウォレットのアドレスを取得
+let address = wallet.address;
+console.log("Arth address:", address);
+
+// ウォレットのニーモニックを取得
+let mnemonic = wallet.mnemonic;
+console.log("Arth mnemonic:", mnemonic);
+
+// ウォレットの秘密鍵を取得
+let privateKey = wallet.privateKey;
+console.log("Arth privateKey:", privateKey);
+*/
+
+/*
+
+//const Tx = require("ethereumjs-tx");
+//const ethers = require("ethers");
+
+const sendEths = async ({
+  to,
+  from,
+  fromPrivateKey,
+  value,
+  gasPrice,
+  gasLimit = ethers.utils.hexlify(21000),
+}) => {
+  const txCount = await provider.getTransactionCount(from);
+  // build the transaction
+  const tx = new Tx({
+    nonce: ethers.utils.hexlify(txCount),
+    to,
+    value: ethers.utils.parseEther(value).toHexString(),
+    gasLimit,
+    gasPrice,
+  });
+  // sign the transaction
+  tx.sign(Buffer.from(fromPrivateKey, "hex"));
+  // send the transaction
+  const { hash } = await provider.sendTransaction(
+    "0x" + tx.serialize().toString("hex")
+  );
+  await provider.waitForTransaction(hash);
+};
+
+sendEths();
+
+async function sendEvm () {
+
+let network = 'ropsten';
+let provider = ethers.getDefaultProvider(network);
+let privateKey = "dcd825c5b20e7f317ad644746b76cb5938234d2c65f29a9a61079571ef488d50";
+//let privateKey = "dcd825c5b20e7f317ad644746b76cb5938234d2c65f29a9a61079571ef488d59";
+let wallet = new ethers.Wallet(privateKey, provider);
+let receiverAddress = "0xAfD2BdD18063455fFC53b4b35Ca09dD9C68c3970";
+let amountInEther = '0.01';
+let tx = {
+  to: receiverAddress,
+  // 単位 ether を、単位 wei に変換
+  value: ethers.utils.parseEther(amountInEther)
+}
+console.log('Arth ethers.utils.parseEther: ', ethers.utils.parseEther(amountInEther));
+
+await wallet.sendTransaction(tx)
+.then((txObj) => {
+    console.log('Arth ethers: ', txObj)
+});
+
+};
+
+sendEvm();
+
+*/
+
+//console.log('ethereumChains: '); console.log(ethereumChains);
+//console.log('moonbeamBaseChains: '); console.log(moonbeamBaseChains);
+
+async function getBalanceAstarEvm (networkKey: string) {
+  //  let address: string = '0x3908f5b9f831c1e74C0B1312D0f06126a58f4Ac0';
+  // let address: string = '0x46ebddef8cd9bb167dc30878d7113b7e168e6f06';
+  let wssURL = '';
+
+  if (networkKey === 'astarEvm') {
+    wssURL = 'wss://rpc.astar.network';
+  } else if (networkKey === 'shidenEvm') {
+    wssURL = 'wss://rpc.shiden.astar.network';
+  } else if (networkKey === 'shibuyaEvm') {
+    wssURL = 'wss://rpc.shibuya.astar.network';
+  }
+
+  const ss58Address = 'ZM24FujhBK3XaDsdkpYBf4QQAvRkoMq42aqrUQnxFo3qrAw'; // test address
+  const address = u8aToHex(addressToEvm(ss58Address));
+  const web3 = new Web3(new Web3.providers.WebsocketProvider(wssURL));
+  const balance = await web3.eth.getBalance(address);
+
+  web3.eth.accounts.signTransaction
+
+  console.log('Arth await balance: ' + networkKey + ', SS58:' + ss58Address + ' -> H160:' + address + ', ' + balance);
+
+  //-----------------------------------
+//  const gasPrice = await web3.eth.getGasPrice();
+  //web3.eth.signTransaction
+//  console.log('Arth gasPrice: ', gasPrice, web3.utils.toHex(gasPrice));
+//  console.log('Arth estimateGas: ', await web3.eth.estimateGas({
+//    to: '0x46ebddef8cd9bb167dc30878d7113b7e168e6f06'
+//  }));
+
+//console.log('Arth getTransaction: ', await web3.eth.getTransaction('0x46e006cc388aae098d403f8f404ba0193468f986a857301856c914a72762a8b3'));
+
+  /*
+  await web3.eth.sendTransaction({
+    gasPrice: web3.utils.toHex(gasPrice),
+    from: '0x741b69c425a140290a638cb1f9b3ca79c29f98c0',
+    to: '0x96cbef157358b7c90b0481ba8b3db8f58e014116',
+    value: '0x0',
+    gas: '1000'
+  });
+*/
+
+  /*
+  const rawTx: TransactionConfig = {
+    nonce: await web3.eth.getTransactionCount(fromAddress),
+    gasPrice: web3.utils.toHex(gasPrice),
+    from: fromAddress,
+    to: contractAddress,
+    value: '0x0',
+    data: contract.methods.transfer(toAddress, value).encodeABI(),
+  };
+  const estimatedGas = await web3.eth.estimateGas(rawTx);
+*/
+/*
+await web3.eth.sendTransaction({
+    gasPrice: web3.utils.toHex(gasPrice),
+    from: '0x741b69c425a140290a638cb1f9b3ca79c29f98c0',
+    to: '0x96cbef157358b7c90b0481ba8b3db8f58e014116',
+    value: '0x0',
+    gas: '1000'
+  });
+*/
+  //-----------------------------------
+
+  // return balance;
+}
+
+// @ts-ignore
+getBalanceAstarEvm('astarEvm');
+// @ts-ignore
+getBalanceAstarEvm('shibuyaEvm');
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 // @ts-ignore
@@ -200,11 +387,28 @@ function subscribeWithAccountMulti (addresses: string[], networkKey: string, net
         feeFrozen = feeFrozen.add(balance.data?.feeFrozen?.toBn() || new BN(0));
       });
 
+      if (networkKey === 'astar') {
+
+        async function getBalanceAstarEvm (networkKey: string) {
+          const wssURL = 'wss://rpc.astar.network';
+          const ss58Address = addresses[0]; // 'ZM24FujhBK3XaDsdkpYBf4QQAvRkoMq42aqrUQnxFo3qrAw'; // test address
+          const address = u8aToHex(addressToEvm(ss58Address));
+          const web3 = new Web3(new Web3.providers.WebsocketProvider(wssURL));
+
+          balanceItem.feeFrozen = await web3.eth.getBalance(address);
+          console.log('Arth subscribeWithAccountMulti');
+        }
+
+        getBalanceAstarEvm('astar');
+
+      } else {
+        balanceItem.feeFrozen = feeFrozen.toString();
+      }
+
       balanceItem.state = APIItemState.READY;
       balanceItem.free = free.toString();
       balanceItem.reserved = reserved.toString();
       balanceItem.miscFrozen = miscFrozen.toString();
-      balanceItem.feeFrozen = feeFrozen.toString();
 
       callback(networkKey, balanceItem);
     });

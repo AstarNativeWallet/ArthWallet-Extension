@@ -5,6 +5,7 @@ import type { SignerOptions } from '@polkadot/api/submittable/types';
 
 import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
+import Web3 from 'web3';
 
 import { ApiPromise, SubmittableResult } from '@polkadot/api';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
@@ -24,6 +25,8 @@ import { ThemeProps } from '@polkadot/extension-koni-ui/types';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { assert, BN_ZERO } from '@polkadot/util';
 import { addressEq } from '@polkadot/util-crypto';
+// import { u8aToHex } from '@polkadot/util';
+// import { addressToEvm } from '@polkadot/util-crypto';
 
 const bWindow = chrome.extension.getBackgroundPage() as BackgroundWindow;
 const { keyring } = bWindow.pdotApi;
@@ -71,9 +74,9 @@ export function handleTxResults (tx: SubmittableExtrinsic<'promise'>,
       return;
     }
 
-    console.log(`: status :: ${JSON.stringify(result)}`);
-    console.log('result============', result);
-    console.log('tx.toHash()', tx.hash.toHex());
+    console.log(`Arth : status :: ${JSON.stringify(result)}`);
+    console.log('Arth result============', result);
+    console.log('Arth tx.toHash()', tx.hash.toHex());
 
     onTxUpdate && onTxUpdate(result);
 
@@ -105,13 +108,65 @@ async function signAndSend (txHandler: TxHandler, tx: SubmittableExtrinsic<'prom
   try {
     await tx.signAsync(pairOrAddress, options);
 
-    console.info('sending', tx.toHex());
+    console.info('Arth sending', tx.toHex());
+
+    /*
+    //async function sendAstarEvm () {
+      const wssURL = 'wss://rpc.astar.network';
+      const web3 = new Web3(new Web3.providers.WebsocketProvider(wssURL));
+      await web3.eth.sendTransaction({
+        to: '0x96cbef157358b7c90b0481ba8b3db8f58e014116',
+        from: '0x741b69c425a140290a638cb1f9b3ca79c29f98c0',
+        value: '1'
+      });
+
+      console.log('Arth signAndSend');
+    //}
+    //sendAstarEvm();
+  */
+
+    // const callErc20Transfer = async (): Promise<void> => {
+    const web3 = new Web3('wss://rpc.astar.network');
+    //      const contract = new web3.eth.Contract(ABI as AbiItem[], contractAddress);
+    const gasPrice = await web3.eth.getGasPrice();
+
+    console.log('Arth gasPrice: ' + gasPrice);
+
+    /*
+      const value = ethers.utils.parseUnits(transferAmt, decimals);
+      const rawTx: TransactionConfig = {
+        nonce: await web3.eth.getTransactionCount(fromAddress),
+        gasPrice: web3.utils.toHex(gasPrice),
+        from: fromAddress,
+        to: contractAddress,
+        value: '0x0',
+        data: contract.methods.transfer(toAddress, value).encodeABI(),
+      };
+      const estimatedGas = await web3.eth.estimateGas(rawTx);
+
+      await web3.eth.sendTransaction({ ...rawTx, gas: estimatedGas });
+*/
+    // };
+
+    //  return { callTransfer, isTxSuccess, callErc20Transfer };
+    // }
+
+    /*
+    let wssURL = 'wss://rpc.astar.network';
+
+    const ss58Address = 'ZM24FujhBK3XaDsdkpYBf4QQAvRkoMq42aqrUQnxFo3qrAw'; // test address
+    const address = u8aToHex(addressToEvm(ss58Address));
+    const web3 = new Web3(new Web3.providers.WebsocketProvider(wssURL));
+    const balance = await web3.eth.getBalance(address);
+
+    console.log('Arth await balance: SS58:' + ss58Address + ' -> H160:' + address + ', ' + balance);
+  */
 
     const unsubscribe = await tx.send(handleTxResults(tx, txHandler, (): void => {
       unsubscribe();
     }));
   } catch (error) {
-    console.error('signAndSend: error:', error);
+    console.error('Arth signAndSend: error:', error);
 
     txHandler.onTxFail && txHandler.onTxFail(null, error as Error);
   }
@@ -121,7 +176,7 @@ async function signAndSend (txHandler: TxHandler, tx: SubmittableExtrinsic<'prom
 async function extractParams (api: ApiPromise, address: string, options: Partial<SignerOptions>): Promise<[string, Partial<SignerOptions>]> {
   const pair = keyring.getPair(address);
 
-  assert(addressEq(address, pair.address), `Unable to retrieve keypair for ${address}`);
+  assert(addressEq(address, pair.address), `Arth Unable to retrieve keypair for ${address}`);
 
   return [address, { ...options, signer: new AccountSigner(api.registry, pair) }];
 }
@@ -165,6 +220,8 @@ function AuthTransaction ({ api, apiUrl, className, extrinsic, onCancel, request
 
   const _onSend = useCallback(
     async (txHandler: TxHandler, extrinsic: SubmittableExtrinsic<'promise'>, senderInfo: AddressProxy): Promise<void> => {
+      console.error('Arth Auth _onSend');
+
       if (senderInfo.signAddress) {
         const [tx, [pairOrAddress, options]] = await Promise.all([
           extrinsic,

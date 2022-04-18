@@ -36,8 +36,10 @@ const connectWeb3Apis = function () {
 
     if (networkInfo && networkInfo.provider) {
       if (networkInfo.provider.startsWith('ws')) {
+        console.log('Arth connectWeb3Apis ws : ', networkKey, ', networkInfo: ', networkInfo);
         apiMap[networkKey] = new _web.default(new _web.default.providers.WebsocketProvider(networkInfo.provider));
       } else if (networkInfo.provider.startsWith('http')) {
+        console.log('Arth connectWeb3Apis http : ', networkKey, ', networkInfo: ', networkInfo);
         apiMap[networkKey] = new _web.default(new _web.default.providers.HttpProvider(networkInfo.provider));
       }
     }
@@ -57,8 +59,12 @@ exports.getWeb3Api = getWeb3Api;
 
 const getERC20Contract = function (networkKey, assetAddress) {
   let options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
+  if (networkKey === 'astarEvm') {// console.log('Arth getERC20Contract: ', networkKey, ', address: ', assetAddress, ', options: ', options);
+  }
+
   return new web3Map[networkKey].eth.Contract(ERC20Contract.abi, assetAddress, options);
 };
 

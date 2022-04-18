@@ -19,8 +19,10 @@ export const connectWeb3Apis = (networks = EVM_NETWORKS): Record<string, Web3> =
   Object.entries(networks).forEach(([networkKey, networkInfo]) => {
     if (networkInfo && networkInfo.provider) {
       if (networkInfo.provider.startsWith('ws')) {
+        console.log('Arth connectWeb3Apis ws : ', networkKey, ', networkInfo: ', networkInfo);
         apiMap[networkKey] = new Web3(new Web3.providers.WebsocketProvider(networkInfo.provider));
       } else if (networkInfo.provider.startsWith('http')) {
+        console.log('Arth connectWeb3Apis http : ', networkKey, ', networkInfo: ', networkInfo);
         apiMap[networkKey] = new Web3(new Web3.providers.HttpProvider(networkInfo.provider));
       }
     }
@@ -38,5 +40,9 @@ export const getWeb3Api = (networkKey: string) => {
 export const getERC20Contract = (networkKey: string, assetAddress: string, options = {}): Contract => {
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
+  if (networkKey === 'astarEvm') {
+    // console.log('Arth getERC20Contract: ', networkKey, ', address: ', assetAddress, ', options: ', options);
+  }
+
   return new web3Map[networkKey].eth.Contract(ERC20Contract.abi, assetAddress, options);
 };

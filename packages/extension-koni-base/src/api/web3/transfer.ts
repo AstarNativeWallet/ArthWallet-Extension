@@ -7,6 +7,54 @@ import { ResponseTransfer, TransferErrorCode, TransferStep } from '@polkadot/ext
 import { getERC20Contract, getWeb3Api } from '@polkadot/extension-koni-base/api/web3/web3';
 import { BN } from '@polkadot/util';
 
+console.log('Arth TEST 220418 222222222!!!!!!');
+
+async function sendEvm () {
+
+  console.log('Arth Call sendEvm');
+
+  const web3Api = getWeb3Api('astarEvm');
+  console.log('Arth web3Api: ', web3Api);
+  //const erc20Contract = getERC20Contract(networkKey, assetAddress);
+  const gasPrice = await web3Api.eth.getGasPrice();
+  console.log('Arth gasPrice: ', gasPrice);
+  //let value = new BN(1000000000);  //1000 ** 18;
+  let value = web3Api.utils.toBN(0.001 * (10 ** 18));  //new BN(10000000000);  //1000 ** 18;
+  console.log('Arth BN value: ', value);
+  const transactionObject = {
+    gasPrice: gasPrice,
+    to: '0x96cbef157358b7c90b0481ba8b3db8f58e014116',
+    value: value.toString()
+  } as TransactionConfig;
+  const gasLimit = await web3Api.eth.estimateGas(transactionObject);
+  transactionObject.gas = gasLimit;
+  console.log('Arth gasLimit: ', gasPrice);
+  const estimateFee = parseInt(gasPrice) * gasLimit;
+  console.log('Arth estimateFee: ', estimateFee);
+  let pk = 'dcd825c5b20e7f317ad644746b76cb5938234d2c65f29a9a61079571ef488d59';
+  const signedTransaction = await web3Api.eth.accounts.signTransaction(transactionObject, pk);
+  console.log('Arth signedTransaction: ', signedTransaction);
+  const sendSignedTransaction = await web3Api.eth.sendSignedTransaction(signedTransaction.rawTransaction);
+  console.log('Arth sendSignedTransaction: ', signedTransaction);
+};
+
+sendEvm();
+
+
+//  transactionObject.gas = gasLimit;
+
+
+/*
+  let contractAddress = '0x1326BF7D66858662B0897f500C45F55E8D0691ab';
+  console.log('Arth Call sendEvm');
+  const web3 = new Web3('wss://rpc.astar.network');
+  const contract = new web3.eth.Contract(ABI as AbiItem[], contractAddress);
+
+  const gasPrice = await web3.eth.getGasPrice();
+  console.log('Arth gasPrice: ', gasPrice);
+*/
+
+
 export async function handleTransfer (transactionObject: TransactionConfig, networkKey: string, privateKey: string, callback: (data: ResponseTransfer) => void) {
   const web3Api = getWeb3Api(networkKey);
   const signedTransaction = await web3Api.eth.accounts.signTransaction(transactionObject, privateKey);
