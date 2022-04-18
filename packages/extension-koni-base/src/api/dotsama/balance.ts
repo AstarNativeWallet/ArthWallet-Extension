@@ -3,9 +3,9 @@
 
 // console.log('Arth TEST 123456!!!!');
 
+import { ethers } from 'ethers';
 import { Observable } from 'rxjs';
 import Web3 from 'web3';
-import { ethers } from 'ethers';
 import { Contract } from 'web3-eth-contract';
 
 import { ApiPromise } from '@polkadot/api';
@@ -22,6 +22,7 @@ import { categoryAddresses, sumBN } from '@polkadot/extension-koni-base/utils/ut
 import { AccountInfo } from '@polkadot/types/interfaces';
 import { BN, u8aToHex } from '@polkadot/util';
 import { addressToEvm } from '@polkadot/util-crypto';
+import { AbstractInt } from '@polkadot/types-codec';
 
 console.log('ethereumChains: '); console.log(ethereumChains);
 console.log('moonbeamBaseChains: '); console.log(moonbeamBaseChains);
@@ -241,11 +242,12 @@ function subscribeWithAccountMulti (addresses: string[], networkKey: string, net
         const web3 = new Web3(new Web3.providers.WebsocketProvider(wssURL));
 
         balanceItem.feeFrozen = await web3.eth.getBalance(address);
-        const deposit = await web3.eth.getBalance(address);
- 
+        const deposit: string = await web3.eth.getBalance(address);
+
         // const evmDepositAmount = Math.ceil(balanceItem.feeFrozen / 1000000000000000000) - 1;
         const displayEvmDepositAmount = Number(ethers.utils.formatEther(deposit.toString()));
-        const evmDepositAmount = Number(deposit);
+
+        const evmDepositAmount = deposit;
 
         chrome.storage.local.set({ displayEvmDepositAmount: displayEvmDepositAmount });
         chrome.storage.local.set({ evmDepositAmount: evmDepositAmount });

@@ -10,6 +10,7 @@ import { SubmittableExtrinsic } from '@polkadot/api/types';
 // import { DeriveBalancesAll } from '@polkadot/api-derive/types';
 // import { TransactionHistoryItemType } from '@polkadot/extension-base/background/KoniTypes';
 import { AccountJson } from '@polkadot/extension-base/background/types';
+// import { getWeb3Api } from '@polkadot/extension-koni-base/api/web3/web3';
 // import { web3Accounts, web3Enable, web3FromAddress, web3ListRpcProviders, web3UseRpcProvider } from '@polkadot/extension-dapp';
 import { Button, Warning } from '@polkadot/extension-koni-ui/components';
 import LoadingContainer from '@polkadot/extension-koni-ui/components/LoadingContainer';
@@ -191,7 +192,7 @@ function WithdrawEvmDeposit ({ api, apiUrl, className = '', currentAccount, isEt
   const [txResult, setTxResult] = useState<TxResult>({ isShowTxResult: false, isTxSuccess: false });
   // const [h160address, setH160address] = useState<string | null>(null);
   const [evmDepositAmount, setEvmDepositAmount] = useState<BN | null>(null);
-  const [displayEvmDepositAmount, setDisplayEvmDepositAmount] = useState(null);
+  const [displayEvmDepositAmount, setDisplayEvmDepositAmount] = useState<number | null>(null);
   const { isShowTxResult } = txResult;
 
   // type SubstrateAccount = {
@@ -315,17 +316,21 @@ function WithdrawEvmDeposit ({ api, apiUrl, className = '', currentAccount, isEt
       console.log('h160address is: ', h160address);
 
       chrome.storage.local.get(['evmDepositAmount'], function (result) {
-        if (typeof result.evmDepositAmount === 'number') {
-          // setEvmDepositAmount(result.evmDepositAmount * 1000000000000000000);
-          // const withdrawEvmDepositAmount = result.evmDepositAmount / 1000000000000000000;
-          const withdrawEvmDepositAmount = result.evmDepositAmount;
+        if (typeof result.evmDepositAmount === 'string') {
+        // setEvmDepositAmount(result.evmDepositAmount * 1000000000000000000);
+        // const withdrawEvmDepositAmount = Math.ceil(result.evmDepositAmount / (10 ** 3));
+        // const withdrawEvmDepositAmount = result.evmDepositAmount - (10 ** 17);
+        // const web3Api = getWeb3Api(networkKey);
+        // const withdrawEvmDepositAmount = web3Api.utils.toBN(0.1 * (10 ** 18));
+          const withdrawEvmDepositAmount: BigInt = BigInt(result.evmDepositAmount);
+          // const withdrawEvmDepositAmount: BN = 100000000000000000;
 
           setEvmDepositAmount(withdrawEvmDepositAmount);
 
           console.log('withdrawEvmDepositAmount is: ', withdrawEvmDepositAmount);
-          // console.log('unitAmount is      : ', 1000000000000000000 );
+          console.log('unitAmount is              : ', 1000000000000000000);
         } else {
-          console.log('evmDepositAmount is not valid number.', result.evmDepositAmount);
+          console.log('evmDepositAmount is not valid type.', result.evmDepositAmount);
         }
       });
       // const evmDepositAmount = 1000000000000000;
