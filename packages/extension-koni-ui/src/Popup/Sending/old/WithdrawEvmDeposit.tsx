@@ -8,7 +8,7 @@ import styled from 'styled-components';
 import { ApiPromise, SubmittableResult } from '@polkadot/api';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
 // import { DeriveBalancesAll } from '@polkadot/api-derive/types';
-// import { TransactionHistoryItemType } from '@polkadot/extension-base/background/KoniTypes';
+import { TransactionHistoryItemType } from '@polkadot/extension-base/background/KoniTypes';
 import { AccountJson } from '@polkadot/extension-base/background/types';
 // import { getWeb3Api } from '@polkadot/extension-koni-base/api/web3/web3';
 // import { web3Accounts, web3Enable, web3FromAddress, web3ListRpcProviders, web3UseRpcProvider } from '@polkadot/extension-dapp';
@@ -16,7 +16,7 @@ import { Button, Warning } from '@polkadot/extension-koni-ui/components';
 import LoadingContainer from '@polkadot/extension-koni-ui/components/LoadingContainer';
 // import Toggle from '@polkadot/extension-koni-ui/components/Toggle';
 import useTranslation from '@polkadot/extension-koni-ui/hooks/useTranslation';
-// import { updateTransactionHistory } from '@polkadot/extension-koni-ui/messaging';
+import { updateTransactionHistory } from '@polkadot/extension-koni-ui/messaging';
 import { Header } from '@polkadot/extension-koni-ui/partials';
 import AuthTransaction from '@polkadot/extension-koni-ui/Popup/Sending/old/AuthTransaction';
 // import InputBalance from '@polkadot/extension-koni-ui/Popup/Sending/old/component/InputBalance';
@@ -24,6 +24,7 @@ import useApi from '@polkadot/extension-koni-ui/Popup/Sending/old/hook/useApi';
 // import { useCall } from '@polkadot/extension-koni-ui/Popup/Sending/old/hook/useCall';
 import SendFundResult from '@polkadot/extension-koni-ui/Popup/Sending/old/SendFundResult';
 import { TxResult } from '@polkadot/extension-koni-ui/Popup/Sending/old/types';
+import WithdrawEvmDepositResult from '@polkadot/extension-koni-ui/Popup/Sending/old/WithdrawEvmDepositResult';
 import { RootState } from '@polkadot/extension-koni-ui/stores';
 import { ThemeProps } from '@polkadot/extension-koni-ui/types';
 import { isAccountAll } from '@polkadot/extension-koni-ui/util';
@@ -54,41 +55,41 @@ interface ContentProps extends ThemeProps {
 //   return !!(accountInfo as AccountInfoWithRefCount).refcount;
 // }
 
-// type ExtractTxResultType = {
-//   change: string;
-//   fee?: string;
-// }
+type ExtractTxResultType = {
+  change: string;
+  fee?: string;
+}
 
-// function extractTxResult (result: SubmittableResult): ExtractTxResultType {
-//   let change = '0';
-//   let fee;
+function extractTxResult (result: SubmittableResult): ExtractTxResultType {
+  let change = '0';
+  let fee;
 
-//   const { events } = result;
+  const { events } = result;
 
-//   const transferEvent = events.find((e) =>
-//     //    e.event.section === 'balances' &&
-//     //    e.event.method.toLowerCase() === 'transfer'
-//     e.event.section === 'evm' &&
-//     e.event.method.toLowerCase() === 'withdraw'
-//   );
+  const transferEvent = events.find((e) =>
+    //    e.event.section === 'balances' &&
+    //    e.event.method.toLowerCase() === 'transfer'
+    e.event.section === 'evm' &&
+    e.event.method.toLowerCase() === 'withdraw'
+  );
 
-//   if (transferEvent) {
-//     change = transferEvent.event.data[2]?.toString() || '0';
-//   }
+  if (transferEvent) {
+    change = transferEvent.event.data[2]?.toString() || '0';
+  }
 
-//   const withdrawEvent = events.find((e) =>
-//     e.event.section === 'balances' &&
-//     e.event.method.toLowerCase() === 'withdraw');
+  const withdrawEvent = events.find((e) =>
+    e.event.section === 'balances' &&
+    e.event.method.toLowerCase() === 'withdraw');
 
-//   if (withdrawEvent) {
-//     fee = withdrawEvent.event.data[1]?.toString();
-//   }
+  if (withdrawEvent) {
+    fee = withdrawEvent.event.data[1]?.toString();
+  }
 
-//   return {
-//     change,
-//     fee
-//   };
-// }
+  return {
+    change,
+    fee
+  };
+}
 
 // async function checkPhishing (_senderId: string | null, recipientId: string | null): Promise<[string | null, string | null]> {
 //   return [
@@ -166,7 +167,7 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
         showSearch
         showSettings
         showSubHeader
-        subHeaderName={t<string>('Withdraw EVM deposit')}
+        subHeaderName={t<string>('Withdraw EVM Deposit')}
       />
       {renderContent()}
     </div>
@@ -191,7 +192,7 @@ function WithdrawEvmDeposit ({ api, apiUrl, className = '', currentAccount, isEt
   const [isShowTxModal, setShowTxModal] = useState<boolean>(false);
   const [txResult, setTxResult] = useState<TxResult>({ isShowTxResult: false, isTxSuccess: false });
   // const [h160address, setH160address] = useState<string | null>(null);
-  const [evmDepositAmount, setEvmDepositAmount] = useState<BN | null>(null);
+  const [evmDepositAmount, setEvmDepositAmount] = useState<BigInt | null>(null);
   const [displayEvmDepositAmount, setDisplayEvmDepositAmount] = useState<number | null>(null);
   const { isShowTxResult } = txResult;
 
@@ -388,21 +389,21 @@ function WithdrawEvmDeposit ({ api, apiUrl, className = '', currentAccount, isEt
     }
 
     if (result && extrinsicHash) {
-      // const { change, fee } = extractTxResult(result);
+      const { change, fee } = extractTxResult(result);
 
-      // const item: TransactionHistoryItemType = {
-      //   action: 'send',
-      //   change,
-      //   extrinsicHash,
-      //   fee,
-      //   isSuccess: true,
-      //   networkKey,
-      //   time: Date.now()
-      // };
+      const item: TransactionHistoryItemType = {
+        action: 'send',
+        change,
+        extrinsicHash,
+        fee,
+        isSuccess: true,
+        networkKey,
+        time: Date.now()
+      };
 
-      // updateTransactionHistory(senderId, networkKey, item, () => {
-      //   onGetTxResult(true, extrinsicHash);
-      // }).catch((e) => console.log('Error when update Transaction History', e));
+      updateTransactionHistory(senderId, networkKey, item, () => {
+        onGetTxResult(true, extrinsicHash);
+      }).catch((e) => console.log('Error when update Transaction History', e));
     } else {
       onGetTxResult(true);
     }
@@ -415,21 +416,21 @@ function WithdrawEvmDeposit ({ api, apiUrl, className = '', currentAccount, isEt
     }
 
     if (result && extrinsicHash) {
-      // const { change, fee } = extractTxResult(result);
+      const { change, fee } = extractTxResult(result);
 
-      // const item: TransactionHistoryItemType = {
-      //   action: 'send',
-      //   change,
-      //   extrinsicHash,
-      //   fee,
-      //   isSuccess: false,
-      //   networkKey,
-      //   time: Date.now()
-      // };
+      const item: TransactionHistoryItemType = {
+        action: 'send',
+        change,
+        extrinsicHash,
+        fee,
+        isSuccess: false,
+        networkKey,
+        time: Date.now()
+      };
 
-      // updateTransactionHistory(senderId, networkKey, item, () => {
-      //   onGetTxResult(false, extrinsicHash, error);
-      // }).catch((e) => console.log('Error when update Transaction History', e));
+      updateTransactionHistory(senderId, networkKey, item, () => {
+        onGetTxResult(false, extrinsicHash, error);
+      }).catch((e) => console.log('Error when update Transaction History', e));
     } else {
       onGetTxResult(false, undefined, error);
     }
@@ -463,12 +464,12 @@ function WithdrawEvmDeposit ({ api, apiUrl, className = '', currentAccount, isEt
               // isDisabled={isSameAddress || !hasAvailable || !(recipientId) || (!amount && !isAll) || amountGtAvailableBalance || !!recipientPhish}
               onClick={_onSend}
             >
-              {t<string>('Withdraw EVM deposit')}
+              {t<string>('Withdraw EVM Deposit')}
             </Button>
           </div>
         )
         : (
-          <SendFundResult
+          <WithdrawEvmDepositResult
             networkKey={networkKey}
             onResend={_onResend}
             txResult={txResult}

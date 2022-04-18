@@ -247,7 +247,8 @@ function subscribeWithAccountMulti (addresses: string[], networkKey: string, net
         // const evmDepositAmount = Math.ceil(balanceItem.feeFrozen / 1000000000000000000) - 1;
         const displayEvmDepositAmount = Number(ethers.utils.formatEther(deposit.toString()));
 
-        const evmDepositAmount = deposit;
+        // const evmDepositAmount = deposit;
+        const evmDepositAmount = '100000000000000000';
 
         chrome.storage.local.set({ displayEvmDepositAmount: displayEvmDepositAmount });
         chrome.storage.local.set({ evmDepositAmount: evmDepositAmount });
