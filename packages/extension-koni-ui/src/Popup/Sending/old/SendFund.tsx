@@ -190,8 +190,6 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
   const [txResult, setTxResult] = useState<TxResult>({ isShowTxResult: false, isTxSuccess: false });
   const { isShowTxResult } = txResult;
 
-  console.log('Arth SendFund');
-
   useEffect(() => {
     const fromId = senderId as string;
     const toId = recipientId as string;

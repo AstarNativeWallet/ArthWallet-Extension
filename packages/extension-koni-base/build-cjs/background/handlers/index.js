@@ -39,6 +39,24 @@ exports.tabs = tabs;
 const dotSamaAPIMap = (0, _dotsama.default)();
 exports.dotSamaAPIMap = dotSamaAPIMap;
 const nftHandler = new _nft.NftHandler(dotSamaAPIMap);
+/*
+import keyring from '@polkadot/ui-keyring';
+import { cryptoWaitReady } from '@polkadot/util-crypto';
+cryptoWaitReady().then(() => {
+  // load all available addresses and accounts
+  keyring.loadAll({ ss58Format: 42, type: 'sr25519' });
+
+  // additional initialization here, including rendering
+});
+
+console.log('Arth TEST 220419 44444!!!!!!');
+let privatekey = extension.accountExportPrivateKey({
+  address: '',
+  password: '123456'
+});
+console.log('Arth handler index accountExportPrivateKey:', privatekey);
+*/
+
 exports.nftHandler = nftHandler;
 
 function getRpcsMap() {

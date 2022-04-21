@@ -62,7 +62,7 @@ export default class KoniExtension extends Extension {
     return keyring.encodeAddress(key, ss58Format);
   };
 
-  private accountExportPrivateKey ({ address, password }: RequestAccountExportPrivateKey): ResponseAccountExportPrivateKey {
+  public accountExportPrivateKey ({ address, password }: RequestAccountExportPrivateKey): ResponseAccountExportPrivateKey {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const exportedJson = keyring.backupAccount(keyring.getPair(address), password);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument

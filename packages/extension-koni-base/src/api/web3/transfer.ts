@@ -7,8 +7,36 @@ import { ResponseTransfer, TransferErrorCode, TransferStep } from '@polkadot/ext
 import { getERC20Contract, getWeb3Api } from '@polkadot/extension-koni-base/api/web3/web3';
 import { BN } from '@polkadot/util';
 
-console.log('Arth TEST 220418 222222222!!!!!!');
+//import { decodePair } from '@polkadot/keyring/pair/decode';
+//import keyring from '@polkadot/ui-keyring';
+//import { u8aToHex } from '@polkadot/util';
+//import { base64Decode } from '@polkadot/util-crypto';
+//import { RequestAccountExportPrivateKey, ResponseAccountExportPrivateKey } from '@polkadot/extension-base/background/KoniTypes';
 
+/*
+function accountExportPrivateKey ({ address, password }: RequestAccountExportPrivateKey): ResponseAccountExportPrivateKey {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  const exportedJson = keyring.backupAccount(keyring.getPair(address), password);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  const decoded = decodePair(password, base64Decode(exportedJson.encoded), exportedJson.encoding.type);
+
+  return {
+    privateKey: u8aToHex(decoded.secretKey)
+  };
+}
+let privateKeyStr = accountExportPrivateKey({
+  address: '0xf625a97875650f9C46439217c21f7E638E270046', password: '123456'
+});
+console.log('Arth pk: ', privateKeyStr);
+*/
+
+//const exportedJson = keyring.backupAccount(keyring.getPair('0xf625a97875650f9C46439217c21f7E638E270046'), '123456');
+// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+//const decoded = decodePair('123456', base64Decode(exportedJson.encoded), exportedJson.encoding.type);
+//let  privateKey=  u8aToHex(decoded.secretKey);
+//console.log('Arth pk: ', privateKey);
+
+/*
 async function sendEvm () {
 
   console.log('Arth Call sendEvm');
@@ -35,11 +63,11 @@ async function sendEvm () {
   const signedTransaction = await web3Api.eth.accounts.signTransaction(transactionObject, pk);
   console.log('Arth signedTransaction: ', signedTransaction);
   const sendSignedTransaction = await web3Api.eth.sendSignedTransaction(signedTransaction.rawTransaction);
-  console.log('Arth sendSignedTransaction: ', signedTransaction);
+  console.log('Arth sendSignedTransaction: ', sendSignedTransaction);
 };
 
 sendEvm();
-
+*/
 
 //  transactionObject.gas = gasLimit;
 

@@ -19,6 +19,24 @@ export const tabs = new KoniTabs(state);
 export const dotSamaAPIMap = connectDotSamaApis();
 export const nftHandler = new NftHandler(dotSamaAPIMap);
 
+/*
+import keyring from '@polkadot/ui-keyring';
+import { cryptoWaitReady } from '@polkadot/util-crypto';
+cryptoWaitReady().then(() => {
+  // load all available addresses and accounts
+  keyring.loadAll({ ss58Format: 42, type: 'sr25519' });
+
+  // additional initialization here, including rendering
+});
+
+console.log('Arth TEST 220419 44444!!!!!!');
+let privatekey = extension.accountExportPrivateKey({
+  address: '',
+  password: '123456'
+});
+console.log('Arth handler index accountExportPrivateKey:', privatekey);
+*/
+
 function getRpcsMap (): Record<string, string> {
   const result: Record<string, string> = {};
 

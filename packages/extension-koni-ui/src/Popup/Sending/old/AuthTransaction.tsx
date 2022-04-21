@@ -25,8 +25,39 @@ import { ThemeProps } from '@polkadot/extension-koni-ui/types';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { assert, BN_ZERO } from '@polkadot/util';
 import { addressEq } from '@polkadot/util-crypto';
-// import { u8aToHex } from '@polkadot/util';
+import { u8aToHex } from '@polkadot/util';
+
+import { decodePair } from '@polkadot/keyring/pair/decode';
+import { base64Decode } from '@polkadot/util-crypto';
+import { TransactionConfig } from 'web3-core';
+import { getWeb3Api } from '@polkadot/extension-koni-base/api/web3/web3';
+
+//import { RequestAccountExportPrivateKey, ResponseAccountExportPrivateKey } from '@polkadot/extension-base/background/KoniTypes';
+
 // import { addressToEvm } from '@polkadot/util-crypto';
+
+/*
+import { exportAccountPrivateKey } from '../../messaging';
+
+import { getId } from '@polkadot/extension-base/utils/getId';
+
+function sendMessage<TMessageType extends MessageTypesWithNullRequest> (message: TMessageType): Promise<ResponseTypes[TMessageType]>;
+function sendMessage<TMessageType extends MessageTypesWithNoSubscriptions> (message: TMessageType, request: RequestTypes[TMessageType]): Promise<ResponseTypes[TMessageType]>;
+function sendMessage<TMessageType extends MessageTypesWithSubscriptions> (message: TMessageType, request: RequestTypes[TMessageType], subscriber: (data: SubscriptionMessageTypes[TMessageType]) => void): Promise<ResponseTypes[TMessageType]>;
+function sendMessage<TMessageType extends MessageTypes> (message: TMessageType, request?: RequestTypes[TMessageType], subscriber?: (data: unknown) => void): Promise<ResponseTypes[TMessageType]> {
+  return new Promise((resolve, reject): void => {
+    const id = getId();
+
+    handlers[id] = { reject, resolve, subscriber };
+
+    port.postMessage({ id, message, request: request || {} });
+  });
+}
+
+export async function exportAccountPrivateKey (address: string, password: string): Promise<{ privateKey: string }> {
+  return sendMessage('pri(accounts.exportPrivateKey)', { address, password });
+}
+*/
 
 const bWindow = chrome.extension.getBackgroundPage() as BackgroundWindow;
 const { keyring } = bWindow.pdotApi;
@@ -106,65 +137,65 @@ async function signAndSend (txHandler: TxHandler, tx: SubmittableExtrinsic<'prom
   txHandler.onTxStart && txHandler.onTxStart();
 
   try {
-    await tx.signAsync(pairOrAddress, options);
 
-    console.info('Arth sending', tx.toHex());
+    let address = '0x96cbef157358b7c90b0481ba8b3db8f58e014116'; //pairOrAddress;
+    let password = '123456';
+    let fromAddress: string = pairOrAddress.toString();
 
-    /*
-    //async function sendAstarEvm () {
-      const wssURL = 'wss://rpc.astar.network';
-      const web3 = new Web3(new Web3.providers.WebsocketProvider(wssURL));
-      await web3.eth.sendTransaction({
-        to: '0x96cbef157358b7c90b0481ba8b3db8f58e014116',
-        from: '0x741b69c425a140290a638cb1f9b3ca79c29f98c0',
-        value: '1'
-      });
+    console.info('Arth signAndSend txHandler: ', txHandler);
+    console.info('Arth signAndSend tx: ', tx);
+    console.info('Arth signAndSend pairOrAddress: ', pairOrAddress);
+    console.info('Arth signAndSend options: ', options);
 
-      console.log('Arth signAndSend');
-    //}
-    //sendAstarEvm();
-  */
+    alert("Hello TypeScript");
+    keyring.getPair(fromAddress);
 
-    // const callErc20Transfer = async (): Promise<void> => {
-    const web3 = new Web3('wss://rpc.astar.network');
-    //      const contract = new web3.eth.Contract(ABI as AbiItem[], contractAddress);
-    const gasPrice = await web3.eth.getGasPrice();
+    const accounts = keyring.getAccounts();
+    accounts.forEach(({ address, meta, publicKey }) =>
+      console.log('Arth address: ', address, JSON.stringify(meta), u8aToHex(publicKey))
+    );
 
-    console.log('Arth gasPrice: ' + gasPrice);
+    const exportedJson = keyring.backupAccount(keyring.getPair(fromAddress), password);
+    const decoded = decodePair(password, base64Decode(exportedJson.encoded), exportedJson.encoding.type);
+  
+    let privateKey = u8aToHex(decoded.secretKey)
+    console.log('Arth privateKey: ', privateKey);
 
-    /*
-      const value = ethers.utils.parseUnits(transferAmt, decimals);
-      const rawTx: TransactionConfig = {
-        nonce: await web3.eth.getTransactionCount(fromAddress),
-        gasPrice: web3.utils.toHex(gasPrice),
-        from: fromAddress,
-        to: contractAddress,
-        value: '0x0',
-        data: contract.methods.transfer(toAddress, value).encodeABI(),
-      };
-      const estimatedGas = await web3.eth.estimateGas(rawTx);
+    async function sendEvm () {
 
-      await web3.eth.sendTransaction({ ...rawTx, gas: estimatedGas });
-*/
-    // };
+      console.log('Arth Call sendEvm');
+    
+      const web3Api = getWeb3Api('astarEvm');
+      console.log('Arth web3Api: ', web3Api);
+      //const erc20Contract = getERC20Contract(networkKey, assetAddress);
+      const gasPrice = await web3Api.eth.getGasPrice();
+      console.log('Arth gasPrice: ', gasPrice);
+      //let value = new BN(1000000000);  //1000 ** 18;
+      let value = web3Api.utils.toBN(0.1 * (10 ** 18));  //new BN(10000000000);  //1000 ** 18;
+      console.log('Arth BN value: ', value);
+      const transactionObject = {
+        gasPrice: gasPrice,
+        to: address,
+        value: value.toString()
+      } as TransactionConfig;
+      const gasLimit = await web3Api.eth.estimateGas(transactionObject);
+      transactionObject.gas = gasLimit;
+      console.log('Arth gasLimit: ', gasPrice);
+      const estimateFee = parseInt(gasPrice) * gasLimit;
+      console.log('Arth estimateFee: ', estimateFee);
+      const signedTransaction = await web3Api.eth.accounts.signTransaction(transactionObject, privateKey);
+      console.log('Arth signedTransaction: ', signedTransaction);
+      const sendSignedTransaction = await web3Api.eth.sendSignedTransaction(signedTransaction.rawTransaction);
+      console.log('Arth sendSignedTransaction: ', sendSignedTransaction);
+    };
+    
+    sendEvm();
+    
+    //await tx.signAsync(pairOrAddress, options);
 
-    //  return { callTransfer, isTxSuccess, callErc20Transfer };
-    // }
-
-    /*
-    let wssURL = 'wss://rpc.astar.network';
-
-    const ss58Address = 'ZM24FujhBK3XaDsdkpYBf4QQAvRkoMq42aqrUQnxFo3qrAw'; // test address
-    const address = u8aToHex(addressToEvm(ss58Address));
-    const web3 = new Web3(new Web3.providers.WebsocketProvider(wssURL));
-    const balance = await web3.eth.getBalance(address);
-
-    console.log('Arth await balance: SS58:' + ss58Address + ' -> H160:' + address + ', ' + balance);
-  */
-
-    const unsubscribe = await tx.send(handleTxResults(tx, txHandler, (): void => {
-      unsubscribe();
-    }));
+    //const unsubscribe = await tx.send(handleTxResults(tx, txHandler, (): void => {
+    //  unsubscribe();
+    //}));
   } catch (error) {
     console.error('Arth signAndSend: error:', error);
 
@@ -234,7 +265,7 @@ function AuthTransaction ({ api, apiUrl, className, extrinsic, onCancel, request
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [api, tip, extrinsic]
   );
-
+  
   const _doStart = useCallback(
     (): void => {
       setBusy(true);
@@ -250,6 +281,24 @@ function AuthTransaction ({ api, apiUrl, className, extrinsic, onCancel, request
         _unlock()
           .then((isUnlocked): void => {
             if (isUnlocked) {
+
+              /*
+              export async function exportAccountPrivateKey (address: string, password: string): Promise<{ privateKey: string }> {
+                return sendMessage('pri(accounts.exportPrivateKey)', { address, password });
+              }
+              
+              exportAccountPrivateKey('0x96cbef157358b7c90b0481ba8b3db8f58e014116', '123456')
+              .then(({ privateKey }) => {
+                setPrivateKey(privateKey);
+                setIsBusy(false);
+              })
+              .catch((error: Error) => {
+                console.error(error);
+                setError(error.message);
+                setIsBusy(false);
+              });
+      */
+
               _onSend(txHandler, extrinsic, senderInfo).catch(errorHandler);
             } else {
               setBusy(false);
@@ -336,7 +385,7 @@ function AuthTransaction ({ api, apiUrl, className, extrinsic, onCancel, request
               isDisabled={!senderInfo.signAddress || isRenderError}
               onClick={_doStart}
             >
-              {t<string>('Sign and Submit')}
+              {t<string>('Sign and Submit TEST')}
             </Button>
           </div>
         </div>

@@ -166,14 +166,14 @@ async function getBalanceAstarEvm(networkKey) {
   const balance = await web3.eth.getBalance(address);
   web3.eth.accounts.signTransaction;
   console.log('Arth await balance: ' + networkKey + ', SS58:' + ss58Address + ' -> H160:' + address + ', ' + balance); //-----------------------------------
+  //  const gasPrice = await web3.eth.getGasPrice();
+  //web3.eth.signTransaction
+  //  console.log('Arth gasPrice: ', gasPrice, web3.utils.toHex(gasPrice));
+  //  console.log('Arth estimateGas: ', await web3.eth.estimateGas({
+  //    to: '0x46ebddef8cd9bb167dc30878d7113b7e168e6f06'
+  //  }));
+  //console.log('Arth getTransaction: ', await web3.eth.getTransaction('0x46e006cc388aae098d403f8f404ba0193468f986a857301856c914a72762a8b3'));
 
-  const gasPrice = await web3.eth.getGasPrice(); //web3.eth.signTransaction
-
-  console.log('Arth gasPrice: ', gasPrice, web3.utils.toHex(gasPrice));
-  console.log('Arth estimateGas: ', await web3.eth.estimateGas({
-    to: '0x46ebddef8cd9bb167dc30878d7113b7e168e6f06'
-  }));
-  console.log('Arth getTransaction: ', await web3.eth.getTransaction('0x46e006cc388aae098d403f8f404ba0193468f986a857301856c914a72762a8b3'));
   /*
   await web3.eth.sendTransaction({
     gasPrice: web3.utils.toHex(gasPrice),

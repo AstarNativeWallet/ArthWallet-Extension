@@ -17,8 +17,77 @@ var _util = require("@polkadot/util");
 
 // Copyright 2019-2022 @polkadot/extension-koni-base authors & contributors
 // SPDX-License-Identifier: Apache-2.0
-console.log('Arth TEST 220418 222222222!!!!!!');
+//import { decodePair } from '@polkadot/keyring/pair/decode';
+//import keyring from '@polkadot/ui-keyring';
+//import { u8aToHex } from '@polkadot/util';
+//import { base64Decode } from '@polkadot/util-crypto';
+//import { RequestAccountExportPrivateKey, ResponseAccountExportPrivateKey } from '@polkadot/extension-base/background/KoniTypes';
 
+/*
+function accountExportPrivateKey ({ address, password }: RequestAccountExportPrivateKey): ResponseAccountExportPrivateKey {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  const exportedJson = keyring.backupAccount(keyring.getPair(address), password);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  const decoded = decodePair(password, base64Decode(exportedJson.encoded), exportedJson.encoding.type);
+
+  return {
+    privateKey: u8aToHex(decoded.secretKey)
+  };
+}
+let privateKeyStr = accountExportPrivateKey({
+  address: '0xf625a97875650f9C46439217c21f7E638E270046', password: '123456'
+});
+console.log('Arth pk: ', privateKeyStr);
+*/
+//const exportedJson = keyring.backupAccount(keyring.getPair('0xf625a97875650f9C46439217c21f7E638E270046'), '123456');
+// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+//const decoded = decodePair('123456', base64Decode(exportedJson.encoded), exportedJson.encoding.type);
+//let  privateKey=  u8aToHex(decoded.secretKey);
+//console.log('Arth pk: ', privateKey);
+
+/*
+async function sendEvm () {
+
+  console.log('Arth Call sendEvm');
+
+  const web3Api = getWeb3Api('astarEvm');
+  console.log('Arth web3Api: ', web3Api);
+  //const erc20Contract = getERC20Contract(networkKey, assetAddress);
+  const gasPrice = await web3Api.eth.getGasPrice();
+  console.log('Arth gasPrice: ', gasPrice);
+  //let value = new BN(1000000000);  //1000 ** 18;
+  let value = web3Api.utils.toBN(0.001 * (10 ** 18));  //new BN(10000000000);  //1000 ** 18;
+  console.log('Arth BN value: ', value);
+  const transactionObject = {
+    gasPrice: gasPrice,
+    to: '0x96cbef157358b7c90b0481ba8b3db8f58e014116',
+    value: value.toString()
+  } as TransactionConfig;
+  const gasLimit = await web3Api.eth.estimateGas(transactionObject);
+  transactionObject.gas = gasLimit;
+  console.log('Arth gasLimit: ', gasPrice);
+  const estimateFee = parseInt(gasPrice) * gasLimit;
+  console.log('Arth estimateFee: ', estimateFee);
+  let pk = 'dcd825c5b20e7f317ad644746b76cb5938234d2c65f29a9a61079571ef488d59';
+  const signedTransaction = await web3Api.eth.accounts.signTransaction(transactionObject, pk);
+  console.log('Arth signedTransaction: ', signedTransaction);
+  const sendSignedTransaction = await web3Api.eth.sendSignedTransaction(signedTransaction.rawTransaction);
+  console.log('Arth sendSignedTransaction: ', sendSignedTransaction);
+};
+
+sendEvm();
+*/
+//  transactionObject.gas = gasLimit;
+
+/*
+  let contractAddress = '0x1326BF7D66858662B0897f500C45F55E8D0691ab';
+  console.log('Arth Call sendEvm');
+  const web3 = new Web3('wss://rpc.astar.network');
+  const contract = new web3.eth.Contract(ABI as AbiItem[], contractAddress);
+
+  const gasPrice = await web3.eth.getGasPrice();
+  console.log('Arth gasPrice: ', gasPrice);
+*/
 async function handleTransfer(transactionObject, networkKey, privateKey, callback) {
   const web3Api = (0, _web.getWeb3Api)(networkKey);
   const signedTransaction = await web3Api.eth.accounts.signTransaction(transactionObject, privateKey);
