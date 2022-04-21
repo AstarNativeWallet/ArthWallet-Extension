@@ -4,6 +4,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { PromiEvent, TransactionConfig, TransactionReceipt } from 'web3-core';
 
 import { ApiPromise, SubmittableResult } from '@polkadot/api';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
@@ -55,28 +56,30 @@ type ExtractTxResultType = {
   fee?: string;
 }
 
-function extractTxResult (result: SubmittableResult): ExtractTxResultType {
+function extractTxResult (result: TransactionReceipt): ExtractTxResultType {
   let change = '0';
   let fee;
 
   const { events } = result;
 
-  const transferEvent = events.find((e) =>
-    e.event.section === 'balances' &&
-    e.event.method.toLowerCase() === 'transfer'
-  );
+  console.log('extractTxResult(events): ', events);
 
-  if (transferEvent) {
-    change = transferEvent.event.data[2]?.toString() || '0';
-  }
+  // const transferEvent = events.find((e) =>
+  //   e.event.section === 'balances' &&
+  //   e.event.method.toLowerCase() === 'transfer'
+  // );
 
-  const withdrawEvent = events.find((e) =>
-    e.event.section === 'balances' &&
-    e.event.method.toLowerCase() === 'withdraw');
+  // if (transferEvent) {
+  //   change = transferEvent.event.data[2]?.toString() || '0';
+  // }
 
-  if (withdrawEvent) {
-    fee = withdrawEvent.event.data[1]?.toString();
-  }
+  // const withdrawEvent = events.find((e) =>
+  //   e.event.section === 'balances' &&
+  //   e.event.method.toLowerCase() === 'withdraw');
+
+  // if (withdrawEvent) {
+  //   fee = withdrawEvent.event.data[1]?.toString();
+  // }
 
   return {
     change,
@@ -283,7 +286,7 @@ function SendEvmFund ({ api, apiUrl, className = '', currentAccount, isEthereum,
     _onCancelTx();
   }, [_onCancelTx, setWrapperClass]);
 
-  const _onTxSuccess = useCallback((result: SubmittableResult, extrinsicHash?: string) => {
+  const _onTxSuccess = useCallback((result: TransactionReceipt, extrinsicHash?: string) => {
     if (!senderId) {
       return;
     }

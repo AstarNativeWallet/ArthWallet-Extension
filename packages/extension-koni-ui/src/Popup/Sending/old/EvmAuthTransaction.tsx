@@ -6,7 +6,7 @@ import type { SignerOptions } from '@polkadot/api/submittable/types';
 import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Web3 from 'web3';
-import { TransactionConfig } from 'web3-core';
+import { PromiEvent, TransactionConfig, TransactionReceipt } from 'web3-core';
 
 import { ApiPromise, SubmittableResult } from '@polkadot/api';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
@@ -96,44 +96,57 @@ function unlockAccount ({ isUnlockCached, signAddress, signPassword }: AddressPr
   return null;
 }
 
-export function handleTxResults (tx: SubmittableExtrinsic<'promise'>,
-  { onTxFail, onTxSuccess, onTxUpdate }: TxHandler,
-  unsubscribe: () => void): (result: SubmittableResult) => void {
-  return (result: SubmittableResult): void => {
-    if (!result || !result.status) {
-      return;
-    }
+// export function handleTxResults (result: TransactionReceipt,
+//   { onTxFail, onTxSuccess, onTxUpdate }: TxHandler,
+//   unsubscribe: () => void): (result: TransactionReceipt) => void {
+export function handleTxResults (result: TransactionReceipt,
+  { onTxFail, onTxSuccess, onTxUpdate }: TxHandler): (result: TransactionReceipt) => void {
+  return (result: TransactionReceipt): void => {
+    // if (!result || !result.status) {
+    //   return;
+    // }
 
     console.log(`Arth : status :: ${JSON.stringify(result)}`);
     console.log('Arth result============', result);
-    console.log('Arth tx.toHash()', tx.hash.toHex());
+    // console.log('Arth tx.toHash()', tx.hash.toHex());
 
     onTxUpdate && onTxUpdate(result);
 
-    if (result.status.isFinalized || result.status.isInBlock) {
-      result.events
-        .filter(({ event: { section } }) => section === 'system')
-        .forEach(({ event: { method } }): void => {
-          const extrinsicHash = tx.hash.toHex();
-
-          if (method === 'ExtrinsicFailed') {
-            onTxFail && onTxFail(result, null, extrinsicHash);
-          } else if (method === 'ExtrinsicSuccess') {
-            onTxSuccess && onTxSuccess(result, extrinsicHash);
-          }
-        });
-    } else if (result.isError) {
-      onTxFail && onTxFail(result, null);
+    if (result.status === true) {
+      onTxSuccess(result, result.transactionHash);
     }
 
-    if (result.isCompleted) {
-      unsubscribe();
-    }
+    // if (result.status) {
+    //   result.events
+    //     .filter(({ event: { section } }) => section === 'system')
+    //     .forEach(({ event: { method } }): void => {
+    //       const extrinsicHash = tx.hash.toHex();
+
+    //       if (method === 'ExtrinsicFailed') {
+    //         onTxFail && onTxFail(result, null, extrinsicHash);
+    //       } else if (method === 'ExtrinsicSuccess') {
+    //         onTxSuccess && onTxSuccess(result, extrinsicHash);
+    //       }
+    //     });
+    // if (result.status) {
+    console.log('result.status: ', result.status);
+
+    console.log('result.events: ', result.events);
+    // }
+    // } else if (result.isError) {
+    //   onTxFail && onTxFail(result, null);
+    // }
   };
+
+  // if (result.status === true) {
+  //   unsubscribe();
+  // }
 }
 
 async function evmSignAndSend (txHandler: TxHandler, fromAddress: string, password: string, address: string, amount: BigInt): Promise<void> {
   txHandler.onTxStart && txHandler.onTxStart();
+
+  const { onTxFail, onTxSuccess, onTxUpdate } = txHandler;
 
   try {
     // const fromAddress: string = pairOrAddress.toString();
@@ -182,6 +195,20 @@ async function evmSignAndSend (txHandler: TxHandler, fromAddress: string, passwo
     const sendSignedTransaction = await web3Api.eth.sendSignedTransaction(signedTransaction.rawTransaction);
 
     console.log('Arth sendSignedTransaction: ', sendSignedTransaction);
+
+    const result = sendSignedTransaction;
+
+    // const unsubscribe = handleTxResults(sendSignedTransaction, txHandler, (): void => {
+    //   unsubscribe();
+    // });
+    // handleTxResults(sendSignedTransaction, txHandler);
+    onTxUpdate && onTxUpdate(result);
+
+    const extrinsicHash: string = result.transactionHash;
+
+    if (result.status === true) {
+      onTxSuccess(result, extrinsicHash);
+    }
   } catch (error) {
     console.error('Arth sendEVM: error:', error);
 
