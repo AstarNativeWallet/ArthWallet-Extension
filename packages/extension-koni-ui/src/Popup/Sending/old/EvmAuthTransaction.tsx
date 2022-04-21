@@ -26,7 +26,7 @@ import { cacheUnlock } from '@polkadot/extension-koni-ui/Popup/Sending/old/util'
 import { ThemeProps } from '@polkadot/extension-koni-ui/types';
 import { decodePair } from '@polkadot/keyring/pair/decode';
 import { KeyringPair } from '@polkadot/keyring/types';
-import { assert, BN_ZERO, u8aToHex } from '@polkadot/util';
+import { assert, BN, BN_ZERO, u8aToHex } from '@polkadot/util';
 import { addressEq, base64Decode } from '@polkadot/util-crypto';
 
 // import { RequestAccountExportPrivateKey, ResponseAccountExportPrivateKey } from '@polkadot/extension-base/background/KoniTypes';
@@ -60,6 +60,7 @@ const bWindow = chrome.extension.getBackgroundPage() as BackgroundWindow;
 const { keyring } = bWindow.pdotApi;
 
 interface Props extends ThemeProps {
+  amount: BigInt;
   className?: string;
   extrinsic: SubmittableExtrinsic<'promise'>;
   requestAddress: string;
@@ -131,7 +132,7 @@ export function handleTxResults (tx: SubmittableExtrinsic<'promise'>,
   };
 }
 
-async function evmSignAndSend (txHandler: TxHandler, fromAddress: string, password: string, address: string): Promise<void> {
+async function evmSignAndSend (txHandler: TxHandler, fromAddress: string, password: string, address: string, amount: BigInt): Promise<void> {
   txHandler.onTxStart && txHandler.onTxStart();
 
   try {
@@ -159,13 +160,14 @@ async function evmSignAndSend (txHandler: TxHandler, fromAddress: string, passwo
 
     console.log('Arth gasPrice: ', gasPrice);
     // let value = new BN(1000000000);  //1000 ** 18;
-    const value = web3Api.utils.toBN(0.1 * (10 ** 18)); // new BN(10000000000);  //1000 ** 18;
+    // const value = web3Api.utils.toBN(amount * (10 ** 18)); // new BN(10000000000);  //1000 ** 18;
+    const value = amount.toString();
 
     console.log('Arth BN value: ', value);
     const transactionObject = {
       gasPrice: gasPrice,
       to: address,
-      value: value.toString()
+      value: value
     } as TransactionConfig;
     const gasLimit = await web3Api.eth.estimateGas(transactionObject);
 
@@ -239,7 +241,7 @@ async function evmSignAndSend (txHandler: TxHandler, fromAddress: string, passwo
 //   return [address, { ...options, signer: new AccountSigner(api.registry, pair) }];
 // }
 
-function EvmAuthTransaction ({ api, apiUrl, className, extrinsic, onCancel, requestAddress, txHandler, recipientId }: Props): React.ReactElement<Props> | null {
+function EvmAuthTransaction ({ amount, api, apiUrl, className, extrinsic, onCancel, recipientId, requestAddress, txHandler }: Props): React.ReactElement<Props> | null {
   const { t } = useTranslation();
   const [error, setError] = useState<Error | null>(null);
   const [isBusy, setBusy] = useState(false);
@@ -294,8 +296,8 @@ function EvmAuthTransaction ({ api, apiUrl, className, extrinsic, onCancel, requ
   // );
 
   const _onSend = useCallback(
-    async (txHandler: TxHandler, fromAddress: string, password: string, address: string): Promise<void> => {
-      await evmSignAndSend(txHandler, fromAddress, password, address);
+    async (txHandler: TxHandler, fromAddress: string, password: string, address: string, amount: BN): Promise<void> => {
+      await evmSignAndSend(txHandler, fromAddress, password, address, amount);
     }, []
   );
 
@@ -331,7 +333,7 @@ function EvmAuthTransaction ({ api, apiUrl, className, extrinsic, onCancel, requ
               });
       */
 
-              _onSend(txHandler, senderInfo.signAddress, senderInfo.signPassword, recipientId).catch(errorHandler);
+              _onSend(txHandler, senderInfo.signAddress, senderInfo.signPassword, recipientId, amount).catch(errorHandler);
             } else {
               setBusy(false);
             }
@@ -341,7 +343,7 @@ function EvmAuthTransaction ({ api, apiUrl, className, extrinsic, onCancel, requ
           });
       }, 0);
     },
-    [_onSend, _unlock, txHandler, senderInfo, recipientId]
+    [_onSend, _unlock, txHandler, senderInfo, recipientId, amount]
   );
 
   const _onCancel = useCallback(() => {
