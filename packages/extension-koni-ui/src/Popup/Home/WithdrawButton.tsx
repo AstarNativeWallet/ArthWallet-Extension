@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import Tooltip from '@polkadot/extension-koni-ui/components/Tooltip';
 import { ThemeProps } from '@polkadot/extension-koni-ui/types';
 
-let tooltipId = 0;
+let tooltipId = 10;
 
 interface Props extends ThemeProps {
   className?: string;
