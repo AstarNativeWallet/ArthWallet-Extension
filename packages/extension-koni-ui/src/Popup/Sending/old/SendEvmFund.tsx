@@ -16,8 +16,8 @@ import Toggle from '@polkadot/extension-koni-ui/components/Toggle';
 import useTranslation from '@polkadot/extension-koni-ui/hooks/useTranslation';
 import { updateTransactionHistory } from '@polkadot/extension-koni-ui/messaging';
 import { Header } from '@polkadot/extension-koni-ui/partials';
-import AuthTransaction from '@polkadot/extension-koni-ui/Popup/Sending/old/AuthTransaction';
 import InputBalance from '@polkadot/extension-koni-ui/Popup/Sending/old/component/InputBalance';
+import EvmAuthTransaction from '@polkadot/extension-koni-ui/Popup/Sending/old/EvmAuthTransaction';
 import useApi from '@polkadot/extension-koni-ui/Popup/Sending/old/hook/useApi';
 import { useCall } from '@polkadot/extension-koni-ui/Popup/Sending/old/hook/useCall';
 import SendEvmFundResult from '@polkadot/extension-koni-ui/Popup/Sending/old/SendEvmFundResult';
@@ -504,11 +504,12 @@ function SendEvmFund ({ api, apiUrl, className = '', currentAccount, isEthereum,
         />
       )}
       {extrinsic && isShowTxModal && (
-        <AuthTransaction
+        <EvmAuthTransaction
           api={api}
           apiUrl={apiUrl}
           extrinsic={extrinsic}
           onCancel={_onCancelTx}
+          recipientId={recipientId}
           requestAddress={senderId}
           txHandler={{
             onTxSuccess: _onTxSuccess,

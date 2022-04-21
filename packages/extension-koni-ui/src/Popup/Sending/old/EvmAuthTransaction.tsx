@@ -63,6 +63,7 @@ interface Props extends ThemeProps {
   className?: string;
   extrinsic: SubmittableExtrinsic<'promise'>;
   requestAddress: string;
+  recipientId: string;
   onCancel: () => void;
   txHandler: TxHandler;
   api: ApiPromise;
@@ -130,20 +131,13 @@ export function handleTxResults (tx: SubmittableExtrinsic<'promise'>,
   };
 }
 
-async function signAndSend (txHandler: TxHandler, tx: SubmittableExtrinsic<'promise'>, pairOrAddress: KeyringPair | string, options: Partial<SignerOptions>): Promise<void> {
+async function evmSignAndSend (txHandler: TxHandler, fromAddress: string, password: string, address: string): Promise<void> {
   txHandler.onTxStart && txHandler.onTxStart();
 
   try {
-    const address = '0x96cbef157358b7c90b0481ba8b3db8f58e014116'; // pairOrAddress;
-    const password = '123456';
-    const fromAddress: string = pairOrAddress.toString();
+    // const fromAddress: string = pairOrAddress.toString();
 
-    console.info('Arth signAndSend txHandler: ', txHandler);
-    console.info('Arth signAndSend tx: ', tx);
-    console.info('Arth signAndSend pairOrAddress: ', pairOrAddress);
-    console.info('Arth signAndSend options: ', options);
-
-    alert('Hello TypeScript');
+    console.log('Arth Call sendEvm');
     keyring.getPair(fromAddress);
 
     const accounts = keyring.getAccounts();
@@ -157,66 +151,95 @@ async function signAndSend (txHandler: TxHandler, tx: SubmittableExtrinsic<'prom
 
     const privateKey = u8aToHex(decoded.secretKey);
 
-    console.log('Arth privateKey: ', privateKey);
+    const web3Api = getWeb3Api('astarEvm');
 
-    async function sendEvm () {
-      console.log('Arth Call sendEvm');
+    console.log('Arth web3Api: ', web3Api);
+    // const erc20Contract = getERC20Contract(networkKey, assetAddress);
+    const gasPrice = await web3Api.eth.getGasPrice();
 
-      const web3Api = getWeb3Api('astarEvm');
+    console.log('Arth gasPrice: ', gasPrice);
+    // let value = new BN(1000000000);  //1000 ** 18;
+    const value = web3Api.utils.toBN(0.1 * (10 ** 18)); // new BN(10000000000);  //1000 ** 18;
 
-      console.log('Arth web3Api: ', web3Api);
-      // const erc20Contract = getERC20Contract(networkKey, assetAddress);
-      const gasPrice = await web3Api.eth.getGasPrice();
+    console.log('Arth BN value: ', value);
+    const transactionObject = {
+      gasPrice: gasPrice,
+      to: address,
+      value: value.toString()
+    } as TransactionConfig;
+    const gasLimit = await web3Api.eth.estimateGas(transactionObject);
 
-      console.log('Arth gasPrice: ', gasPrice);
-      // let value = new BN(1000000000);  //1000 ** 18;
-      const value = web3Api.utils.toBN(0.1 * (10 ** 18)); // new BN(10000000000);  //1000 ** 18;
+    transactionObject.gas = gasLimit;
+    console.log('Arth gasLimit: ', gasPrice);
+    const estimateFee = parseInt(gasPrice) * gasLimit;
 
-      console.log('Arth BN value: ', value);
-      const transactionObject = {
-        gasPrice: gasPrice,
-        to: address,
-        value: value.toString()
-      } as TransactionConfig;
-      const gasLimit = await web3Api.eth.estimateGas(transactionObject);
+    console.log('Arth estimateFee: ', estimateFee);
+    const signedTransaction = await web3Api.eth.accounts.signTransaction(transactionObject, privateKey);
 
-      transactionObject.gas = gasLimit;
-      console.log('Arth gasLimit: ', gasPrice);
-      const estimateFee = parseInt(gasPrice) * gasLimit;
+    console.log('Arth signedTransaction: ', signedTransaction);
+    const sendSignedTransaction = await web3Api.eth.sendSignedTransaction(signedTransaction.rawTransaction);
 
-      console.log('Arth estimateFee: ', estimateFee);
-      const signedTransaction = await web3Api.eth.accounts.signTransaction(transactionObject, privateKey);
-
-      console.log('Arth signedTransaction: ', signedTransaction);
-      const sendSignedTransaction = await web3Api.eth.sendSignedTransaction(signedTransaction.rawTransaction);
-
-      console.log('Arth sendSignedTransaction: ', sendSignedTransaction);
-    }
-
-    sendEvm();
-
-    // await tx.signAsync(pairOrAddress, options);
-
-    // const unsubscribe = await tx.send(handleTxResults(tx, txHandler, (): void => {
-    //  unsubscribe();
-    // }));
+    console.log('Arth sendSignedTransaction: ', sendSignedTransaction);
   } catch (error) {
-    console.error('Arth signAndSend: error:', error);
+    console.error('Arth sendEVM: error:', error);
 
     txHandler.onTxFail && txHandler.onTxFail(null, error as Error);
   }
 }
 
+// async function signAndSend (txHandler: TxHandler, tx: SubmittableExtrinsic<'promise'>, pairOrAddress: KeyringPair | string, options: Partial<SignerOptions>): Promise<void> {
+//   txHandler.onTxStart && txHandler.onTxStart();
+
+//   try {
+//     const address = '0x96cbef157358b7c90b0481ba8b3db8f58e014116'; // pairOrAddress;
+//     const password = '123456';
+//     const fromAddress: string = pairOrAddress.toString();
+
+//     console.info('Arth signAndSend txHandler: ', txHandler);
+//     console.info('Arth signAndSend tx: ', tx);
+//     console.info('Arth signAndSend pairOrAddress: ', pairOrAddress);
+//     console.info('Arth signAndSend options: ', options);
+
+//     alert('Hello TypeScript');
+//     keyring.getPair(fromAddress);
+
+//     const accounts = keyring.getAccounts();
+
+//     accounts.forEach(({ address, meta, publicKey }) =>
+//       console.log('Arth address: ', address, JSON.stringify(meta), u8aToHex(publicKey))
+//     );
+
+//     const exportedJson = keyring.backupAccount(keyring.getPair(fromAddress), password);
+//     const decoded = decodePair(password, base64Decode(exportedJson.encoded), exportedJson.encoding.type);
+
+//     const privateKey = u8aToHex(decoded.secretKey);
+
+//     console.log('Arth privateKey: ', privateKey);
+
+//     sendEvm();
+
+//     // await tx.signAsync(pairOrAddress, options);
+
+//     // const unsubscribe = await tx.send(handleTxResults(tx, txHandler, (): void => {
+//     //  unsubscribe();
+//     // }));
+//   } catch (error) {
+//     console.error('Arth signAndSend: error:', error);
+
+//     txHandler.onTxFail && txHandler.onTxFail(null, error as Error);
+//   }
+// }
+
 // eslint-disable-next-line @typescript-eslint/require-await
-async function extractParams (api: ApiPromise, address: string, options: Partial<SignerOptions>): Promise<[string, Partial<SignerOptions>]> {
-  const pair = keyring.getPair(address);
+// async function extractParams (api: ApiPromise, address: string, options: Partial<SignerOptions>): Promise<[string, Partial<SignerOptions>]> {
+//   const pair = keyring.getPair(address);
 
-  assert(addressEq(address, pair.address), `Arth Unable to retrieve keypair for ${address}`);
+//   assert(addressEq(address, pair.address), `Arth Unable to retrieve keypair for ${address}`);
 
-  return [address, { ...options, signer: new AccountSigner(api.registry, pair) }];
-}
+//   return [address, { ...options, signer: new AccountSigner(api.registry, pair) }];
+// }
 
-function AuthTransaction ({ api, apiUrl, className, extrinsic, onCancel, requestAddress, txHandler }: Props): React.ReactElement<Props> | null {
+function EvmAuthTransaction ({ api, apiUrl, className, extrinsic, onCancel, requestAddress, txHandler, recipientId }: Props): React.ReactElement<Props> | null {
   const { t } = useTranslation();
   const [error, setError] = useState<Error | null>(null);
   const [isBusy, setBusy] = useState(false);
@@ -253,21 +276,27 @@ function AuthTransaction ({ api, apiUrl, className, extrinsic, onCancel, request
     [senderInfo]
   );
 
+  // const _onSend = useCallback(
+  //   async (txHandler: TxHandler, extrinsic: SubmittableExtrinsic<'promise'>, senderInfo: AddressProxy): Promise<void> => {
+  //     console.error('Arth Auth _onSend');
+
+  //     if (senderInfo.signAddress) {
+  //       const [tx, [pairOrAddress, options]] = await Promise.all([
+  //         extrinsic,
+  //         extractParams(api, senderInfo.signAddress, { nonce: -1, tip })
+  //       ]);
+
+  //       await signAndSend(txHandler, tx, pairOrAddress, options);
+  //     }
+  //   },
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  //   [api, tip, extrinsic]
+  // );
+
   const _onSend = useCallback(
-    async (txHandler: TxHandler, extrinsic: SubmittableExtrinsic<'promise'>, senderInfo: AddressProxy): Promise<void> => {
-      console.error('Arth Auth _onSend');
-
-      if (senderInfo.signAddress) {
-        const [tx, [pairOrAddress, options]] = await Promise.all([
-          extrinsic,
-          extractParams(api, senderInfo.signAddress, { nonce: -1, tip })
-        ]);
-
-        await signAndSend(txHandler, tx, pairOrAddress, options);
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [api, tip, extrinsic]
+    async (txHandler: TxHandler, fromAddress: string, password: string, address: string): Promise<void> => {
+      await evmSignAndSend(txHandler, fromAddress, password, address);
+    }, []
   );
 
   const _doStart = useCallback(
@@ -302,7 +331,7 @@ function AuthTransaction ({ api, apiUrl, className, extrinsic, onCancel, request
               });
       */
 
-              _onSend(txHandler, extrinsic, senderInfo).catch(errorHandler);
+              _onSend(txHandler, senderInfo.signAddress, senderInfo.signPassword, recipientId).catch(errorHandler);
             } else {
               setBusy(false);
             }
@@ -312,7 +341,7 @@ function AuthTransaction ({ api, apiUrl, className, extrinsic, onCancel, request
           });
       }, 0);
     },
-    [_onSend, _unlock, extrinsic, txHandler, senderInfo]
+    [_onSend, _unlock, txHandler, senderInfo, recipientId]
   );
 
   const _onCancel = useCallback(() => {
@@ -397,7 +426,7 @@ function AuthTransaction ({ api, apiUrl, className, extrinsic, onCancel, request
   );
 }
 
-export default React.memo(styled(AuthTransaction)(({ theme }: ThemeProps) => `
+export default React.memo(styled(EvmAuthTransaction)(({ theme }: ThemeProps) => `
   .subwallet-modal {
     max-width: 460px;
     left: 0;
