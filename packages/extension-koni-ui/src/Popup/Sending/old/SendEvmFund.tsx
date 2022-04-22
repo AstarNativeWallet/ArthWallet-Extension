@@ -312,7 +312,7 @@ function SendEvmFund ({ api, apiUrl, className = '', currentAccount, isEthereum,
     }
   }, [senderId, networkKey, onGetTxResult]);
 
-  const _onTxFail = useCallback((result: SubmittableResult | null, error: Error | null, extrinsicHash?: string) => {
+  const _onTxFail = useCallback((result: TransactionReceipt | null, error: Error | null, extrinsicHash?: string) => {
     if (!senderId) {
       return;
     }

@@ -10,7 +10,7 @@ import { ActionContext, Button } from '@polkadot/extension-koni-ui/components';
 import useTranslation from '@polkadot/extension-koni-ui/hooks/useTranslation';
 import { TxResult } from '@polkadot/extension-koni-ui/Popup/Sending/old/types';
 import { ThemeProps } from '@polkadot/extension-koni-ui/types';
-import { getScanExplorerTransactionHistoryUrl, isSupportScanExplorer } from '@polkadot/extension-koni-ui/util';
+import { getScanExplorerTransactionHistoryUrl, isSupportScanExplorer, isSupportSubscan } from '@polkadot/extension-koni-ui/util';
 
 export interface Props extends ThemeProps {
   className?: string;
@@ -45,7 +45,7 @@ function SendEvmFundResult ({ className = '', failResultText = 'Send Fund Fail',
   );
 
   const viewTransactionBtn = (networkKey: string, extrinsicHash: string) => {
-    if (isSupportScanExplorer(networkKey)) {
+    if (isSupportSubscan(networkKey)) {
       return (
         <a
           className='kn-send-fund-stt-btn kn-view-history-btn'

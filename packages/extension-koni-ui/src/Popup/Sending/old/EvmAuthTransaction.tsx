@@ -348,7 +348,6 @@ function EvmAuthTransaction ({ amount, api, apiUrl, className, extrinsic, onCanc
                 return sendMessage('pri(accounts.exportPrivateKey)', { address, password });
               }
 
-              exportAccountPrivateKey('0x96cbef157358b7c90b0481ba8b3db8f58e014116', '123456')
               .then(({ privateKey }) => {
                 setPrivateKey(privateKey);
                 setIsBusy(false);
