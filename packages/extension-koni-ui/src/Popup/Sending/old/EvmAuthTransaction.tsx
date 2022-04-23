@@ -445,7 +445,7 @@ function EvmAuthTransaction ({ amount, api, apiUrl, className, extrinsic, onCanc
               isDisabled={!senderInfo.signAddress || isRenderError}
               onClick={_doStart}
             >
-              {t<string>('Sign and Submit TEST')}
+              {t<string>('Sign and Submit')}
             </Button>
           </div>
         </div>
