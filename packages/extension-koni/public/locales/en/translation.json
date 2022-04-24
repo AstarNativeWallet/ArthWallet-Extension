@@ -10,7 +10,7 @@
   "Create new account (root or derived)": "",
   "Create new account": "",
   "Import account from pre-existing seed": "",
-  "Restore account from backup JSON file": "",
+  "Restore account from JSON backup file": "",
   "Attach external QR-signer account": "",
   "External QR accounts and Access": "",
   "Allow Camera Access": "",
@@ -298,5 +298,6 @@
   "Connect All": "",
   "Forget All": "",
   "Forget Site": "",
-  "Choose the account(s) you’d like to connect": ""
+  "Choose the account(s) you’d like to connect": "",
+  "Import account from Seed Phrase": ""
 }
