@@ -453,7 +453,7 @@ export default React.memo(styled(Header)(({ theme }: Props) => `
 
   .container {
     background-color: ${theme.headerBackground};
-    box-shadow: ${theme.headerBoxShadow};
+    // box-shadow: ${theme.headerBoxShadow};
 
     > .top-container {
       display: flex;

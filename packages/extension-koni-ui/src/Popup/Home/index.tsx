@@ -22,7 +22,7 @@ import stakingActive from '@polkadot/extension-koni-ui/assets/home-tab-icon/stak
 import transfers from '@polkadot/extension-koni-ui/assets/home-tab-icon/transfers.svg';
 import transfersActive from '@polkadot/extension-koni-ui/assets/home-tab-icon/transfers-active.svg';
 import { AccountContext, AccountQrModal, Link } from '@polkadot/extension-koni-ui/components';
-import { BalanceVal } from '@polkadot/extension-koni-ui/components/balance';
+// import { BalanceVal } from '@polkadot/extension-koni-ui/components/balance';
 import Tooltip from '@polkadot/extension-koni-ui/components/Tooltip';
 import useAccountBalance from '@polkadot/extension-koni-ui/hooks/screen/home/useAccountBalance';
 import useCrowdloanNetworks from '@polkadot/extension-koni-ui/hooks/screen/home/useCrowdloanNetworks';
@@ -41,14 +41,14 @@ import { RootState } from '@polkadot/extension-koni-ui/stores';
 import { ThemeProps } from '@polkadot/extension-koni-ui/types';
 import { BN_ZERO, isAccountAll, NFT_DEFAULT_GRID_SIZE, NFT_GRID_HEIGHT_THRESHOLD, NFT_HEADER_HEIGHT, NFT_PER_ROW, NFT_PREVIEW_HEIGHT } from '@polkadot/extension-koni-ui/util';
 
-import buyIcon from '../../assets/buy-icon.svg';
-import donateIcon from '../../assets/donate-icon.svg';
-import sendIcon from '../../assets/send-icon.svg';
+// import buyIcon from '../../assets/buy-icon.svg';
+// import donateIcon from '../../assets/donate-icon.svg';
+// import sendIcon from '../../assets/send-icon.svg';
 // import swapIcon from '../../assets/swap-icon.svg';
 import ChainBalances from './ChainBalances/ChainBalances';
 import Crowdloans from './Crowdloans/Crowdloans';
 import TransactionHistory from './TransactionHistory/TransactionHistory';
-import ActionButton from './ActionButton';
+// import ActionButton from './ActionButton';
 
 interface WrapperProps extends ThemeProps {
   className?: string;
@@ -237,26 +237,26 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
     setQrModalOpen(false);
   }, []);
 
-  const _isAccountAll = isAccountAll(address);
+  // const _isAccountAll = isAccountAll(address);
 
   const tabItems = useMemo<TabHeaderItemType[]>(() => {
     return getTabHeaderItems(address, t);
   }, [address, t]);
 
-  const _toggleBalances = useCallback(() => {
-    const accountInfo = {
-      address: address,
-      isShowBalance: !isShowBalance
-    } as CurrentAccountInfo;
+  // const _toggleBalances = useCallback(() => {
+  //   const accountInfo = {
+  //     address: address,
+  //     isShowBalance: !isShowBalance
+  //   } as CurrentAccountInfo;
 
-    saveCurrentAccountAddress(accountInfo, () => {
-      triggerAccountsSubscription().catch((e) => {
-        console.error('There is a problem when trigger Accounts Subscription', e);
-      });
-    }).catch((e) => {
-      console.error('There is a problem when set Current Account', e);
-    });
-  }, [address, isShowBalance]);
+  //   saveCurrentAccountAddress(accountInfo, () => {
+  //     triggerAccountsSubscription().catch((e) => {
+  //       console.error('There is a problem when trigger Accounts Subscription', e);
+  //     });
+  //   }).catch((e) => {
+  //     console.error('There is a problem when set Current Account', e);
+  //   });
+  // }, [address, isShowBalance]);
 
   const _backToHome = useCallback(() => {
     setShowBalanceDetail(false);
@@ -281,7 +281,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
         toggleZeroBalances={_toggleZeroBalances}
       />
 
-      <div className={'home-action-block'}>
+      {/* <div className={'home-action-block'}>
         <div className='account-total-balance'>
           <div
             className={'account-total-btn'}
@@ -359,7 +359,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
             </div>
           </div>
         )}
-      </div>
+      </div> */}
 
       {isShowBalanceDetail &&
         <div
@@ -479,6 +479,7 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
   .home-tab-contents {
     flex: 1;
     overflow: auto;
+    background-color: #fff;
   }
 
   .home-action-block {
