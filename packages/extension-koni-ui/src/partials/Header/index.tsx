@@ -680,7 +680,7 @@ export default React.memo(styled(Header)(({ theme }: Props) => `
     width: 54px;
     min-width: 54px;
     height: 54px;
-    border: 2px solid ${theme.checkDotColor};
+    // border: 2px solid ${theme.checkDotColor};
     padding: 2px;
     border-radius: 50%;
   }
