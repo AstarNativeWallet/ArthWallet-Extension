@@ -22,7 +22,6 @@ import useIsPopup from '@polkadot/extension-koni-ui/hooks/useIsPopup';
 import useMetadata from '@polkadot/extension-koni-ui/hooks/useMetadata';
 import { showAccount, tieAccount, windowOpen } from '@polkadot/extension-koni-ui/messaging';
 import AccountMenuSettings from '@polkadot/extension-koni-ui/partials/AccountMenuSettings';
-import DetailHeader from '@polkadot/extension-koni-ui/partials/Header/DetailHeader';
 import SubHeader from '@polkadot/extension-koni-ui/partials/Header/SubHeader';
 import { RootState, store } from '@polkadot/extension-koni-ui/stores';
 import { accountAllRecoded, getGenesisOptionsByAddressType, isAccountAll } from '@polkadot/extension-koni-ui/util';
@@ -31,7 +30,8 @@ import reformatAddress from '@polkadot/extension-koni-ui/util/reformatAddress';
 import { IconTheme } from '@polkadot/react-identicon/types';
 
 import defaultAvatar from '../../assets/default-avatar.svg';
-import logo from '../../assets/sub-wallet-logo.svg';
+// import logo from '../../assets/sub-wallet-logo.svg';
+import burgerMenu from '../../assets/icon/burger-menu.svg';
 import useOutsideClick from '../../hooks/useOutsideClick';
 import { Theme } from '../../types';
 
@@ -191,13 +191,13 @@ function Header ({ changeAccountCallback, children, className = '', isBusy, isCo
     }, [currentAccount, genesisOptions]
   );
 
-  const _toggleZeroBalances = useCallback(
-    (): void => {
-      toggleZeroBalances && toggleZeroBalances();
-      setShowAccountAction(false);
-    },
-    [toggleZeroBalances]
-  );
+  // const _toggleZeroBalances = useCallback(
+  //   (): void => {
+  //     toggleZeroBalances && toggleZeroBalances();
+  //     setShowAccountAction(false);
+  //   },
+  //   [toggleZeroBalances]
+  // );
 
   const theme = (
     currentAccount?.type === 'ethereum'
@@ -270,16 +270,16 @@ function Header ({ changeAccountCallback, children, className = '', isBusy, isCo
     [currentAccount]
   );
 
-  const _toggleVisibility = useCallback(
-    () => {
-      if (currentAccount && currentAccount.isHidden) {
-        currentAccount.address && showAccount(currentAccount?.address, true).catch(console.error);
-      } else {
-        setShowModal(true);
-      }
-    },
-    [currentAccount]
-  );
+  // const _toggleVisibility = useCallback(
+  //   () => {
+  //     if (currentAccount && currentAccount.isHidden) {
+  //       currentAccount.address && showAccount(currentAccount?.address, true).catch(console.error);
+  //     } else {
+  //       setShowModal(true);
+  //     }
+  //   },
+  //   [currentAccount]
+  // );
 
   return (
     <div className={`${className} ${smallMargin ? 'smallMargin' : ''}`}>
@@ -292,8 +292,8 @@ function Header ({ changeAccountCallback, children, className = '', isBusy, isCo
               to={'/'}
             >
               <img
-                className='logo'
-                src={logo}
+                className='burgerMenu'
+                src={burgerMenu}
               />
             </Link>
           </div>
@@ -400,17 +400,6 @@ function Header ({ changeAccountCallback, children, className = '', isBusy, isCo
 
         />
         }
-        {isContainDetailHeader && currentAccount &&
-          <DetailHeader
-            currentAccount={currentAccount}
-            formatted={formattedAddress}
-            isShowZeroBalances={isShowZeroBalances}
-            popupTheme={popupTheme}
-            // eslint-disable-next-line @typescript-eslint/no-misused-promises
-            toggleVisibility={_toggleVisibility}
-            toggleZeroBalances={_toggleZeroBalances}
-          />
-        }
 
         {showSubHeader &&
           <SubHeader
@@ -463,7 +452,7 @@ export default React.memo(styled(Header)(({ theme }: Props) => `
   }
 
   .container {
-    background-color: ${theme.background};
+    background-color: ${theme.headerBackground};
     box-shadow: ${theme.headerBoxShadow};
 
     > .top-container {
@@ -482,10 +471,10 @@ export default React.memo(styled(Header)(({ theme }: Props) => `
       text-align: center;
       margin-left: 5px;
 
-      .logo {
-        height: 48px;
-        width: 48px;
-        margin-right:12px;
+      .burgerMenu {
+        height: 32px;
+        width: 32px;
+        margin-left:10px;
       }
 
       .logoText {
@@ -514,7 +503,7 @@ export default React.memo(styled(Header)(({ theme }: Props) => `
   }
 
   .identityIcon {
-    border: 2px solid ${theme.checkDotColor};
+    // border: 2px solid ${theme.checkDotColor};
   }
 
   .subheader-container {
@@ -569,7 +558,7 @@ export default React.memo(styled(Header)(({ theme }: Props) => `
   }
 
   .setting-icon-wrapper {
-    margin-left: 1rem;
+    margin-left: 3rem;
     cursor: pointer;
     height: 56px;
   }
@@ -608,6 +597,7 @@ export default React.memo(styled(Header)(({ theme }: Props) => `
     align-items: center;
     border: 2px solid ${theme.inputBorderColor};
     border-radius: 8px;
+    background-color: #fff;
     min-height: 25px;
     width: 215px;
     padding: 2px 6px;
@@ -621,7 +611,7 @@ export default React.memo(styled(Header)(({ theme }: Props) => `
       text-overflow: ellipsis;
       white-space: nowrap;
       line-height: 24px;
-      color: ${theme.textColor2};
+      color: #000000;
     }
 
     &__icon {
