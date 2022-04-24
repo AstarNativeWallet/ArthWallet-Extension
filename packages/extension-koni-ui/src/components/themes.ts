@@ -15,6 +15,7 @@ const darkTheme = {
   backButtonTextColor: '#FFFFFF',
   backDropColor: 'rgba(255, 255, 255, 0.5)',
   background: '#010414',
+  headerBackground: '#C4C4C4',
   backgroundAccountAddress: '#262C4A',
   backgroundDropdownSeclection: 'rgba(0, 7, 45, .7)',
   bodyColor: '#20222A',
