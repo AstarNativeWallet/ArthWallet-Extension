@@ -60,7 +60,7 @@ const bWindow = chrome.extension.getBackgroundPage() as BackgroundWindow;
 const { keyring } = bWindow.pdotApi;
 
 interface Props extends ThemeProps {
-  amount: BigInt;
+  amount: BN;
   className?: string;
   extrinsic: SubmittableExtrinsic<'promise'>;
   requestAddress: string;
@@ -100,7 +100,7 @@ function unlockAccount ({ isUnlockCached, signAddress, signPassword }: AddressPr
 //   { onTxFail, onTxSuccess, onTxUpdate }: TxHandler,
 //   unsubscribe: () => void): (result: TransactionReceipt) => void {
 export function handleTxResults (result: TransactionReceipt,
-  { onTxFail, onTxSuccess, onTxUpdate }: TxHandler): (result: TransactionReceipt) => void {
+  { onTxSuccess, onTxUpdate }: TxHandler): (result: TransactionReceipt) => void {
   return (result: TransactionReceipt): void => {
     // if (!result || !result.status) {
     //   return;
@@ -112,7 +112,7 @@ export function handleTxResults (result: TransactionReceipt,
 
     onTxUpdate && onTxUpdate(result);
 
-    if (result.status === true) {
+    if (onTxSuccess && result.status) {
       onTxSuccess(result, result.transactionHash);
     }
 
@@ -143,11 +143,11 @@ export function handleTxResults (result: TransactionReceipt,
   // }
 }
 
-async function evmSignAndSend (txHandler: TxHandler, fromAddress: string, password: string, address: string, amount: BigInt): Promise<void> {
+async function evmSignAndSend (txHandler: TxHandler, fromAddress: string, password: string, address: string, amount: BN): Promise<void> {
   txHandler.onTxStart && txHandler.onTxStart();
 
-  //const { onTxFail, onTxSuccess, onTxUpdate } = txHandler;
   const { onTxSuccess, onTxUpdate } = txHandler;
+  //const { onTxSuccess, onTxUpdate } = txHandler;
 
   try {
     // const fromAddress: string = pairOrAddress.toString();
@@ -174,8 +174,8 @@ async function evmSignAndSend (txHandler: TxHandler, fromAddress: string, passwo
 
     console.log('Arth gasPrice: ', gasPrice);
     // let value = new BN(1000000000);  //1000 ** 18;
-    // const value = web3Api.utils.toBN(amount * (10 ** 18)); // new BN(10000000000);  //1000 ** 18;
-    const value = amount.toString();
+    const value = amount; //web3Api.utils.toBN(amount * (10 ** 18)); // new BN(10000000000);  //1000 ** 18;
+    //const value = amount.toString();
 
     console.log('Arth BN value: ', value);
     const transactionObject = {
@@ -205,7 +205,7 @@ async function evmSignAndSend (txHandler: TxHandler, fromAddress: string, passwo
 
       const extrinsicHash: string = result.transactionHash;
   
-      if (result.status === true) {
+      if (onTxSuccess && result.status) {
         onTxSuccess(result, extrinsicHash);
       }
   

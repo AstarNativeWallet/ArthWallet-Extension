@@ -1,7 +1,5 @@
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -9,11 +7,7 @@ exports.getFreeBalance = getFreeBalance;
 exports.subscribeBalance = subscribeBalance;
 exports.subscribeEVMBalance = subscribeEVMBalance;
 
-var _ethers = require("ethers");
-
 var _rxjs = require("rxjs");
-
-var _web = _interopRequireDefault(require("web3"));
 
 var _KoniTypes = require("@polkadot/extension-base/background/KoniTypes");
 
@@ -23,7 +17,7 @@ var _registry = require("@polkadot/extension-koni-base/api/dotsama/registry");
 
 var _balance = require("@polkadot/extension-koni-base/api/web3/balance");
 
-var _web2 = require("@polkadot/extension-koni-base/api/web3/web3");
+var _web = require("@polkadot/extension-koni-base/api/web3/web3");
 
 var _handlers = require("@polkadot/extension-koni-base/background/handlers");
 
@@ -33,43 +27,10 @@ var _utils = require("@polkadot/extension-koni-base/utils/utils");
 
 var _util = require("@polkadot/util");
 
-var _utilCrypto = require("@polkadot/util-crypto");
-
 // Copyright 2019-2022 @polkadot/extension-koni-base authors & contributors
 // SPDX-License-Identifier: Apache-2.0
-// console.log('Arth TEST 123456!!!!');
-//import { AbstractInt } from '@polkadot/types-codec';
-console.log('ethereumChains: ');
-console.log(_apiHelper.ethereumChains);
-console.log('moonbeamBaseChains: ');
-console.log(_apiHelper.moonbeamBaseChains);
-
-async function getBalanceAstarEvm(networkKey) {
-  //  let address: string = '0x3908f5b9f831c1e74C0B1312D0f06126a58f4Ac0';
-  // let address: string = '0x46ebddef8cd9bb167dc30878d7113b7e168e6f06';
-  let wssURL = '';
-
-  if (networkKey === 'astarEvm') {
-    wssURL = 'wss://rpc.astar.network';
-  } else if (networkKey === 'shidenEvm') {
-    wssURL = 'wss://rpc.shiden.astar.network';
-  } else if (networkKey === 'shibuyaEvm') {
-    wssURL = 'wss://rpc.shibuya.astar.network';
-  }
-
-  const ss58Address = 'ZM24FujhBK3XaDsdkpYBf4QQAvRkoMq42aqrUQnxFo3qrAw'; // test address
-
-  const address = (0, _util.u8aToHex)((0, _utilCrypto.addressToEvm)(ss58Address));
-  const web3 = new _web.default(new _web.default.providers.WebsocketProvider(wssURL));
-  const balance = await web3.eth.getBalance(address);
-  console.log('Arth await balance: ' + networkKey + ', SS58:' + ss58Address + ' -> H160:' + address + ', ' + balance);
-  return balance;
-}
-
-getBalanceAstarEvm('astarEvm');
-getBalanceAstarEvm('shibuyaEvm'); // eslint-disable-next-line @typescript-eslint/no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 // @ts-ignore
-
 function subscribeWithDerive(addresses, networkKey, networkAPI, callback) {
   const freeMap = {};
   const reservedMap = {};
@@ -156,7 +117,7 @@ function subscribeERC20Interval(addresses, networkKey, api, originBalanceItem, c
       } = _ref4;
 
       if (erc20Address) {
-        ERC20ContractMap[symbol] = (0, _web2.getERC20Contract)(networkKey, erc20Address);
+        ERC20ContractMap[symbol] = (0, _web.getERC20Contract)(networkKey, erc20Address);
       }
     });
     getTokenBalances();
@@ -265,50 +226,11 @@ function subscribeWithAccountMulti(addresses, networkKey, networkAPI, callback) 
         miscFrozen = miscFrozen.add(((_balance$data3 = balance.data) === null || _balance$data3 === void 0 ? void 0 : (_balance$data3$miscFr = _balance$data3.miscFrozen) === null || _balance$data3$miscFr === void 0 ? void 0 : _balance$data3$miscFr.toBn()) || new _util.BN(0));
         feeFrozen = feeFrozen.add(((_balance$data4 = balance.data) === null || _balance$data4 === void 0 ? void 0 : (_balance$data4$feeFro = _balance$data4.feeFrozen) === null || _balance$data4$feeFro === void 0 ? void 0 : _balance$data4$feeFro.toBn()) || new _util.BN(0));
       });
-
-      async function getBalanceAstarEvm(networkKey) {
-        const wssURL = 'wss://rpc.astar.network';
-        const ss58Address = addresses[0]; // 'ZM24FujhBK3XaDsdkpYBf4QQAvRkoMq42aqrUQnxFo3qrAw'; // test address
-
-        const address = (0, _util.u8aToHex)((0, _utilCrypto.addressToEvm)(ss58Address));
-        const web3 = new _web.default(new _web.default.providers.WebsocketProvider(wssURL));
-        balanceItem.feeFrozen = await web3.eth.getBalance(address);
-        const deposit = await web3.eth.getBalance(address); // const evmDepositAmount = Math.ceil(balanceItem.feeFrozen / 1000000000000000000) - 1;
-
-        const displayEvmDepositAmount = Number(_ethers.ethers.utils.formatEther(deposit.toString())); // const evmDepositAmount = deposit;
-
-        const evmDepositAmount = '100000000000000000';
-        chrome.storage.local.set({
-          displayEvmDepositAmount: displayEvmDepositAmount
-        });
-        chrome.storage.local.set({
-          evmDepositAmount: evmDepositAmount
-        });
-
-        if (parseFloat(balanceItem.feeFrozen) > 0) {
-          chrome.storage.local.set({
-            isEvmDeposit: true
-          });
-        } else {
-          chrome.storage.local.set({
-            isEvmDeposit: false
-          });
-        }
-
-        console.log('Arth subscribeWithAccountMulti');
-      }
-
-      if (networkKey === 'astar') {
-        getBalanceAstarEvm('astar');
-      } else {
-        balanceItem.feeFrozen = feeFrozen.toString();
-      }
-
       balanceItem.state = _KoniTypes.APIItemState.READY;
       balanceItem.free = free.toString();
       balanceItem.reserved = reserved.toString();
-      balanceItem.miscFrozen = miscFrozen.toString(); // balanceItem.feeFrozen = feeFrozen.toString();
-
+      balanceItem.miscFrozen = miscFrozen.toString();
+      balanceItem.feeFrozen = feeFrozen.toString();
       callback(networkKey, balanceItem);
     });
   }
@@ -398,7 +320,7 @@ async function getFreeBalance(networkKey, address, token) {
 
     if (!(tokenInfo !== null && tokenInfo !== void 0 && tokenInfo.isMainToken)) {
       if (_apiHelper.moonbeamBaseChains.indexOf(networkKey) > -1 && tokenInfo !== null && tokenInfo !== void 0 && tokenInfo.erc20Address) {
-        const contract = (0, _web2.getERC20Contract)(networkKey, tokenInfo.erc20Address); // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+        const contract = (0, _web.getERC20Contract)(networkKey, tokenInfo.erc20Address); // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 
         const free = await contract.methods.balanceOf(address).call(); // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-return
 

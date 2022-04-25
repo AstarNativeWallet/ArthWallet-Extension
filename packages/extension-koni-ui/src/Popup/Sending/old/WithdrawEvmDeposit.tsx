@@ -30,7 +30,7 @@ import { ThemeProps } from '@polkadot/extension-koni-ui/types';
 import { isAccountAll } from '@polkadot/extension-koni-ui/util';
 // import { checkAddress } from '@polkadot/phishing';
 // import { AccountInfoWithProviders, AccountInfoWithRefCount } from '@polkadot/types/interfaces';
-// import { BN, BN_HUNDRED, BN_ZERO, isFunction } from '@polkadot/util';
+import { BN } from '@polkadot/util';
 import { isFunction } from '@polkadot/util';
 
 // import Available from './component/Available';
@@ -177,12 +177,8 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
 function WithdrawEvmDeposit ({ api, apiUrl, className = '', currentAccount, isEthereum, networkKey, setWrapperClass }: ContentProps): React.ReactElement {
   const { t } = useTranslation();
   
-  const propSenderId = currentAccount?.address;
-/*
-  if (typeof propSenderId !== undefined) {
-    propSenderId = currentAccount?.address;
-  }  
-*/
+  //const propSenderId = currentAccount?.address;
+  let propSenderId = currentAccount?.address;
 
   const senderId = propSenderId;
   // const [amount, setAmount] = useState<BN | undefined>(BN_ZERO);
@@ -199,7 +195,7 @@ function WithdrawEvmDeposit ({ api, apiUrl, className = '', currentAccount, isEt
   const [isShowTxModal, setShowTxModal] = useState<boolean>(false);
   const [txResult, setTxResult] = useState<TxResult>({ isShowTxResult: false, isTxSuccess: false });
   // const [h160address, setH160address] = useState<string | null>(null);
-  const [evmDepositAmount, setEvmDepositAmount] = useState<BigInt | null>(null);
+  const [evmDepositAmount, setEvmDepositAmount] = useState<BN | null>(null);
   const [displayEvmDepositAmount, setDisplayEvmDepositAmount] = useState<number | null>(null);
   const { isShowTxResult } = txResult;
 
@@ -330,9 +326,9 @@ function WithdrawEvmDeposit ({ api, apiUrl, className = '', currentAccount, isEt
           // const withdrawEvmDepositAmount = result.evmDepositAmount - (10 ** 17);
           // const web3Api = getWeb3Api(networkKey);
 
-          // const withdrawEvmDepositAmount = web3Api.utils.toBN(0.1 * (10 ** 18));
-
-          const withdrawEvmDepositAmount: BigInt = BigInt(result.evmDepositAmount);
+          //const withdrawEvmDepositAmount = web3Api.utils.toBN(0.1 * (10 ** 18));
+          //const withdrawEvmDepositAmount: BigInt = BigInt(result.evmDepositAmount);
+          const withdrawEvmDepositAmount: BN = new BN(result.evmDepositAmount);
 
           // const withdrawEvmDepositAmount: BN = 100000000000000000;
   
@@ -349,6 +345,7 @@ function WithdrawEvmDeposit ({ api, apiUrl, className = '', currentAccount, isEt
         return isFunction(api.tx.evm.withdraw) ? [h160address, evmDepositAmount] : null;
   
       }
+      return null;
 
     }, [api.tx.evm.withdraw, evmDepositAmount, propSenderId]);
 
