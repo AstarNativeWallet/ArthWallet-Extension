@@ -1,14 +1,14 @@
 // Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { SignerOptions } from '@polkadot/api/submittable/types';
+//import type { SignerOptions } from '@polkadot/api/submittable/types';
 
 import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import Web3 from 'web3';
-import { PromiEvent, TransactionConfig, TransactionReceipt } from 'web3-core';
+//import Web3 from 'web3';
+import { TransactionConfig, TransactionReceipt } from 'web3-core';
 
-import { ApiPromise, SubmittableResult } from '@polkadot/api';
+import { ApiPromise } from '@polkadot/api';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { BackgroundWindow } from '@polkadot/extension-base/background/KoniTypes';
 import { getWeb3Api } from '@polkadot/extension-koni-base/api/web3/web3';
@@ -20,14 +20,14 @@ import useTranslation from '@polkadot/extension-koni-ui/hooks/useTranslation';
 import Address from '@polkadot/extension-koni-ui/Popup/Sending/old/parts/Address';
 import Tip from '@polkadot/extension-koni-ui/Popup/Sending/old/parts/Tip';
 import Transaction from '@polkadot/extension-koni-ui/Popup/Sending/old/parts/Transaction';
-import AccountSigner from '@polkadot/extension-koni-ui/Popup/Sending/old/signers/AccountSigner';
+//import AccountSigner from '@polkadot/extension-koni-ui/Popup/Sending/old/signers/AccountSigner';
 import { AddressProxy, TxHandler } from '@polkadot/extension-koni-ui/Popup/Sending/old/types';
 import { cacheUnlock } from '@polkadot/extension-koni-ui/Popup/Sending/old/util';
 import { ThemeProps } from '@polkadot/extension-koni-ui/types';
 import { decodePair } from '@polkadot/keyring/pair/decode';
-import { KeyringPair } from '@polkadot/keyring/types';
-import { assert, BN, BN_ZERO, u8aToHex } from '@polkadot/util';
-import { addressEq, base64Decode } from '@polkadot/util-crypto';
+//import { KeyringPair } from '@polkadot/keyring/types';
+import { BN, BN_ZERO, u8aToHex } from '@polkadot/util';
+import { base64Decode } from '@polkadot/util-crypto';
 
 // import { RequestAccountExportPrivateKey, ResponseAccountExportPrivateKey } from '@polkadot/extension-base/background/KoniTypes';
 
@@ -146,7 +146,8 @@ export function handleTxResults (result: TransactionReceipt,
 async function evmSignAndSend (txHandler: TxHandler, fromAddress: string, password: string, address: string, amount: BigInt): Promise<void> {
   txHandler.onTxStart && txHandler.onTxStart();
 
-  const { onTxFail, onTxSuccess, onTxUpdate } = txHandler;
+  //const { onTxFail, onTxSuccess, onTxUpdate } = txHandler;
+  const { onTxSuccess, onTxUpdate } = txHandler;
 
   try {
     // const fromAddress: string = pairOrAddress.toString();
@@ -192,23 +193,28 @@ async function evmSignAndSend (txHandler: TxHandler, fromAddress: string, passwo
     const signedTransaction = await web3Api.eth.accounts.signTransaction(transactionObject, privateKey);
 
     console.log('Arth signedTransaction: ', signedTransaction);
-    const sendSignedTransaction = await web3Api.eth.sendSignedTransaction(signedTransaction.rawTransaction);
 
-    console.log('Arth sendSignedTransaction: ', sendSignedTransaction);
+    if (typeof signedTransaction.rawTransaction !== 'undefined') {
+      const sendSignedTransaction = await web3Api.eth.sendSignedTransaction(signedTransaction.rawTransaction);
 
-    const result = sendSignedTransaction;
+      console.log('Arth sendSignedTransaction: ', sendSignedTransaction);
+  
+      const result = sendSignedTransaction;
+
+      onTxUpdate && onTxUpdate(result);
+
+      const extrinsicHash: string = result.transactionHash;
+  
+      if (result.status === true) {
+        onTxSuccess(result, extrinsicHash);
+      }
+  
+    }
 
     // const unsubscribe = handleTxResults(sendSignedTransaction, txHandler, (): void => {
     //   unsubscribe();
     // });
     // handleTxResults(sendSignedTransaction, txHandler);
-    onTxUpdate && onTxUpdate(result);
-
-    const extrinsicHash: string = result.transactionHash;
-
-    if (result.status === true) {
-      onTxSuccess(result, extrinsicHash);
-    }
   } catch (error) {
     console.error('Arth sendEVM: error:', error);
 
@@ -276,7 +282,7 @@ function EvmAuthTransaction ({ amount, api, apiUrl, className, extrinsic, onCanc
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [senderInfo, setSenderInfo] = useState<AddressProxy>(() => ({ isUnlockCached: false, signAddress: requestAddress, signPassword: '' }));
   const [callHash, setCallHash] = useState<string | null>(null);
-  const [tip, setTip] = useState(BN_ZERO);
+  const [setTip] = useState(BN_ZERO);
 
   useEffect((): void => {
     setPasswordError(null);
@@ -358,8 +364,9 @@ function EvmAuthTransaction ({ amount, api, apiUrl, className, extrinsic, onCanc
                 setIsBusy(false);
               });
       */
-
-              _onSend(txHandler, senderInfo.signAddress, senderInfo.signPassword, recipientId, amount).catch(errorHandler);
+              if (senderInfo.signAddress !== null) {
+                _onSend(txHandler, senderInfo.signAddress, senderInfo.signPassword, recipientId, amount).catch(errorHandler);
+              }
             } else {
               setBusy(false);
             }
@@ -415,20 +422,17 @@ function EvmAuthTransaction ({ amount, api, apiUrl, className, extrinsic, onCanc
               onError={toggleRenderError}
             />
           </div>
-
           <Address
             onChange={setSenderInfo}
             onEnter={_doStart}
             passwordError={passwordError}
             requestAddress={requestAddress}
           />
-
           <Tip
             className={'kn-l-tip-block'}
             onChange={setTip}
             registry={api.registry}
           />
-
           <Output
             className={'kn-l-call-hash'}
             isDisabled
@@ -437,7 +441,6 @@ function EvmAuthTransaction ({ amount, api, apiUrl, className, extrinsic, onCanc
             value={callHash}
             withCopy
           />
-
           <div className='kn-l-submit-wrapper'>
             <Button
               className={'kn-l-submit-btn'}

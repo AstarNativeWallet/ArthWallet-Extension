@@ -1,7 +1,7 @@
 // Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
@@ -22,7 +22,7 @@ import AuthTransaction from '@polkadot/extension-koni-ui/Popup/Sending/old/AuthT
 // import InputBalance from '@polkadot/extension-koni-ui/Popup/Sending/old/component/InputBalance';
 import useApi from '@polkadot/extension-koni-ui/Popup/Sending/old/hook/useApi';
 // import { useCall } from '@polkadot/extension-koni-ui/Popup/Sending/old/hook/useCall';
-import SendFundResult from '@polkadot/extension-koni-ui/Popup/Sending/old/SendFundResult';
+//import SendFundResult from '@polkadot/extension-koni-ui/Popup/Sending/old/SendFundResult';
 import { TxResult } from '@polkadot/extension-koni-ui/Popup/Sending/old/types';
 import WithdrawEvmDepositResult from '@polkadot/extension-koni-ui/Popup/Sending/old/WithdrawEvmDepositResult';
 import { RootState } from '@polkadot/extension-koni-ui/stores';
@@ -31,7 +31,7 @@ import { isAccountAll } from '@polkadot/extension-koni-ui/util';
 // import { checkAddress } from '@polkadot/phishing';
 // import { AccountInfoWithProviders, AccountInfoWithRefCount } from '@polkadot/types/interfaces';
 // import { BN, BN_HUNDRED, BN_ZERO, isFunction } from '@polkadot/util';
-import { BN, BN_HUNDRED, BN_ZERO, isFunction } from '@polkadot/util';
+import { isFunction } from '@polkadot/util';
 
 // import Available from './component/Available';
 // import InputAddress from './component/InputAddress';
@@ -176,7 +176,14 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
 
 function WithdrawEvmDeposit ({ api, apiUrl, className = '', currentAccount, isEthereum, networkKey, setWrapperClass }: ContentProps): React.ReactElement {
   const { t } = useTranslation();
+  
   const propSenderId = currentAccount?.address;
+/*
+  if (typeof propSenderId !== undefined) {
+    propSenderId = currentAccount?.address;
+  }  
+*/
+
   const senderId = propSenderId;
   // const [amount, setAmount] = useState<BN | undefined>(BN_ZERO);
   // const [hasAvailable] = useState(true);
@@ -312,31 +319,37 @@ function WithdrawEvmDeposit ({ api, apiUrl, className = '', currentAccount, isEt
 
   const txParams: unknown[] | (() => unknown[]) | null =
     useMemo(() => {
-      const h160address = buildEvmAddress(propSenderId);
+      if (typeof propSenderId !== 'undefined') {
+        const h160address = buildEvmAddress(propSenderId);
+        console.log('h160address is: ', h160address);
 
-      console.log('h160address is: ', h160address);
+        chrome.storage.local.get(['evmDepositAmount'], function (result) {
+          if (typeof result.evmDepositAmount === 'string') {
+          // setEvmDepositAmount(result.evmDepositAmount * 1000000000000000000);
+          // const withdrawEvmDepositAmount = Math.ceil(result.evmDepositAmount / (10 ** 3));
+          // const withdrawEvmDepositAmount = result.evmDepositAmount - (10 ** 17);
+          // const web3Api = getWeb3Api(networkKey);
 
-      chrome.storage.local.get(['evmDepositAmount'], function (result) {
-        if (typeof result.evmDepositAmount === 'string') {
-        // setEvmDepositAmount(result.evmDepositAmount * 1000000000000000000);
-        // const withdrawEvmDepositAmount = Math.ceil(result.evmDepositAmount / (10 ** 3));
-        // const withdrawEvmDepositAmount = result.evmDepositAmount - (10 ** 17);
-        // const web3Api = getWeb3Api(networkKey);
-        // const withdrawEvmDepositAmount = web3Api.utils.toBN(0.1 * (10 ** 18));
+          // const withdrawEvmDepositAmount = web3Api.utils.toBN(0.1 * (10 ** 18));
+
           const withdrawEvmDepositAmount: BigInt = BigInt(result.evmDepositAmount);
+
           // const withdrawEvmDepositAmount: BN = 100000000000000000;
+  
+            setEvmDepositAmount(withdrawEvmDepositAmount);
+  
+            console.log('withdrawEvmDepositAmount is: ', withdrawEvmDepositAmount);
+            console.log('unitAmount is              : ', 1000000000000000000);
+          } else {
+            console.log('evmDepositAmount is not valid type.', result.evmDepositAmount);
+          }
+        });
+        // const evmDepositAmount = 1000000000000000;
+  
+        return isFunction(api.tx.evm.withdraw) ? [h160address, evmDepositAmount] : null;
+  
+      }
 
-          setEvmDepositAmount(withdrawEvmDepositAmount);
-
-          console.log('withdrawEvmDepositAmount is: ', withdrawEvmDepositAmount);
-          console.log('unitAmount is              : ', 1000000000000000000);
-        } else {
-          console.log('evmDepositAmount is not valid type.', result.evmDepositAmount);
-        }
-      });
-      // const evmDepositAmount = 1000000000000000;
-
-      return isFunction(api.tx.evm.withdraw) ? [h160address, evmDepositAmount] : null;
     }, [api.tx.evm.withdraw, evmDepositAmount, propSenderId]);
 
   // const tx: ((...args: any[]) => SubmittableExtrinsic<'promise'>) | null = canToggleAll && isAll && isFunction(api.tx.balances.transferAll)
@@ -455,7 +468,7 @@ function WithdrawEvmDeposit ({ api, apiUrl, className = '', currentAccount, isEt
         ? (
           <div className={'kn-l-submit-wrapper'}>
             <a>Your withdrawable EVM Deposit Amount is</a>
-            {displayEvmDepositAmount > 0
+            {displayEvmDepositAmount !== null && displayEvmDepositAmount > 0
               ? <h1>{displayEvmDepositAmount} ASTR</h1>
               : <h1>0 ASTR</h1>
             }

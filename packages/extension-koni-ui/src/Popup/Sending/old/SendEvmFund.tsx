@@ -4,9 +4,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { PromiEvent, TransactionConfig, TransactionReceipt } from 'web3-core';
+//import { PromiEvent, TransactionConfig, TransactionReceipt } from 'web3-core';
+import { TransactionReceipt } from 'web3-core';
 
-import { ApiPromise, SubmittableResult } from '@polkadot/api';
+//import { ApiPromise, SubmittableResult } from '@polkadot/api';
+import { ApiPromise } from '@polkadot/api';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { DeriveBalancesAll } from '@polkadot/api-derive/types';
 import { TransactionHistoryItemType } from '@polkadot/extension-base/background/KoniTypes';
@@ -57,7 +59,7 @@ type ExtractTxResultType = {
 }
 
 function extractTxResult (result: TransactionReceipt): ExtractTxResultType {
-  let change = '0';
+  const change = '0';
   let fee;
 
   const { events } = result;

@@ -4,8 +4,8 @@
 import { ethers } from 'ethers';
 
 // import { isValidAddressPolkadotAddress } from 'src/hooks/helper/plasmUtils';
-import { hexToU8a, isHex, isString, u8aToHex } from '@polkadot/util';
-import { addressToEvm, decodeAddress, encodeAddress, evmToAddress } from '@polkadot/util-crypto';
+import { hexToU8a, isHex, u8aToHex } from '@polkadot/util';
+import { addressToEvm, decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 // import { ASTAR_SS58_FORMAT } from 'src/hooks/helper/plasmUtils';
 
 // export const checkSumEvmAddress = (evmAddress: string): string => {

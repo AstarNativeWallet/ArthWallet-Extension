@@ -15,7 +15,7 @@ import { Contract } from 'web3-eth-contract';
 
 import { ApiPromise } from '@polkadot/api';
 import { UnsubscribePromise } from '@polkadot/api/types';
-import { DeriveBalancesAll } from '@polkadot/api-derive/types';
+//import { DeriveBalancesAll } from '@polkadot/api-derive/types';
 import { APIItemState, ApiProps, BalanceChildItem, BalanceItem, TokenBalanceRaw, TokenInfo } from '@polkadot/extension-base/background/KoniTypes';
 import { ethereumChains, moonbeamBaseChains } from '@polkadot/extension-koni-base/api/dotsama/api-helper';
 import { getRegistry, getTokenInfo } from '@polkadot/extension-koni-base/api/dotsama/registry';
@@ -62,6 +62,7 @@ console.log('moonbeamBaseChains: '); console.log(moonbeamBaseChains);
 
 console.log('Arth TEST 123456!!!!');
 
+/*
 function subscribeWithDerive (addresses: string[], networkKey: string, networkAPI: ApiProps, callback: (networkKey: string, rs: BalanceItem) => void) {
   const freeMap: Record<string, BN> = {};
   const reservedMap: Record<string, BN> = {};
@@ -96,6 +97,7 @@ function subscribeWithDerive (addresses: string[], networkKey: string, networkAP
     });
   };
 }
+*/
 
 function subscribeERC20Interval (addresses: string[], networkKey: string, api: ApiPromise, originBalanceItem: BalanceItem, callback: (networkKey: string, rs: BalanceItem) => void): () => void {
   let tokenList = {} as TokenInfo[];

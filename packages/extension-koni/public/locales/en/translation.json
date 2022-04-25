@@ -298,5 +298,11 @@
   "Connect All": "",
   "Forget All": "",
   "Forget Site": "",
-  "Choose the account(s) you’d like to connect": ""
+  "Choose the account(s) you’d like to connect": "",
+  "Withdraw EVM Deposit": "",
+  "Substrate Send": "",
+  "EVM Send": "",
+  "Send EVM fund": "",
+  "Txhash: ": "",
+  "Send fund TEST": ""
 }

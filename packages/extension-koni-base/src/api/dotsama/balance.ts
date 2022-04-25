@@ -20,9 +20,9 @@ import { dotSamaAPIMap } from '@polkadot/extension-koni-base/background/handlers
 import { ASTAR_REFRESH_BALANCE_INTERVAL, IGNORE_GET_SUBSTRATE_FEATURES_LIST, MOONBEAM_REFRESH_BALANCE_INTERVAL } from '@polkadot/extension-koni-base/constants';
 import { categoryAddresses, sumBN } from '@polkadot/extension-koni-base/utils/utils';
 import { AccountInfo } from '@polkadot/types/interfaces';
+//import { AbstractInt } from '@polkadot/types-codec';
 import { BN, u8aToHex } from '@polkadot/util';
 import { addressToEvm } from '@polkadot/util-crypto';
-import { AbstractInt } from '@polkadot/types-codec';
 
 console.log('ethereumChains: '); console.log(ethereumChains);
 console.log('moonbeamBaseChains: '); console.log(moonbeamBaseChains);

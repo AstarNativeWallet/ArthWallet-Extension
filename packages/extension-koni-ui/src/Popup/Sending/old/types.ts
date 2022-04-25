@@ -1,7 +1,8 @@
 // Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { PromiEvent, TransactionConfig, TransactionReceipt } from 'web3-core';
+//import { PromiEvent, TransactionConfig, TransactionReceipt } from 'web3-core';
+import { TransactionReceipt } from 'web3-core';
 
 import { SubmittableResult } from '@polkadot/api';
 import { SignerResult } from '@polkadot/api/types';
