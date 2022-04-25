@@ -6,7 +6,7 @@ import { WebsocketProviderOptions } from 'web3-core-helpers';
 import { Contract } from 'web3-eth-contract';
 
 import { EVM_NETWORKS } from '@polkadot/extension-koni-base/api/endpoints';
-//import { numberToHex } from '@polkadot/util';
+// import { numberToHex } from '@polkadot/util';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires,@typescript-eslint/no-unsafe-assignment
 export const ERC20Contract = require('./api-helper/ERC20Contract.json');

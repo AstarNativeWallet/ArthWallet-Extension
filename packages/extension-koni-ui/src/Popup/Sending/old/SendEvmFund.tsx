@@ -4,10 +4,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-//import { PromiEvent, TransactionConfig, TransactionReceipt } from 'web3-core';
+// import { PromiEvent, TransactionConfig, TransactionReceipt } from 'web3-core';
 import { TransactionReceipt } from 'web3-core';
 
-//import { ApiPromise, SubmittableResult } from '@polkadot/api';
+// import { ApiPromise, SubmittableResult } from '@polkadot/api';
 import { ApiPromise } from '@polkadot/api';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { DeriveBalancesAll } from '@polkadot/api-derive/types';
@@ -187,6 +187,10 @@ function SendEvmFund ({ api, apiUrl, className = '', currentAccount, isEthereum,
   const [isShowTxModal, setShowTxModal] = useState<boolean>(false);
   const [txResult, setTxResult] = useState<TxResult>({ isShowTxResult: false, isTxSuccess: false });
   const { isShowTxResult } = txResult;
+
+  useEffect((): void => {
+    console.log('amount: ', amount);
+  }, [amount]);
 
   useEffect(() => {
     const fromId = senderId as string;

@@ -1,11 +1,11 @@
 // Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-//import type { SignerOptions } from '@polkadot/api/submittable/types';
+// import type { SignerOptions } from '@polkadot/api/submittable/types';
 
 import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
-//import Web3 from 'web3';
+// import Web3 from 'web3';
 import { TransactionConfig, TransactionReceipt } from 'web3-core';
 
 import { ApiPromise } from '@polkadot/api';
@@ -18,15 +18,16 @@ import Output from '@polkadot/extension-koni-ui/components/Output';
 import { useToggle } from '@polkadot/extension-koni-ui/hooks/useToggle';
 import useTranslation from '@polkadot/extension-koni-ui/hooks/useTranslation';
 import Address from '@polkadot/extension-koni-ui/Popup/Sending/old/parts/Address';
-import Tip from '@polkadot/extension-koni-ui/Popup/Sending/old/parts/Tip';
+// import Tip from '@polkadot/extension-koni-ui/Popup/Sending/old/parts/Tip';
 import Transaction from '@polkadot/extension-koni-ui/Popup/Sending/old/parts/Transaction';
-//import AccountSigner from '@polkadot/extension-koni-ui/Popup/Sending/old/signers/AccountSigner';
+// import AccountSigner from '@polkadot/extension-koni-ui/Popup/Sending/old/signers/AccountSigner';
 import { AddressProxy, TxHandler } from '@polkadot/extension-koni-ui/Popup/Sending/old/types';
 import { cacheUnlock } from '@polkadot/extension-koni-ui/Popup/Sending/old/util';
 import { ThemeProps } from '@polkadot/extension-koni-ui/types';
 import { decodePair } from '@polkadot/keyring/pair/decode';
-//import { KeyringPair } from '@polkadot/keyring/types';
-import { BN, BN_ZERO, u8aToHex } from '@polkadot/util';
+// import { KeyringPair } from '@polkadot/keyring/types';
+// import { BN, BN_ZERO, u8aToHex } from '@polkadot/util';
+import { BN, u8aToHex } from '@polkadot/util';
 import { base64Decode } from '@polkadot/util-crypto';
 
 // import { RequestAccountExportPrivateKey, ResponseAccountExportPrivateKey } from '@polkadot/extension-base/background/KoniTypes';
@@ -147,7 +148,7 @@ async function evmSignAndSend (txHandler: TxHandler, fromAddress: string, passwo
   txHandler.onTxStart && txHandler.onTxStart();
 
   const { onTxSuccess, onTxUpdate } = txHandler;
-  //const { onTxSuccess, onTxUpdate } = txHandler;
+  // const { onTxSuccess, onTxUpdate } = txHandler;
 
   try {
     // const fromAddress: string = pairOrAddress.toString();
@@ -174,8 +175,8 @@ async function evmSignAndSend (txHandler: TxHandler, fromAddress: string, passwo
 
     console.log('Arth gasPrice: ', gasPrice);
     // let value = new BN(1000000000);  //1000 ** 18;
-    const value = amount; //web3Api.utils.toBN(amount * (10 ** 18)); // new BN(10000000000);  //1000 ** 18;
-    //const value = amount.toString();
+    const value = amount; // web3Api.utils.toBN(amount * (10 ** 18)); // new BN(10000000000);  //1000 ** 18;
+    // const value = amount.toString();
 
     console.log('Arth BN value: ', value);
     const transactionObject = {
@@ -198,17 +199,16 @@ async function evmSignAndSend (txHandler: TxHandler, fromAddress: string, passwo
       const sendSignedTransaction = await web3Api.eth.sendSignedTransaction(signedTransaction.rawTransaction);
 
       console.log('Arth sendSignedTransaction: ', sendSignedTransaction);
-  
+
       const result = sendSignedTransaction;
 
       onTxUpdate && onTxUpdate(result);
 
       const extrinsicHash: string = result.transactionHash;
-  
+
       if (onTxSuccess && result.status) {
         onTxSuccess(result, extrinsicHash);
       }
-  
     }
 
     // const unsubscribe = handleTxResults(sendSignedTransaction, txHandler, (): void => {
@@ -282,7 +282,7 @@ function EvmAuthTransaction ({ amount, api, apiUrl, className, extrinsic, onCanc
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [senderInfo, setSenderInfo] = useState<AddressProxy>(() => ({ isUnlockCached: false, signAddress: requestAddress, signPassword: '' }));
   const [callHash, setCallHash] = useState<string | null>(null);
-  const [setTip] = useState(BN_ZERO);
+  // const [setTip] = useState(BN_ZERO);
 
   useEffect((): void => {
     setPasswordError(null);
@@ -428,11 +428,11 @@ function EvmAuthTransaction ({ amount, api, apiUrl, className, extrinsic, onCanc
             passwordError={passwordError}
             requestAddress={requestAddress}
           />
-          <Tip
+          {/* <Tip
             className={'kn-l-tip-block'}
             onChange={setTip}
             registry={api.registry}
-          />
+          /> */}
           <Output
             className={'kn-l-call-hash'}
             isDisabled
