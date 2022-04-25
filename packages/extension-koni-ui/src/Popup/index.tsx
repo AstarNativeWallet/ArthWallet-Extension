@@ -17,7 +17,9 @@ import useSetupStore from '@polkadot/extension-koni-ui/hooks/store/useSetupStore
 import TransferNftContainer from '@polkadot/extension-koni-ui/Popup/Home/Nfts/transfer/TransferNftContainer';
 import ImportLedger from '@polkadot/extension-koni-ui/Popup/ImportLedger';
 import Donate from '@polkadot/extension-koni-ui/Popup/Sending/old/Donate';
+import SendEvmFundEvmToEvmDeposit from '@polkadot/extension-koni-ui/Popup/Sending/old/SendEvmFundEvmToEvmDeposit';
 import SendFund from '@polkadot/extension-koni-ui/Popup/Sending/old/SendFund';
+import SendFundNativeToEvm from '@polkadot/extension-koni-ui/Popup/Sending/old/SendFundNativeToEvm';
 import WithdrawEvmDeposit from '@polkadot/extension-koni-ui/Popup/Sending/old/WithdrawEvmDeposit';
 import Settings from '@polkadot/extension-koni-ui/Popup/Settings';
 import GeneralSetting from '@polkadot/extension-koni-ui/Popup/Settings/GeneralSetting';
@@ -234,6 +236,8 @@ export default function Popup (): React.ReactElement {
                           <Route path='/account/networks'>{wrapWithErrorBoundary(<Networks />, 'account-networks')}</Route>
                           <Route path='/account/network-edit'>{wrapWithErrorBoundary(<NetworkEdit />, 'account-network-edit')}</Route>
                           <Route path='/account/withdraw-evm-deposit'>{wrapWithErrorBoundary(<WithdrawEvmDeposit />, 'withdraw-evm-deposit')}</Route>
+                          <Route path='/account/send-evm-to-evmdeposit-fund'>{wrapWithErrorBoundary(<SendEvmFundEvmToEvmDeposit />, 'send-evm-to-evmdeposit-fund')}</Route>
+                          <Route path='/account/send-native-to-evm-fund'>{wrapWithErrorBoundary(<SendFundNativeToEvm />, 'send-native-to-evm-fund')}</Route>
                           <Route path='/account/send-fund'>{wrapWithErrorBoundary(<SendFund />, 'send-fund')}</Route>
                           <Route path='/account/send-evm-fund'>{wrapWithErrorBoundary(<SendEvmFund />, 'send-evm-fund')}</Route>
                           <Route path='/account/donate'>{wrapWithErrorBoundary(<Donate />, 'donate')}</Route>

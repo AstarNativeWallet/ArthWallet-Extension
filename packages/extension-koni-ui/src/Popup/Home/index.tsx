@@ -329,11 +329,29 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
             </div>
             <Link
               className={'action-button-wrapper'}
+              to={'/account/send-evm-to-evmdeposit-fund'}
+            >
+              <ActionButton
+                iconSrc={sendIcon}
+                tooltipContent={t<string>('EVM → EVMDeposit Send')}
+              />
+            </Link>
+            <Link
+              className={'action-button-wrapper'}
+              to={'/account/send-native-to-evm-fund'}
+            >
+              <ActionButton
+                iconSrc={sendIcon}
+                tooltipContent={t<string>('Native → EVM Send')}
+              />
+            </Link>
+            <Link
+              className={'action-button-wrapper'}
               to={'/account/send-fund'}
             >
               <ActionButton
                 iconSrc={sendIcon}
-                tooltipContent={t<string>('Substrate Send')}
+                tooltipContent={t<string>('Native → Native Send')}
               />
             </Link>
             <Link
@@ -342,7 +360,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
             >
               <ActionButton
                 iconSrc={sendIcon}
-                tooltipContent={t<string>('EVM Send')}
+                tooltipContent={t<string>('EVM → EVM Send')}
               />
             </Link>
             {/* <Link
