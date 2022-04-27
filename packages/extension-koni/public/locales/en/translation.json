@@ -304,5 +304,9 @@
   "EVM Send": "",
   "Send EVM fund": "",
   "Txhash: ": "",
-  "Send fund TEST": ""
+  "Send fund TEST": "",
+  "EVM → EVMDeposit Send": "",
+  "Native → EVM Send": "",
+  "Native → Native Send": "",
+  "EVM → EVM Send": ""
 }

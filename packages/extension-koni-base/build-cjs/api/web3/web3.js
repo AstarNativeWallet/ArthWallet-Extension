@@ -13,7 +13,7 @@ var _endpoints = require("@polkadot/extension-koni-base/api/endpoints");
 
 // Copyright 2019-2022 @polkadot/extension-koni-base authors & contributors
 // SPDX-License-Identifier: Apache-2.0
-//import { numberToHex } from '@polkadot/util';
+// import { numberToHex } from '@polkadot/util';
 // eslint-disable-next-line @typescript-eslint/no-var-requires,@typescript-eslint/no-unsafe-assignment
 const ERC20Contract = require('./api-helper/ERC20Contract.json'); // eslint-disable-next-line @typescript-eslint/no-var-requires,@typescript-eslint/no-unsafe-assignment
 

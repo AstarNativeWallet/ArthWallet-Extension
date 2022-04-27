@@ -47,7 +47,7 @@ var _utilCrypto = require("@polkadot/util-crypto");
 // Copyright 2019-2022 @polkadot/extension-koni-base authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 // console.log('Arth TEST 123456!!!!');
-//import { DeriveBalancesAll } from '@polkadot/api-derive/types';
+// import { DeriveBalancesAll } from '@polkadot/api-derive/types';
 console.log('ethereumChains: ');
 console.log(_apiHelper.ethereumChains);
 console.log('moonbeamBaseChains: ');
