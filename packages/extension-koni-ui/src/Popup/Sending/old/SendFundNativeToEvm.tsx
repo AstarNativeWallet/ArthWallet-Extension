@@ -32,6 +32,12 @@ import InputAddress from './component/InputAddress';
 import AuthTransactionNativeToEvm from './AuthTransactionNativeToEvm';
 import SendFundResultNativeToEvm from './SendFundResultNativeToEvm';
 
+//import * as polkadotCryptoUtils from "@polkadot/util-crypto";
+import { evmToAddress } from '@polkadot/util-crypto';
+//import { isConstructorDeclaration } from 'typescript';
+
+console.log('Arth SendFundNativeToEvm toId evmToAddress: ', evmToAddress('0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266', 5));
+
 interface Props extends ThemeProps {
   className?: string;
 }
@@ -158,7 +164,7 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
         showSearch
         showSettings
         showSubHeader
-        subHeaderName={t<string>('Send fund')}
+        subHeaderName={t<string>('Send fund (Native to EVM)')}
       />
       {renderContent()}
     </div>
@@ -173,7 +179,8 @@ function SendFundNativeToEvm ({ api, apiUrl, className = '', currentAccount, isE
   const [isProtected, setIsProtected] = useState(false);
   const [isAll, setIsAll] = useState(false);
   const [[maxTransfer, noFees], setMaxTransfer] = useState<[BN | null, boolean]>([null, false]);
-  const [recipientId, setRecipientId] = useState<string | null>(null);
+  const [setRecipientId] = useState<string | null>(null);
+  //const [setRecipientId] = useState<string | null>(null);
   const [senderId, setSenderId] = useState<string | null>(null);
   const [[, recipientPhish], setPhishing] = useState<[string | null, string | null]>([null, null]);
   const balances = useCall<DeriveBalancesAll>(api.derive.balances?.all, [senderId], undefined, apiUrl);
@@ -183,10 +190,29 @@ function SendFundNativeToEvm ({ api, apiUrl, className = '', currentAccount, isE
   const [txResult, setTxResult] = useState<TxResult>({ isShowTxResult: false, isTxSuccess: false });
   const { isShowTxResult } = txResult;
 
+  const recipientId = evmToAddress('0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266', 5);
+
+  //let recipientId = 'aa'; //useState<string | null>(null);
+  //if (setRecipientId) {
+  //  recipientId = evmToAddress(recipientId, 5);
+  //}
+  console.log('Arth SendFundNativeToEvm recipientId: ', recipientId);
+
   useEffect(() => {
     const fromId = senderId as string;
     const toId = recipientId as string;
+console.log('Arth SendFundNativeToEvm toId: ', toId);
+//console.log('Arth SendFundNativeToEvm toId evmToAddress: ', evmToAddress('0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266', 5));
+
+    //if (toId) {
+    //  toId = evmToAddress(toId, 5);
+    //}
+
+//console.log('Arth SendFundNativeToEvm toId evmToAddress: ', evmToAddress(toId, 5));
+
     let isSync = true;
+
+    //toId = 'aNhuaXEfaSiXJcC1YxssiHgNjCvoJbESD68KjycecaZvqpv';  //evmToAddress(toId, 5);
 
     // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -375,7 +401,7 @@ function SendFundNativeToEvm ({ api, apiUrl, className = '', currentAccount, isE
             autoPrefill={false}
             className={'kn-field -field-2'}
             help={t<string>('Select a contact or paste the address you want to send funds to.')}
-            isEthereum={isEthereum}
+            isEthereum={true}
             label={t<string>('Send to address')}
             // isDisabled={!!propRecipientId}
             labelExtra={

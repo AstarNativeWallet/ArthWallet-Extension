@@ -19010,6 +19010,7 @@ __metadata:
   dependencies:
     "@babel/core": ^7.16.7
     "@polkadot/dev": ^0.66.3
+    "@polkadot/util-crypto": ^9.0.1
     "@types/jest": ^27.4.0
     "@types/node": ^17.0.10
     apollo: ^2.33.9

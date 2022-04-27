@@ -163,7 +163,7 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
         showSearch
         showSettings
         showSubHeader
-        subHeaderName={t<string>('Send EVM fund')}
+        subHeaderName={t<string>('Send fund (EVM to EVM)')}
       />
       {renderContent()}
     </div>

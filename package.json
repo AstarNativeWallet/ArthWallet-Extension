@@ -38,6 +38,7 @@
     "watch": "cd packages/extension-koni && yarn polkadot-exec-webpack --config webpack.watch.cjs --mode development --watch"
   },
   "dependencies": {
+    "@polkadot/util-crypto": "^9.0.1",
     "@types/node": "^17.0.10",
     "apollo": "^2.33.9",
     "ethers": "^5.6.4",

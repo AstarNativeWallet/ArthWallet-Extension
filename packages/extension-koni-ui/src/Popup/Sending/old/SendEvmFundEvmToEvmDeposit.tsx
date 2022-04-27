@@ -163,7 +163,7 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
         showSearch
         showSettings
         showSubHeader
-        subHeaderName={t<string>('Send EVM fund')}
+        subHeaderName={t<string>('Send fund (EVM to Deposit)')}
       />
       {renderContent()}
     </div>
@@ -384,7 +384,7 @@ function SendEvmFundEvmToEvmDeposit ({ api, apiUrl, className = '', currentAccou
             autoPrefill={false}
             className={'kn-field -field-2'}
             help={t<string>('Select a contact or paste the address you want to send funds to.')}
-            isEthereum={isEthereum}
+            isEthereum={false}
             label={t<string>('Send to address')}
             // isDisabled={!!propRecipientId}
             labelExtra={

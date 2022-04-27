@@ -29,10 +29,9 @@ import { decodePair } from '@polkadot/keyring/pair/decode';
 // import { BN, BN_ZERO, u8aToHex } from '@polkadot/util';
 import { BN, u8aToHex } from '@polkadot/util';
 import { base64Decode } from '@polkadot/util-crypto';
+import { addressToEvm } from '@polkadot/util-crypto';
 
 // import { RequestAccountExportPrivateKey, ResponseAccountExportPrivateKey } from '@polkadot/extension-base/background/KoniTypes';
-
-// import { addressToEvm } from '@polkadot/util-crypto';
 
 /*
 import { exportAccountPrivateKey } from '../../messaging';
@@ -153,13 +152,15 @@ async function evmSignAndSend (txHandler: TxHandler, fromAddress: string, passwo
   try {
     // const fromAddress: string = pairOrAddress.toString();
 
+    const toAddress: string = u8aToHex(addressToEvm(address));
+
     console.log('Arth Call sendEvm');
     keyring.getPair(fromAddress);
 
     const accounts = keyring.getAccounts();
 
-    accounts.forEach(({ address, meta, publicKey }) =>
-      console.log('Arth address: ', address, JSON.stringify(meta), u8aToHex(publicKey))
+    accounts.forEach(({ toAddress, meta, publicKey }) =>
+      console.log('Arth toAddress: ', toAddress, JSON.stringify(meta), u8aToHex(publicKey))
     );
 
     const exportedJson = keyring.backupAccount(keyring.getPair(fromAddress), password);
@@ -181,7 +182,7 @@ async function evmSignAndSend (txHandler: TxHandler, fromAddress: string, passwo
     console.log('Arth BN value: ', value);
     const transactionObject = {
       gasPrice: gasPrice,
-      to: address,
+      to: toAddress,
       value: value
     } as TransactionConfig;
     const gasLimit = await web3Api.eth.estimateGas(transactionObject);
