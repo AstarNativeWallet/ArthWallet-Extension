@@ -353,6 +353,19 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
       {/* eslint-disable-next-line multiline-ternary */}
       {!isShowTxResult ? (
         <div className={`${className} -main-content`}>
+          
+          <div className = {'transferable-container'}>
+              <div >
+                <p className = {'transfer-total'}>Transferable Total</p>
+                <div className='transferable-amount'>
+                <Available
+                  api={api}
+                  apiUrl={apiUrl}
+                  params={senderId}
+                />
+                </div>
+              </div>
+            </div>
           <InputAddress
             className={'kn-field -field-1'}
             defaultValue={propSenderId}
@@ -542,6 +555,46 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
       display: none;
     }
   }
+
+
+  .transferable-container {
+    margin 20px auto;
+    width: 328px;
+    height: 104px;
+    background: rgba(79, 88, 128, 1);
+    border-radius: 8px;
+  }
+  .transfer-total {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 100%;
+    
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.05em;
+    
+    color: #F0F0F0;
+  }
+  .transferable-amount {
+
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 100%;
+    /* identical to box height, or 24px */
+
+    text-align : center;
+    letter-spacing: 0.05em;
+    
+    color: #F0F0F0;
+    
+  }
+
+
+
 
   .send-fund-container {
     padding-left: 15px;
