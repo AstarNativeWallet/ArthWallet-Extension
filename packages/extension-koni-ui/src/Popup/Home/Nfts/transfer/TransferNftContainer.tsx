@@ -218,7 +218,7 @@ function TransferNftContainer ({ api, className, collectionId, collectionImage, 
             autoPrefill={false}
             className={'kn-field -field-2'}
             help={'Select a contact or paste the address you want to send nft to.'}
-            isEtherium={isEthereumAddress()}
+            isEthereum={isEthereumAddress()}
             // isDisabled={!!propRecipientId}
             label={'Send to address'}
             onChange={setRecipientAddress}
