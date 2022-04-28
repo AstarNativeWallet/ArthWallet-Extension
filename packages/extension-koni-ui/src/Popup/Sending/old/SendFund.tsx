@@ -34,8 +34,8 @@ import InputAddress from './component/InputAddress';
 
 interface Props extends ThemeProps {
   className?: string;
+  help?: React.ReactNode;
 }
-
 interface ContentProps extends ThemeProps {
   className?: string;
   setWrapperClass: (classname: string) => void;
@@ -368,34 +368,49 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
                 />
                 </div>
               </div>
-            </div>
-            
-          <InputAddress
-            className={'kn-field -field-1'}
-            defaultValue={propSenderId}
-            help={t<string>('The account you will send funds from.')}
-            isEtherium={isEthereum}
-            // isDisabled={!!propSenderId}
-            label={t<string>('Send from account')}
-            labelExtra={
-              <Available
-                api={api}
-                apiUrl={apiUrl}
-                label={t<string>('Transferable')}
-                params={senderId}
-              />
-            }
-            onChange={setSenderId}
-            type='account'
-            withEllipsis
-          />
+          </div>
+          
+          <div>
+            <span className='address-text'>
+          {t<string>('Send from account')}
+          </span>
+            <InputAddress
+              className={'kn-field -field-1'}
+              defaultValue={propSenderId}
+              //help={t<string>('The account you will send funds from.')}
+              isEtherium={isEthereum}
+              // isDisabled={!!propSenderId}
+              
+              //label={t<string>('Send from account')}
+              /*
+              labelExtra={
+                <Available
+                  api={api}
+                  apiUrl={apiUrl}
+                  label={t<string>('Transferable')}
+                  params={senderId}
+                />
+              }*/
+              
+              onChange={setSenderId}
+              type='account'
+              withEllipsis
+            />
+          </div>
+          <div>
+            <span className='address-text'>
+          {t<string>('Send to address')}
+          </span>
           <InputAddress
             autoPrefill={false}
             className={'kn-field -field-2'}
-            help={t<string>('Select a contact or paste the address you want to send funds to.')}
+            //help={t<string>('Select a contact or paste the address you want to send funds to.')}
             isEtherium={isEthereum}
-            label={t<string>('Send to address')}
+            //label={t<string>('Send to address')}
+            
             // isDisabled={!!propRecipientId}
+            
+            /*
             labelExtra={
               <Available
                 api={api}
@@ -404,10 +419,13 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
                 params={recipientId}
               />
             }
+            */
+
             onChange={setRecipientId}
             type='allPlus'
             withEllipsis
           />
+          </div>
           {recipientPhish && (
             <Warning
               className={'kn-l-warning'}
@@ -565,17 +583,27 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
       display: none;
     }
   }
-
-
+  .address-text {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 100%;
+    letter-spacing: 0.03em;
+    color: #FFFFF;
+    }
 
   .transferable-container {
-    margin 20px auto;
+    margin 21px auto 16px;
     width: 328px;
     height: 104px;
     background: rgba(79, 88, 128, 1);
     border-radius: 8px;
   }
   .transfer-total {
+    position: relative;
+    top: 28px;
+
     font-family: 'Roboto';
     font-style: normal;
     font-weight: 400;
@@ -589,6 +617,9 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
     color: #F0F0F0;
   }
   .transferable-amount {
+    position: relative;
+    bottom: -20px;
+
 
     font-family: 'Roboto';
     font-style: normal;
@@ -611,7 +642,7 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
     padding-right: 15px;
     padding-bottom: 15px;
     flex: 1;
-    padding-top: 25px;
+    padding-top: 13px;
     overflow-y: auto;
 
     // &::-webkit-scrollbar {
@@ -697,7 +728,7 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
     font-size: 24px;
     line-height: 100%;
     /* identical to box height, or 24px */
-    
+
     text-align: center;
     letter-spacing: 0.05em;
     

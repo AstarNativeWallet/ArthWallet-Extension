@@ -288,15 +288,16 @@ class InputAddress extends React.PureComponent<Props, State> {
 
 const ExportedComponent = withMulti(
   styled(InputAddress)(({ theme }: ThemeProps) => `
-  padding-top: 9px;
+  
   padding-left: 60px;
   padding-right: 10px;
   display: flex;
   align-items: flex-start;
-  background: ${theme.background};
+  background: rgba(40, 42, 55, 1);
+
   position: relative;
-  border: 2px solid ${theme.borderColor2};
-  height: 72px;
+  border: 1px solid rgba(79, 88, 127, 1);
+  height: 60px;
   z-index: 3;
   border-radius: 8px;
 
@@ -342,7 +343,7 @@ const ExportedComponent = withMulti(
 
   .ui--AddressSearch > input,
   .text > .ui--KeyPair {
-    padding: 28px 10px 10px 60px;
+    padding: 0px 49px 0px 88px;
   }
 
   .ui--AddressSearch > input {
@@ -382,13 +383,14 @@ const ExportedComponent = withMulti(
 
     &:before {
       content: '';
-      height: 42px;
-      width: 42px;
+      height: 36px;
+      width: 36px;
       display: block;
       position: absolute;
       z-index: -1;
-      top: 10px;
-      left: 10px;
+      top: 12px;
+      bottom: 12px;
+      left: 24px;
       border-radius: 100%;
       background: ${theme.backgroundAccountAddress};
     }
@@ -399,7 +401,6 @@ const ExportedComponent = withMulti(
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      padding-right: 16px;
     }
   }
 
@@ -413,10 +414,10 @@ const ExportedComponent = withMulti(
 
     .ui--KeyPair-icon {
       position: absolute;
-      width: 42px;
-      height: 42px;
-      left: 10px;
-      top: 10px;
+      width: 36px;
+      height: 36px;
+      left: 24px;
+      top: 12px;
     }
 
     .name, .address {
@@ -424,17 +425,31 @@ const ExportedComponent = withMulti(
     }
 
     .name {
-      flex: 1;
+      position: absolute;
+      top :8px;
+
+      font-family: 'Roboto';
+      font-style: normal;
+      font-weight: 700;
       font-size: 16px;
-      color: ${theme.textColor};
-      font-weight: 500;
+      line-height: 100%;
     }
 
     .address {
-      font-size: 14px;
-      line-height: 24px;
-      color: ${theme.textColor2};
-      font-weight: 400
+      position: absolute;
+      bottom: 8px;
+      margin-top:4px;
+      font-family: 'Roboto';
+      font-style: normal;
+      font-weight: 700;
+      font-size: 12px;
+      line-height: 100%;
+      /* identical to box height, or 12px */
+      
+      display: flex;
+      align-items: center;
+      
+      color: #FFFFFF;
     }
   }
 
