@@ -30,7 +30,9 @@ import { AccountInfoWithProviders, AccountInfoWithRefCount } from '@polkadot/typ
 import { BN, BN_HUNDRED, BN_ZERO, isFunction } from '@polkadot/util';
 
 import Available from './component/Available';
-import InputAddress from './component/InputAddress';
+import InputAddressNew from './component/InputAddressNew';
+import LabelHelp from './component/LabelHelp';
+
 
 interface Props extends ThemeProps {
   className?: string;
@@ -371,10 +373,14 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
           </div>
           
           <div>
-            <span className='address-text'>
+            <a className='address-text'>
           {t<string>('Send from account')}
-          </span>
-            <InputAddress
+          </a>
+          <LabelHelp
+            help= {t<string>('The account you will send funds from.')}
+            className = 'send-help'
+          />
+            <InputAddressNew
               className={'kn-field -field-1'}
               defaultValue={propSenderId}
               //help={t<string>('The account you will send funds from.')}
@@ -398,10 +404,14 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
             />
           </div>
           <div>
-            <span className='address-text'>
-          {t<string>('Send to address')}
-          </span>
-          <InputAddress
+            <a className='address-text'>
+              {t<string>('Send to address')}
+            </a>
+            <LabelHelp
+            help= {t<string>('Select a contact or paste the address you want to send funds to.')}
+            className = 'send-help'
+          />
+          <InputAddressNew
             autoPrefill={false}
             className={'kn-field -field-2'}
             //help={t<string>('Select a contact or paste the address you want to send funds to.')}
@@ -583,6 +593,11 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
       display: none;
     }
   }
+  .send-help {
+    color: #FDFDFD;
+    opacity: 0.5;
+  }
+
   .address-text {
     font-family: 'Roboto';
     font-style: normal;
@@ -697,7 +712,7 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
     z-index:10;
     position: sticky;
     bottom: -15px;
-    padding: 15px;
+    padding: 15px 0px;
     margin-left: -15px;
     margin-bottom: -15px;
     margin-right: -15px;
@@ -705,19 +720,17 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
   }
   .kn-submit-btn {
     display: inline-block;
-    margin-right: 44px;
     height: 48px;
-    width: 207px;
-    margin: 
+    width: 256px;
     border-radius: 6px;
     
   }
     .cancel-btn {
       display: inline-block;
-      margin-right: 20px;
-      margin-left: 44px;
+      margin-right: 28px;
+      margin-left: 15px;
       height: 48px;
-      width: 101px;
+      width: 144px;
       background: rgba(48, 59, 87, 1);
       border-radius: 6px;
   }
