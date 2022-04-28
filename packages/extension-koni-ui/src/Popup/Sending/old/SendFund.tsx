@@ -154,11 +154,11 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
     <div className={`-wrapper ${className} ${wrapperClass}`}>
       <Header
         showAdd
-        showCancelButton
+        //showCancelButton
         showSearch
         showSettings
-        showSubHeader
-        subHeaderName={t<string>('Send fund')}
+        //showSubHeader
+        //subHeaderName={t<string>('Send fund')}
       />
 
       {renderContent()}
@@ -353,7 +353,10 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
       {/* eslint-disable-next-line multiline-ternary */}
       {!isShowTxResult ? (
         <div className={`${className} -main-content`}>
-          Send fund
+          <div className='subtitle-transfer'>
+            {t<string>('Transfer')}
+          </div>
+          
           <div className = {'transferable-container'}>
               <div >
                 <p className = {'transfer-total'}>Transferable Total</p>
@@ -505,7 +508,7 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
           <div className={'kn-l-submit-wrapper'}>              
             <Button
               className={'cancel-btn'}
-              onClick={_onCancelTx}
+              to='/'
             >
               {t<string>('cancel')}
             </Button>
@@ -514,7 +517,7 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
               isDisabled={isSameAddress || !hasAvailable || !(recipientId) || (!amount && !isAll) || amountGtAvailableBalance || !!recipientPhish}
               onClick={_onSend}
             >
-              {t<string>('Make Transfer')}
+              {t<string>('Confirm')}
             </Button>
           </div>
         </div>
@@ -660,6 +663,7 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
   }
 
   .kn-l-submit-wrapper {
+    z-index:10;
     position: sticky;
     bottom: -15px;
     padding: 15px;
@@ -686,5 +690,18 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
       background: rgba(48, 59, 87, 1);
       border-radius: 6px;
   }
-  
+  .subtitle-transfer {
+    font-family: 'Roboto';
+    font-style: bold;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 100%;
+    /* identical to box height, or 24px */
+    
+    text-align: center;
+    letter-spacing: 0.05em;
+    
+    color: #FFFFFF;
+      }
+
 `));
