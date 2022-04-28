@@ -353,7 +353,7 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
       {/* eslint-disable-next-line multiline-ternary */}
       {!isShowTxResult ? (
         <div className={`${className} -main-content`}>
-          
+          Send fund
           <div className = {'transferable-container'}>
               <div >
                 <p className = {'transfer-total'}>Transferable Total</p>
@@ -366,6 +366,7 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
                 </div>
               </div>
             </div>
+            
           <InputAddress
             className={'kn-field -field-1'}
             defaultValue={propSenderId}
@@ -501,7 +502,13 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
             </Warning>
           )}
 
-          <div className={'kn-l-submit-wrapper'}>
+          <div className={'kn-l-submit-wrapper'}>              
+            <Button
+              className={'cancel-btn'}
+              onClick={_onCancelTx}
+            >
+              {t<string>('cancel')}
+            </Button>
             <Button
               className={'kn-submit-btn'}
               isDisabled={isSameAddress || !hasAvailable || !(recipientId) || (!amount && !isAll) || amountGtAvailableBalance || !!recipientPhish}
@@ -557,6 +564,7 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
   }
 
 
+
   .transferable-container {
     margin 20px auto;
     width: 328px;
@@ -592,7 +600,6 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
     color: #F0F0F0;
     
   }
-
 
 
 
@@ -661,4 +668,23 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
     margin-right: -15px;
     background-color: ${theme.background};
   }
+  .kn-submit-btn {
+    display: inline-block;
+    margin-right: 44px;
+    height: 48px;
+    width: 207px;
+    margin: 
+    border-radius: 6px;
+    
+  }
+    .cancel-btn {
+      display: inline-block;
+      margin-right: 20px;
+      margin-left: 44px;
+      height: 48px;
+      width: 101px;
+      background: rgba(48, 59, 87, 1);
+      border-radius: 6px;
+  }
+  
 `));
