@@ -26,16 +26,13 @@ import { isAccountAll } from '@polkadot/extension-koni-ui/util';
 import { checkAddress } from '@polkadot/phishing';
 import { AccountInfoWithProviders, AccountInfoWithRefCount } from '@polkadot/types/interfaces';
 import { BN, BN_HUNDRED, BN_ZERO, isFunction } from '@polkadot/util';
-// import * as polkadotCryptoUtils from "@polkadot/util-crypto";
-import { evmToAddress } from '@polkadot/util-crypto';
 
+// import * as polkadotCryptoUtils from "@polkadot/util-crypto";
 import Available from './component/Available';
 import InputAddress from './component/InputAddress';
 import AuthTransactionNativeToEvm from './AuthTransactionNativeToEvm';
 import SendFundResultNativeToEvm from './SendFundResultNativeToEvm';
 // import { isConstructorDeclaration } from 'typescript';
-
-console.log('Arth SendFundNativeToEvm toId evmToAddress: ', evmToAddress('0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266', 5));
 
 interface Props extends ThemeProps {
   className?: string;
