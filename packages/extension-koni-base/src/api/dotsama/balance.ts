@@ -311,32 +311,42 @@ function subscribeWithAccountMulti (addresses: string[], networkKey: string, net
 }
 
 export function subscribeEVMBalance (networkKey: string, api: ApiPromise, addresses: string[], callback: (networkKey: string, rs: BalanceItem) => void) {
-  const balanceItem = {
-    state: APIItemState.PENDING,
-    free: '0',
-    reserved: '0',
-    miscFrozen: '0',
-    feeFrozen: '0'
-  } as BalanceItem;
+  chrome.storage.local.get(['balanceItemEVM'], function (result) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const balanceItemEVM: BalanceItem = result.balanceItemEVM
+      ? result.balanceItemEVM
+      : {
+        state: APIItemState.PENDING,
+        free: '0',
+        reserved: '0',
+        miscFrozen: '0',
+        feeFrozen: '0'
+      } as BalanceItem;
 
-  function getBalance () {
-    getEVMBalance(networkKey, addresses)
-      .then((balances) => {
-        balanceItem.free = sumBN(balances.map((b) => (new BN(b || '0')))).toString();
-        balanceItem.state = APIItemState.READY;
-        callback(networkKey, balanceItem);
-      })
-      .catch(console.error);
-  }
+    function getBalance () {
+      getEVMBalance(networkKey, addresses)
+        .then((balances) => {
+          balanceItemEVM.free = sumBN(balances.map((b) => (new BN(b || '0')))).toString();
+          balanceItemEVM.state = APIItemState.READY;
+          callback(networkKey, balanceItemEVM);
+        })
+        .catch(console.error);
+    }
 
-  getBalance();
-  const interval = setInterval(getBalance, ASTAR_REFRESH_BALANCE_INTERVAL);
-  const unsub2 = subscribeERC20Interval(addresses, networkKey, api, balanceItem, callback);
+    getBalance();
+    const interval = setInterval(getBalance, ASTAR_REFRESH_BALANCE_INTERVAL);
+    const unsub2 = subscribeERC20Interval(addresses, networkKey, api, balanceItemEVM, callback);
 
-  return () => {
-    clearInterval(interval);
-    unsub2 && unsub2();
-  };
+    console.log(balanceItemEVM);
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    chrome.storage.local.set({ balanceItemEVM: balanceItemEVM });
+
+    return () => {
+      clearInterval(interval);
+      unsub2 && unsub2();
+    };
+  });
 }
 
 export function subscribeBalance (addresses: string[], dotSamaAPIMap: Record<string, ApiProps>, callback: (networkKey: string, rs: BalanceItem) => void) {
