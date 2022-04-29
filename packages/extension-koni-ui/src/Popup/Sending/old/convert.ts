@@ -1,35 +1,40 @@
 // [object Object]
 // SPDX-License-Identifier: Apache-2.0
 
+// eslint-disable-next-line header/header
 import { ethers } from 'ethers';
 
-// import { isValidAddressPolkadotAddress } from 'src/hooks/helper/plasmUtils';
 import { hexToU8a, isHex, u8aToHex } from '@polkadot/util';
-import { addressToEvm, decodeAddress, encodeAddress } from '@polkadot/util-crypto';
-// import { ASTAR_SS58_FORMAT } from 'src/hooks/helper/plasmUtils';
+import { addressToEvm, decodeAddress, encodeAddress, evmToAddress } from '@polkadot/util-crypto';
 
-// export const checkSumEvmAddress = (evmAddress: string): string => {
-//   return ethers.utils.getAddress(evmAddress);
-// };
+const ASTAR_SS58_FORMAT = 5;
 
-// export const isValidEvmAddress = (evmAddress: string): boolean => {
-//   if (!evmAddress) return false;
+const checkSumEvmAddress = (evmAddress: string): string => {
+  return ethers.utils.getAddress(evmAddress);
+};
 
-//   // Memo: returns `false` if evmAddress was converted from SS58
-//   try {
-//     ethers.utils.getAddress(evmAddress);
-//   } catch (e) {
-//     return false;
-//   }
+export const isValidEvmAddress = (evmAddress: string): boolean => {
+  if (!evmAddress) {
+    return false;
+  }
 
-//   const ss58Address = toSS58Address(evmAddress);
-//   return ss58Address.length > 0;
-// };
+  // Memo: returns `false` if evmAddress was converted from SS58
+  try {
+    ethers.utils.getAddress(evmAddress);
+  } catch (e) {
+    return false;
+  }
 
-// export const toSS58Address = (h160Address: string) => {
-//   const address = checkSumEvmAddress(h160Address);
-//   return evmToAddress(address, ASTAR_SS58_FORMAT);
-// };
+  const ss58Address = toSS58Address(evmAddress);
+
+  return ss58Address.length > 0;
+};
+
+export const toSS58Address = (h160Address: string) => {
+  const address = checkSumEvmAddress(h160Address);
+
+  return evmToAddress(address, ASTAR_SS58_FORMAT);
+};
 
 // Memo: The EVM address won't be same as the address shown in MetaMask imported from the same private key of the SS58
 // Ref: https://github.com/polkadot-js/common/issues/931

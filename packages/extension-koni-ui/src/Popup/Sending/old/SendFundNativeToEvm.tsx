@@ -27,12 +27,11 @@ import { checkAddress } from '@polkadot/phishing';
 import { AccountInfoWithProviders, AccountInfoWithRefCount } from '@polkadot/types/interfaces';
 import { BN, BN_HUNDRED, BN_ZERO, isFunction } from '@polkadot/util';
 
-// import * as polkadotCryptoUtils from "@polkadot/util-crypto";
 import Available from './component/Available';
 import InputAddress from './component/InputAddress';
 import AuthTransactionNativeToEvm from './AuthTransactionNativeToEvm';
+import { toSS58Address } from './convert';
 import SendFundResultNativeToEvm from './SendFundResultNativeToEvm';
-// import { isConstructorDeclaration } from 'typescript';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -189,8 +188,6 @@ function SendFundNativeToEvm ({ api, apiUrl, className = '', currentAccount, isE
     const fromId = senderId as string;
     const toId = recipientId;
 
-    console.log('Arth SendFundNativeToEvm toId: ', toId);
-
     let isSync = true;
 
     // @ts-ignore
@@ -244,11 +241,21 @@ function SendFundNativeToEvm ({ api, apiUrl, className = '', currentAccount, isE
 
   const txParams: unknown[] | (() => unknown[]) | null =
     useMemo(() => {
+      let toId = recipientId;
+
+      console.log('toId.length: ', toId?.length);
+
+      if (toId?.length === 42) {
+        toId = toSS58Address(toId);
+      }
+
+      console.log('Arth SendFundNativeToEvm toId: ', toId);
+
       return canToggleAll && isAll
         ? isFunction(api.tx.balances.transferAll)
-          ? [recipientId, false]
-          : [recipientId, maxTransfer]
-        : [recipientId, amount];
+          ? [toId, false]
+          : [toId, maxTransfer]
+        : [toId, amount];
     }, [amount, api.tx.balances.transferAll, canToggleAll, isAll, maxTransfer, recipientId]);
 
   const tx: ((...args: any[]) => SubmittableExtrinsic<'promise'>) | null = canToggleAll && isAll && isFunction(api.tx.balances.transferAll)
