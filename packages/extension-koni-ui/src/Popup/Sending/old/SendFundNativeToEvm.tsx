@@ -26,15 +26,14 @@ import { isAccountAll } from '@polkadot/extension-koni-ui/util';
 import { checkAddress } from '@polkadot/phishing';
 import { AccountInfoWithProviders, AccountInfoWithRefCount } from '@polkadot/types/interfaces';
 import { BN, BN_HUNDRED, BN_ZERO, isFunction } from '@polkadot/util';
+// import * as polkadotCryptoUtils from "@polkadot/util-crypto";
+import { evmToAddress } from '@polkadot/util-crypto';
 
 import Available from './component/Available';
 import InputAddress from './component/InputAddress';
 import AuthTransactionNativeToEvm from './AuthTransactionNativeToEvm';
 import SendFundResultNativeToEvm from './SendFundResultNativeToEvm';
-
-//import * as polkadotCryptoUtils from "@polkadot/util-crypto";
-import { evmToAddress } from '@polkadot/util-crypto';
-//import { isConstructorDeclaration } from 'typescript';
+// import { isConstructorDeclaration } from 'typescript';
 
 console.log('Arth SendFundNativeToEvm toId evmToAddress: ', evmToAddress('0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266', 5));
 
@@ -179,8 +178,7 @@ function SendFundNativeToEvm ({ api, apiUrl, className = '', currentAccount, isE
   const [isProtected, setIsProtected] = useState(false);
   const [isAll, setIsAll] = useState(false);
   const [[maxTransfer, noFees], setMaxTransfer] = useState<[BN | null, boolean]>([null, false]);
-  const [setRecipientId] = useState<string | null>(null);
-  //const [setRecipientId] = useState<string | null>(null);
+  const [recipientId, setRecipientId] = useState<string | null>(null);
   const [senderId, setSenderId] = useState<string | null>(null);
   const [[, recipientPhish], setPhishing] = useState<[string | null, string | null]>([null, null]);
   const balances = useCall<DeriveBalancesAll>(api.derive.balances?.all, [senderId], undefined, apiUrl);
@@ -190,29 +188,13 @@ function SendFundNativeToEvm ({ api, apiUrl, className = '', currentAccount, isE
   const [txResult, setTxResult] = useState<TxResult>({ isShowTxResult: false, isTxSuccess: false });
   const { isShowTxResult } = txResult;
 
-  const recipientId = evmToAddress('0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266', 5);
-
-  //let recipientId = 'aa'; //useState<string | null>(null);
-  //if (setRecipientId) {
-  //  recipientId = evmToAddress(recipientId, 5);
-  //}
-  console.log('Arth SendFundNativeToEvm recipientId: ', recipientId);
-
   useEffect(() => {
     const fromId = senderId as string;
-    const toId = recipientId as string;
-console.log('Arth SendFundNativeToEvm toId: ', toId);
-//console.log('Arth SendFundNativeToEvm toId evmToAddress: ', evmToAddress('0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266', 5));
+    const toId = recipientId;
 
-    //if (toId) {
-    //  toId = evmToAddress(toId, 5);
-    //}
-
-//console.log('Arth SendFundNativeToEvm toId evmToAddress: ', evmToAddress(toId, 5));
+    console.log('Arth SendFundNativeToEvm toId: ', toId);
 
     let isSync = true;
-
-    //toId = 'aNhuaXEfaSiXJcC1YxssiHgNjCvoJbESD68KjycecaZvqpv';  //evmToAddress(toId, 5);
 
     // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access

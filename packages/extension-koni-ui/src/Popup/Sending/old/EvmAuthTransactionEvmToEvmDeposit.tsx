@@ -28,8 +28,7 @@ import { decodePair } from '@polkadot/keyring/pair/decode';
 // import { KeyringPair } from '@polkadot/keyring/types';
 // import { BN, BN_ZERO, u8aToHex } from '@polkadot/util';
 import { BN, u8aToHex } from '@polkadot/util';
-import { base64Decode } from '@polkadot/util-crypto';
-import { addressToEvm } from '@polkadot/util-crypto';
+import { addressToEvm, base64Decode } from '@polkadot/util-crypto';
 
 // import { RequestAccountExportPrivateKey, ResponseAccountExportPrivateKey } from '@polkadot/extension-base/background/KoniTypes';
 
@@ -159,7 +158,7 @@ async function evmSignAndSend (txHandler: TxHandler, fromAddress: string, passwo
 
     const accounts = keyring.getAccounts();
 
-    accounts.forEach(({ toAddress, meta, publicKey }) =>
+    accounts.forEach(({ meta, publicKey, toAddress }) =>
       console.log('Arth toAddress: ', toAddress, JSON.stringify(meta), u8aToHex(publicKey))
     );
 
