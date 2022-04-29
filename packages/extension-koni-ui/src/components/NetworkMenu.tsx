@@ -40,7 +40,7 @@ function NetworkMenu ({ className, currentNetwork, genesisOptions, isNotHaveAcco
     //   text: 'Relaychains',
     //   type: 'RELAY_CHAIN'
     // },
-    
+
     {
       text: 'Astar',
       type: 'ASTAR_MAINNET'
@@ -53,10 +53,10 @@ function NetworkMenu ({ className, currentNetwork, genesisOptions, isNotHaveAcco
       text: 'Kusama',
       type: 'KUSAMA_PARACHAIN'
     },
-    //{
+    // {
     //  text: 'Mainnets',
     //  type: 'MAIN_NET'
-    //},
+    // },
     {
       text: 'Testnets',
       type: 'TEST_NET'

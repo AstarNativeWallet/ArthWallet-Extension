@@ -33,7 +33,6 @@ import Available from './component/Available';
 import InputAddressNew from './component/InputAddressNew';
 import LabelHelp from './component/LabelHelp';
 
-
 interface Props extends ThemeProps {
   className?: string;
   help?: React.ReactNode;
@@ -156,11 +155,11 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
     <div className={`-wrapper ${className} ${wrapperClass}`}>
       <Header
         showAdd
-        //showCancelButton
+        // showCancelButton
         showSearch
         showSettings
-        //showSubHeader
-        //subHeaderName={t<string>('Send fund')}
+        // showSubHeader
+        // subHeaderName={t<string>('Send fund')}
       />
 
       {renderContent()}
@@ -358,36 +357,36 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
           <div className='subtitle-transfer'>
             {t<string>('Transfer')}
           </div>
-          
+
           <div className = {'transferable-container'}>
-              <div >
-                <p className = {'transfer-total'}>Transferable Total</p>
-                <div className='transferable-amount'>
+            <div>
+              <p className = {'transfer-total'}>Transferable Total</p>
+              <div className='transferable-amount'>
                 <Available
                   api={api}
                   apiUrl={apiUrl}
                   params={senderId}
                 />
-                </div>
               </div>
+            </div>
           </div>
-          
+
           <div>
             <a className='address-text'>
-          {t<string>('Send from account')}
-          </a>
-          <LabelHelp
-            help= {t<string>('The account you will send funds from.')}
-            className = 'send-help'
-          />
+              {t<string>('Send from account')}
+            </a>
+            <LabelHelp
+              className = 'send-help'
+              help= {t<string>('The account you will send funds from.')}
+            />
             <InputAddressNew
               className={'kn-field -field-1'}
               defaultValue={propSenderId}
-              //help={t<string>('The account you will send funds from.')}
+              // help={t<string>('The account you will send funds from.')}
               isEtherium={isEthereum}
               // isDisabled={!!propSenderId}
-              
-              //label={t<string>('Send from account')}
+
+              // label={t<string>('Send from account')}
               /*
               labelExtra={
                 <Available
@@ -396,8 +395,8 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
                   label={t<string>('Transferable')}
                   params={senderId}
                 />
-              }*/
-              
+              } */
+
               onChange={setSenderId}
               type='account'
               withEllipsis
@@ -408,19 +407,19 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
               {t<string>('Send to address')}
             </a>
             <LabelHelp
-            help= {t<string>('Select a contact or paste the address you want to send funds to.')}
-            className = 'send-help'
-          />
-          <InputAddressNew
-            autoPrefill={false}
-            className={'kn-field -field-2'}
-            //help={t<string>('Select a contact or paste the address you want to send funds to.')}
-            isEtherium={isEthereum}
-            //label={t<string>('Send to address')}
-            
-            // isDisabled={!!propRecipientId}
-            
-            /*
+              className = 'send-help'
+              help= {t<string>('Select a contact or paste the address you want to send funds to.')}
+            />
+            <InputAddressNew
+              autoPrefill={false}
+              className={'kn-field -field-2'}
+              // help={t<string>('Select a contact or paste the address you want to send funds to.')}
+              isEtherium={isEthereum}
+              // label={t<string>('Send to address')}
+
+              // isDisabled={!!propRecipientId}
+
+              /*
             labelExtra={
               <Available
                 api={api}
@@ -431,10 +430,10 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
             }
             */
 
-            onChange={setRecipientId}
-            type='allPlus'
-            withEllipsis
-          />
+              onChange={setRecipientId}
+              type='allPlus'
+              withEllipsis
+            />
           </div>
           {recipientPhish && (
             <Warning
@@ -533,7 +532,7 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
             </Warning>
           )}
 
-          <div className={'kn-l-submit-wrapper'}>              
+          <div className={'kn-l-submit-wrapper'}>
             <Button
               className={'cancel-btn'}
               to='/'
