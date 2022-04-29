@@ -13,7 +13,7 @@ import { ALL_ACCOUNT_KEY } from '@polkadot/extension-koni-base/constants';
 import { accounts as accountsObservable } from '@polkadot/ui-keyring/observable/accounts';
 import { SubjectInfo } from '@polkadot/ui-keyring/observable/types';
 
-export class KoniSubcription {
+export class KoniSubscription {
   private subscriptionMap: Record<string, any> = {};
   // @ts-ignore
   unsubBalances: () => void | undefined;

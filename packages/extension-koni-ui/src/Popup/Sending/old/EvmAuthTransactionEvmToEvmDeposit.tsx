@@ -12,6 +12,8 @@ import { ApiPromise } from '@polkadot/api';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { BackgroundWindow } from '@polkadot/extension-base/background/KoniTypes';
 import { getWeb3Api } from '@polkadot/extension-koni-base/api/web3/web3';
+import { KoniCron } from '@polkadot/extension-koni-base/background/cron';
+import { KoniSubscription } from '@polkadot/extension-koni-base/background/subscription';
 import { Button } from '@polkadot/extension-koni-ui/components';
 import Modal from '@polkadot/extension-koni-ui/components/Modal';
 import Output from '@polkadot/extension-koni-ui/components/Output';
@@ -113,6 +115,13 @@ export function handleTxResults (result: TransactionReceipt,
 
     if (onTxSuccess && result.status) {
       onTxSuccess(result, result.transactionHash);
+      // Init subcription
+      const subscriptions = new KoniSubscription();
+
+      subscriptions.init();
+
+      // Init cron
+      (new KoniCron(subscriptions)).init();
     }
 
     // if (result.status) {

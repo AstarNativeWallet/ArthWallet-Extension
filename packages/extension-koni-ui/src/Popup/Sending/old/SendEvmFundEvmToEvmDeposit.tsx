@@ -385,8 +385,8 @@ function SendEvmFundEvmToEvmDeposit ({ api, apiUrl, className = '', currentAccou
             className={'kn-field -field-2'}
             help={t<string>('Select a contact or paste the address you want to send funds to.')}
             isEthereum={false}
-            label={t<string>('Send to address')}
             // isDisabled={!!propRecipientId}
+            label={t<string>('Send to address')}
             labelExtra={
               <Available
                 api={api}

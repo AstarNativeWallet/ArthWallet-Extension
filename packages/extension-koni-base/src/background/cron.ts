@@ -7,13 +7,13 @@ import { NftTransferExtra, StakingRewardJson } from '@polkadot/extension-base/ba
 import { getTokenPrice } from '@polkadot/extension-koni-base/api/coingecko';
 import { fetchDotSamaHistory } from '@polkadot/extension-koni-base/api/subquery/history';
 import { dotSamaAPIMap, state } from '@polkadot/extension-koni-base/background/handlers';
-import { KoniSubcription } from '@polkadot/extension-koni-base/background/subscription';
+import { KoniSubscription } from '@polkadot/extension-koni-base/background/subscription';
 import { CRON_AUTO_RECOVER_DOTSAMA_INTERVAL, CRON_REFRESH_HISTORY_INTERVAL, CRON_REFRESH_NFT_INTERVAL, CRON_REFRESH_PRICE_INTERVAL, CRON_REFRESH_STAKING_REWARD_INTERVAL, DOTSAMA_MAX_CONTINUE_RETRY } from '@polkadot/extension-koni-base/constants';
 
 export class KoniCron {
-  subscriptions: KoniSubcription;
+  subscriptions: KoniSubscription;
 
-  constructor (subscriptions: KoniSubcription) {
+  constructor (subscriptions: KoniSubscription) {
     this.subscriptions = subscriptions;
   }
 
@@ -59,7 +59,7 @@ export class KoniCron {
 
     state.getCurrentAccount((currentAccountInfo) => {
       if (currentAccountInfo) {
-        this.addCron('refreshBalance', this.reffeshBalance(currentAccountInfo.address),
+        this.addCron('refreshBalance', this.refreshBalance(currentAccountInfo.address),
           CRON_AUTO_RECOVER_DOTSAMA_INTERVAL);
         this.addCron('refreshNft', this.refreshNft(currentAccountInfo.address), CRON_REFRESH_NFT_INTERVAL);
         this.addCron('refreshStakingReward', this.refreshStakingReward(currentAccountInfo.address), CRON_REFRESH_STAKING_REWARD_INTERVAL);
@@ -77,7 +77,7 @@ export class KoniCron {
           this.removeCron('refreshStakingReward');
           this.removeCron('refreshHistory');
 
-          this.addCron('refreshBalance', this.reffeshBalance(address), CRON_AUTO_RECOVER_DOTSAMA_INTERVAL);
+          this.addCron('refreshBalance', this.refreshBalance(address), CRON_AUTO_RECOVER_DOTSAMA_INTERVAL);
           this.addCron('refreshNft', this.refreshNft(address), CRON_REFRESH_NFT_INTERVAL);
           this.addCron('refreshStakingReward', this.refreshStakingReward(address), CRON_REFRESH_STAKING_REWARD_INTERVAL);
           this.addCron('refreshHistory', this.refreshHistory(address), CRON_REFRESH_HISTORY_INTERVAL);
@@ -99,7 +99,7 @@ export class KoniCron {
     });
   }
 
-  reffeshBalance (address: string) {
+  refreshBalance (address: string) {
     return () => {
       console.log('Refresh Balance state');
       this.subscriptions?.subscribeBalancesAndCrowdloans && this.subscriptions.subscribeBalancesAndCrowdloans(address);
