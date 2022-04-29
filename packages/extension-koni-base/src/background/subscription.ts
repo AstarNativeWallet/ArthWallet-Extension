@@ -70,7 +70,7 @@ export class KoniSubcription {
   }
 
   detectAddresses (currentAccountAddress: string) {
-    return new Promise<Array<string>>((resolve, reject) => {
+    return new Promise<Array<string>>((resolve) => {
       if (currentAccountAddress === ALL_ACCOUNT_KEY) {
         accountsObservable.subject.pipe(take(1))
           .subscribe((accounts: SubjectInfo): void => {

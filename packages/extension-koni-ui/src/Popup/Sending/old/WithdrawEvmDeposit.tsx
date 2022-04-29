@@ -7,34 +7,22 @@ import styled from 'styled-components';
 
 import { ApiPromise, SubmittableResult } from '@polkadot/api';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
-// import { DeriveBalancesAll } from '@polkadot/api-derive/types';
 import { TransactionHistoryItemType } from '@polkadot/extension-base/background/KoniTypes';
 import { AccountJson } from '@polkadot/extension-base/background/types';
-// import { getWeb3Api } from '@polkadot/extension-koni-base/api/web3/web3';
-// import { web3Accounts, web3Enable, web3FromAddress, web3ListRpcProviders, web3UseRpcProvider } from '@polkadot/extension-dapp';
 import { Button, Warning } from '@polkadot/extension-koni-ui/components';
 import LoadingContainer from '@polkadot/extension-koni-ui/components/LoadingContainer';
-// import Toggle from '@polkadot/extension-koni-ui/components/Toggle';
 import useTranslation from '@polkadot/extension-koni-ui/hooks/useTranslation';
 import { updateTransactionHistory } from '@polkadot/extension-koni-ui/messaging';
 import { Header } from '@polkadot/extension-koni-ui/partials';
 import AuthTransaction from '@polkadot/extension-koni-ui/Popup/Sending/old/AuthTransaction';
-// import InputBalance from '@polkadot/extension-koni-ui/Popup/Sending/old/component/InputBalance';
 import useApi from '@polkadot/extension-koni-ui/Popup/Sending/old/hook/useApi';
-// import { useCall } from '@polkadot/extension-koni-ui/Popup/Sending/old/hook/useCall';
-// import SendFundResult from '@polkadot/extension-koni-ui/Popup/Sending/old/SendFundResult';
 import { TxResult } from '@polkadot/extension-koni-ui/Popup/Sending/old/types';
 import WithdrawEvmDepositResult from '@polkadot/extension-koni-ui/Popup/Sending/old/WithdrawEvmDepositResult';
 import { RootState } from '@polkadot/extension-koni-ui/stores';
 import { ThemeProps } from '@polkadot/extension-koni-ui/types';
 import { isAccountAll } from '@polkadot/extension-koni-ui/util';
-// import { checkAddress } from '@polkadot/phishing';
-// import { AccountInfoWithProviders, AccountInfoWithRefCount } from '@polkadot/types/interfaces';
-import { BN } from '@polkadot/util';
-import { isFunction } from '@polkadot/util';
+import { BN, isFunction } from '@polkadot/util';
 
-// import Available from './component/Available';
-// import InputAddress from './component/InputAddress';
 import { buildEvmAddress } from './convert';
 
 interface Props extends ThemeProps {
@@ -51,10 +39,6 @@ interface ContentProps extends ThemeProps {
   networkKey: string;
 }
 
-// function isRefcount (accountInfo: AccountInfoWithProviders | AccountInfoWithRefCount): accountInfo is AccountInfoWithRefCount {
-//   return !!(accountInfo as AccountInfoWithRefCount).refcount;
-// }
-
 type ExtractTxResultType = {
   change: string;
   fee?: string;
@@ -67,8 +51,6 @@ function extractTxResult (result: SubmittableResult): ExtractTxResultType {
   const { events } = result;
 
   const transferEvent = events.find((e) =>
-    //    e.event.section === 'balances' &&
-    //    e.event.method.toLowerCase() === 'transfer'
     e.event.section === 'evm' &&
     e.event.method.toLowerCase() === 'withdraw'
   );
@@ -90,19 +72,6 @@ function extractTxResult (result: SubmittableResult): ExtractTxResultType {
     fee
   };
 }
-
-// async function checkPhishing (_senderId: string | null, recipientId: string | null): Promise<[string | null, string | null]> {
-//   return [
-//     // not being checked atm
-//     // senderId
-//     //   ? await checkAddress(senderId)
-//     //   : null,
-//     null,
-//     recipientId
-//       ? await checkAddress(recipientId)
-//       : null
-//   ];
-// }
 
 type SupportType = 'NETWORK' | 'ACCOUNT';
 
@@ -174,143 +143,25 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
   );
 }
 
-function WithdrawEvmDeposit ({ api, apiUrl, className = '', currentAccount, isEthereum, networkKey, setWrapperClass }: ContentProps): React.ReactElement {
+function WithdrawEvmDeposit ({ api, apiUrl, currentAccount, networkKey, setWrapperClass }: ContentProps): React.ReactElement {
   const { t } = useTranslation();
 
-  // const propSenderId = currentAccount?.address;
   const propSenderId = currentAccount?.address;
 
   const senderId = propSenderId;
-  // const [amount, setAmount] = useState<BN | undefined>(BN_ZERO);
-  // const [hasAvailable] = useState(true);
-  // const [isProtected, setIsProtected] = useState(false);
-  // const [isAll, setIsAll] = useState(false);
-  // const [[maxTransfer, noFees], setMaxTransfer] = useState<[BN | null, boolean]>([null, false]);
-  // const [recipientId, setRecipientId] = useState<string | null>(null);
-  // const [senderId, setSenderId] = useState<string | null>(null);
-  // const [[, recipientPhish], setPhishing] = useState<[string | null, string | null]>([null, null]);
-  // const balances = useCall<DeriveBalancesAll>(api.derive.balances?.all, [senderId], undefined, apiUrl);
-  // const accountInfo = useCall<AccountInfoWithProviders | AccountInfoWithRefCount>(api.query.system.account, [senderId], undefined, apiUrl);
   const [extrinsic, setExtrinsic] = useState<SubmittableExtrinsic<'promise'> | null>(null);
   const [isShowTxModal, setShowTxModal] = useState<boolean>(false);
   const [txResult, setTxResult] = useState<TxResult>({ isShowTxResult: false, isTxSuccess: false });
-  // const [h160address, setH160address] = useState<string | null>(null);
   const [evmDepositAmount, setEvmDepositAmount] = useState<BN | null>(null);
   const [displayEvmDepositAmount, setDisplayEvmDepositAmount] = useState<number | null>(null);
   const { isShowTxResult } = txResult;
 
-  // type SubstrateAccount = {
-  //   address: string;
-  //   name: string;
-  //   source: string;
-  // };
-
-  // // ref: https://github.com/polkadot-js/extension/tree/master/packages/extension-inject
-
-  // const getInjectedExtensions = async (): Promise<any[]> => {
-  //   const extensions = await web3Enable('ArthWallet - Astar Extension Wallet');
-
-  //   // Memo: obtain the extension name
-  //   // console.log('extensions', extensions);
-  //   if (extensions.length === 0) {
-  //     // no extension installed, or the user did not accept the authorization
-  //     // in this case we should inform the use and give a link to the extension
-  //     console.log('There is no extension.');
-
-  //     return;
-  //   }
-
-  //   // we are now informed that the user has at least one extension and that we
-  //   // will be able to show and use accounts
-  //   const allAccounts = await web3Accounts();
-
-  //   console.log(allAccounts);
-
-  //   return extensions;
-  // };
-
-  // const getInjector = async (accounts: SubstrateAccount[]) => {
-  //   const SENDER = currentAccount.address;
-  //   const account = accounts.find((it) => it.address === SENDER);
-  //   const extensions = await getInjectedExtensions();
-  //   const injector = extensions.find((it) => it.name === account?.source);
-
-  //   return injector;
-  // };
-
-  // async function withdrawExcecution () {
-  //   // ref: https://github.com/polkadot-js/docs/blob/19375457a57275160532c8de63bff1e41da775b6/docs/extension/cookbook.md
-  //   // await web3Enable('Arthwallet');
-
-  //   // const accounts = await web3Accounts();
-
-  //   console.log('currentAccount.address: ', currentAccount.address);
-  //   const h160address: string = buildEvmAddress(currentAccount.address);
-
-  //   console.log('h160address: ', h160address);
-
-  //   // const evmDepositAmount = new BN('3');
-  //   const evmDepositAmount = 1;
-
-  //   // await getInjectedExtensions();
-
-  //   // // const injector = await web3FromAddress(SENDER);
-  //   // const injector = getInjector(accounts);
-
-  //   // const transaction = api.tx.evm.withdraw(h160address, new BN('3'));
-  //   // 0xE043F94c5031f4C37C660Ac9534c83C05491d106
-  //   // api.tx.evm.withdraw(h160address, new BN('3'));
-  //   console.log('evmDepositAmount: ', evmDepositAmount);
-  //   console.log('api.tx.evm: ', api.tx);
-
-  //   // api.tx.evm.withdraw('0xE043F94c5031f4C37C660Ac9534c83C05491d106', evmDepositAmount);
-  //   api.tx.evm.withdraw(h160address, evmDepositAmount);
-
-  //   // await transaction.signAndSend(SENDER,
-  //   //   {
-  //   //     signer: injector.signer
-  //   //   },
-  //   //   // (result) => handleResult(result)
-  //   //   (result) => {
-  //   //     console.log(result);
-  //   //   }
-  //   // );
-  // }
-
-  // useEffect((): void => {
-  //   console.log('currentAccount.address: ', currentAccount.address);
-  //   console.log('h160address: ', h160address);
-  //   console.log('evmDepositAmount: ', evmDepositAmount);
-  //   console.log('api.tx: ', api.tx);
-  // }, [currentAccount.address, h160address, api.tx, evmDepositAmount]);
-
-  // useEffect((): void => {
-  //   checkPhishing(senderId, recipientId)
-  //     .then(setPhishing)
-  //     .catch(console.error);
-  // }, [propSenderId, recipientId, senderId]);
-
-  // const noReference = accountInfo
-  //   ? isRefcount(accountInfo)
-  //     ? accountInfo.refcount.isZero()
-  //     : accountInfo.consumers.isZero()
-  //   : true;
-  // const canToggleAll = !isProtected && balances && balances.accountId.eq(senderId) && maxTransfer && noReference;
-
-  // const amountGtAvailableBalance = amount && balances && amount.gt(balances.availableBalance);
-
-  // const txParams: unknown[] | (() => unknown[]) | null =
-  //   useMemo(() => {
-  //     return canToggleAll && isAll
-  //       ? isFunction(api.tx.balances.transferAll)
-  //         ? [recipientId, false]
-  //         : [recipientId, maxTransfer]
-  //       : [recipientId, amount];
-  //   }, [amount, api.tx.balances.transferAll, canToggleAll, isAll, maxTransfer, recipientId]);
-
   chrome.storage.local.get(['displayEvmDepositAmount'], function (result) {
-    setDisplayEvmDepositAmount(result.displayEvmDepositAmount);
-    // console.log('result.displayEvmDepositAmount is: ', result.displayEvmDepositAmount);
+    if (typeof result.displayEvmDepositAmount === 'number') {
+      setDisplayEvmDepositAmount(result.displayEvmDepositAmount);
+    } else {
+      setDisplayEvmDepositAmount(0);
+    }
   });
 
   const txParams: unknown[] | (() => unknown[]) | null =
@@ -318,42 +169,21 @@ function WithdrawEvmDeposit ({ api, apiUrl, className = '', currentAccount, isEt
       if (typeof propSenderId !== 'undefined') {
         const h160address = buildEvmAddress(propSenderId);
 
-        console.log('h160address is: ', h160address);
-
         chrome.storage.local.get(['evmDepositAmount'], function (result) {
           if (typeof result.evmDepositAmount === 'string') {
-          // setEvmDepositAmount(result.evmDepositAmount * 1000000000000000000);
-          // const withdrawEvmDepositAmount = Math.ceil(result.evmDepositAmount / (10 ** 3));
-          // const withdrawEvmDepositAmount = result.evmDepositAmount - (10 ** 17);
-          // const web3Api = getWeb3Api(networkKey);
-
-            // const withdrawEvmDepositAmount = web3Api.utils.toBN(0.1 * (10 ** 18));
-            // const withdrawEvmDepositAmount: BigInt = BigInt(result.evmDepositAmount);
             const withdrawEvmDepositAmount: BN = new BN(result.evmDepositAmount);
 
-            // const withdrawEvmDepositAmount: BN = 100000000000000000;
-
             setEvmDepositAmount(withdrawEvmDepositAmount);
-
-            console.log('withdrawEvmDepositAmount is: ', withdrawEvmDepositAmount);
-            console.log('unitAmount is              : ', 1000000000000000000);
           } else {
             console.log('evmDepositAmount is not valid type.', result.evmDepositAmount);
           }
         });
-        // const evmDepositAmount = 1000000000000000;
 
         return isFunction(api.tx.evm.withdraw) ? [h160address, evmDepositAmount] : null;
       }
 
       return null;
     }, [api.tx.evm.withdraw, evmDepositAmount, propSenderId]);
-
-  // const tx: ((...args: any[]) => SubmittableExtrinsic<'promise'>) | null = canToggleAll && isAll && isFunction(api.tx.balances.transferAll)
-  //   ? api.tx.balances.transferAll
-  //   : isProtected
-  //     ? api.tx.balances.transferKeepAlive
-  //     : api.tx.balances.transfer;
 
   const tx: ((...args: any[]) => SubmittableExtrinsic<'promise'>) | null =
     isFunction(api.tx.evm.withdraw)
@@ -362,7 +192,6 @@ function WithdrawEvmDeposit ({ api, apiUrl, className = '', currentAccount, isEt
 
   const _onSend = useCallback(() => {
     if (tx) {
-      // const txParams: [string, number] = ['5H8kmwy17BeP4emGDPrb4XKSf2w4X7PFvWnz2ZineqNdgNMb', 1];
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       setExtrinsic(tx(...(
         isFunction(txParams)
@@ -372,7 +201,6 @@ function WithdrawEvmDeposit ({ api, apiUrl, className = '', currentAccount, isEt
 
       setShowTxModal(true);
     }
-  // }, [txParams, tx]);
   }, [tx, txParams]);
 
   const _onCancelTx = useCallback(() => {
@@ -417,8 +245,7 @@ function WithdrawEvmDeposit ({ api, apiUrl, className = '', currentAccount, isEt
     } else {
       onGetTxResult(true);
     }
-  // }, [senderId, networkKey, onGetTxResult]);
-  }, [senderId, onGetTxResult]);
+  }, [senderId, networkKey, onGetTxResult]);
 
   const _onTxFail = useCallback((result: SubmittableResult | null, error: Error | null, extrinsicHash?: string) => {
     if (!senderId) {
@@ -444,8 +271,7 @@ function WithdrawEvmDeposit ({ api, apiUrl, className = '', currentAccount, isEt
     } else {
       onGetTxResult(false, undefined, error);
     }
-  // }, [senderId, networkKey, onGetTxResult]);
-  }, [senderId, onGetTxResult]);
+  }, [senderId, networkKey, onGetTxResult]);
 
   const _onResend = useCallback(() => {
     setTxResult({
@@ -456,8 +282,6 @@ function WithdrawEvmDeposit ({ api, apiUrl, className = '', currentAccount, isEt
 
     setWrapperClass('');
   }, [setWrapperClass]);
-
-  // const isSameAddress = !!recipientId && !!senderId && (recipientId === senderId);
 
   return (
     <>
@@ -471,7 +295,6 @@ function WithdrawEvmDeposit ({ api, apiUrl, className = '', currentAccount, isEt
             }
             <Button
               className={'kn-submit-btn'}
-              // isDisabled={isSameAddress || !hasAvailable || !(recipientId) || (!amount && !isAll) || amountGtAvailableBalance || !!recipientPhish}
               onClick={_onSend}
             >
               {t<string>('Withdraw EVM Deposit')}

@@ -152,13 +152,14 @@ async function evmSignAndSend (txHandler: TxHandler, fromAddress: string, passwo
     // const fromAddress: string = pairOrAddress.toString();
 
     const toAddress: string = u8aToHex(addressToEvm(address));
+    // const toAddress: string = address;
 
     console.log('Arth Call sendEvm');
     keyring.getPair(fromAddress);
 
     const accounts = keyring.getAccounts();
 
-    accounts.forEach(({ meta, publicKey, toAddress }) =>
+    accounts.forEach(({ meta, publicKey }) =>
       console.log('Arth toAddress: ', toAddress, JSON.stringify(meta), u8aToHex(publicKey))
     );
 
