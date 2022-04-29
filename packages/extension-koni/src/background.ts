@@ -44,7 +44,18 @@ cryptoWaitReady()
     subscriptions.init();
 
     // Init cron
-    (new KoniCron(subscriptions)).init();
+    const koniCron = new KoniCron(subscriptions);
+
+    koniCron.init();
+
+    chrome.runtime.onMessage.addListener(
+      function (request) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        if (request.withdrawEvmDeposit === 'success') {
+          koniCron.init();
+        }
+      }
+    );
 
     initBackgroundWindow(keyring);
 

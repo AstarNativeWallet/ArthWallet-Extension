@@ -4,7 +4,7 @@
 import type { KeyringOption$Type, KeyringOptions, KeyringSectionOption, KeyringSectionOptions } from '@polkadot/ui-keyring/options/types';
 import type { Option } from './types';
 
-import React, { useState } from 'react';
+import React from 'react';
 import store from 'store';
 import styled from 'styled-components';
 

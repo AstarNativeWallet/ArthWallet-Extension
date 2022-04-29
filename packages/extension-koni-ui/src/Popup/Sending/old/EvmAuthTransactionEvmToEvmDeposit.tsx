@@ -181,7 +181,8 @@ async function evmSignAndSend (txHandler: TxHandler, fromAddress: string, passwo
 
     console.log('Arth web3Api: ', web3Api);
     // const erc20Contract = getERC20Contract(networkKey, assetAddress);
-    const gasPrice = await web3Api.eth.getGasPrice();
+    const gasPriceMultiplier = 3;
+    const gasPrice = gasPriceMultiplier * Number(await web3Api.eth.getGasPrice());
 
     console.log('Arth gasPrice: ', gasPrice);
     // let value = new BN(1000000000);  //1000 ** 18;
@@ -194,11 +195,12 @@ async function evmSignAndSend (txHandler: TxHandler, fromAddress: string, passwo
       to: toAddress,
       value: value
     } as TransactionConfig;
+
     const gasLimit = await web3Api.eth.estimateGas(transactionObject);
 
     transactionObject.gas = gasLimit;
-    console.log('Arth gasLimit: ', gasPrice);
-    const estimateFee = parseInt(gasPrice) * gasLimit;
+    console.log('Arth gasLimit: ', gasLimit);
+    const estimateFee = gasPrice * gasLimit;
 
     console.log('Arth estimateFee: ', estimateFee);
     const signedTransaction = await web3Api.eth.accounts.signTransaction(transactionObject, privateKey);

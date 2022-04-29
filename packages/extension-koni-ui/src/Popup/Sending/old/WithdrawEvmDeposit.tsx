@@ -242,6 +242,10 @@ function WithdrawEvmDeposit ({ api, apiUrl, currentAccount, networkKey, setWrapp
       updateTransactionHistory(senderId, networkKey, item, () => {
         onGetTxResult(true, extrinsicHash);
       }).catch((e) => console.log('Error when update Transaction History', e));
+
+      chrome.runtime.sendMessage({ withdrawEvmDeposit: 'success' }, function () {
+        console.log('withdraw EVM deposit success');
+      });
     } else {
       onGetTxResult(true);
     }
