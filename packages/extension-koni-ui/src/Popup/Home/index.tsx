@@ -32,6 +32,8 @@ import useShowedNetworks from '@polkadot/extension-koni-ui/hooks/screen/home/use
 import useTranslation from '@polkadot/extension-koni-ui/hooks/useTranslation';
 import { saveCurrentAccountAddress, triggerAccountsSubscription } from '@polkadot/extension-koni-ui/messaging';
 import { Header } from '@polkadot/extension-koni-ui/partials';
+// import AccountsTree from '@polkadot/extension-koni-ui/Popup/Accounts/AccountsTree';
+import AccountMenuLists from '@polkadot/extension-koni-ui/partials/AccountList';
 import AddAccount from '@polkadot/extension-koni-ui/Popup/Accounts/AddAccount';
 import NftContainer from '@polkadot/extension-koni-ui/Popup/Home/Nfts/render/NftContainer';
 import StakingContainer from '@polkadot/extension-koni-ui/Popup/Home/Staking/StakingContainer';
@@ -42,10 +44,10 @@ import { ThemeProps } from '@polkadot/extension-koni-ui/types';
 import { BN_ZERO, isAccountAll, NFT_DEFAULT_GRID_SIZE, NFT_GRID_HEIGHT_THRESHOLD, NFT_HEADER_HEIGHT, NFT_PER_ROW, NFT_PREVIEW_HEIGHT } from '@polkadot/extension-koni-ui/util';
 
 import buyIcon from '../../assets/buy-icon.svg';
-import donateIcon from '../../assets/donate-icon.svg';
+// import donateIcon from '../../assets/donate-icon.svg';
 import sendIcon from '../../assets/send-icon.svg';
 // import swapIcon from '../../assets/swap-icon.svg';
-import ChainBalances from './ChainBalances/ChainBalances';
+// import ChainBalances from './ChainBalances/ChainBalances';
 import Crowdloans from './Crowdloans/Crowdloans';
 import TransactionHistory from './TransactionHistory/TransactionHistory';
 import ActionButton from './ActionButton';
@@ -158,7 +160,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
     window.localStorage.getItem('show_zero_balances') === '1'
   );
   const [isQrModalOpen, setQrModalOpen] = useState<boolean>(false);
-  const [selectedNetworkBalance, setSelectedNetworkBalance] = useState<BigN>(BN_ZERO);
+  const [selectedNetworkBalance] = useState<BigN>(BN_ZERO);
   const [trigger] = useState(() => `home-balances-${++tooltipId}`);
   const [
     { iconTheme: qrModalIconTheme,
@@ -211,7 +213,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
   }, [address, activatedTab, _setActiveTab]);
 
   const { crowdloanContributeMap,
-    networkBalanceMaps,
+    // networkBalanceMaps,
     totalBalanceValue } = useAccountBalance(networkKey, showedNetworks, crowdloanNetworks);
 
   const _toggleZeroBalances = useCallback(() => {
@@ -237,7 +239,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
     setQrModalOpen(false);
   }, []);
 
-  const _isAccountAll = isAccountAll(address);
+  // const _isAccountAll = isAccountAll(address);
 
   const tabItems = useMemo<TabHeaderItemType[]>(() => {
     return getTabHeaderItems(address, t);
@@ -271,7 +273,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
       <Header
         changeAccountCallback={onChangeAccount}
         className={'home-header'}
-        isContainDetailHeader={true}
+        // isContainDetailHeader={true}
         isShowZeroBalances={isShowZeroBalances}
         setShowBalanceDetail={setShowBalanceDetail}
         showAdd
@@ -280,7 +282,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
         text={t<string>('Accounts')}
         toggleZeroBalances={_toggleZeroBalances}
       />
-
+      {/*
       <div className={'home-action-block'}>
         <div className='account-total-balance'>
           <div
@@ -360,7 +362,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
           </div>
         )}
       </div>
-
+        */}
       {isShowBalanceDetail &&
         <div
           className='home__back-btn'
@@ -376,7 +378,47 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
       }
 
       <div className={'home-tab-contents'}>
+        <div className='total-balances'>
+          <a className = 'total-text'>{t<string>('Total')}</a>
+          <div
+            className={'account-total-btn'}
+            data-for={trigger}
+            data-tip={true}
+            onClick={_toggleBalances}
+          >
+            {isShowBalance
+              ? <BalanceVal
+                startWithSymbol
+                symbol={'$'}
+                value={isShowBalanceDetail ? selectedNetworkBalance : totalBalanceValue}
+              />
+              : <span>*********</span>
+            }
+          </div>
+        </div>
+
+        <div className='action-button-wrapper'>
+          <ActionButton
+            iconSrc={buyIcon}
+            onClick={_showQrModal}
+            tooltipContent={t<string>('Receive')}
+          />
+        </div>
+
+        <Link
+          className={'action-button-wrapper'}
+          to={'/account/send-fund'}
+        >
+          <ActionButton
+            iconSrc={sendIcon}
+            tooltipContent={t<string>('Send')}
+          />
+        </Link>
+
         {activatedTab === 1 && (
+
+          <AccountMenuLists></AccountMenuLists>
+          /*
           <ChainBalances
             address={address}
             currentNetworkKey={networkKey}
@@ -389,7 +431,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
             setQrModalProps={setQrModalProps}
             setSelectedNetworkBalance={setSelectedNetworkBalance}
             setShowBalanceDetail={setShowBalanceDetail}
-          />
+          /> */
         )}
 
         {activatedTab === 2 && (
@@ -494,8 +536,24 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
   }
 
   .account-total-btn {
-    width: fit-content;
+    /*width: fit-content;*/
     cursor: pointer;
+    position: absolute;
+    top: 59px;
+    
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 36px;
+    line-height: 100%;
+    /* identical to box height, or 36px */
+    
+    display: flex;
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.05em;
+    
+    color: #FFFFFF;
   }
 
   .home-account-button-container {
@@ -503,12 +561,7 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
   }
 
   .action-button-wrapper {
-    opacity: 1;
     margin-right: 10px;
-  }
-
-  .action-button-wrapper:last-child {
-    margin-right: 0;
   }
 
   .home__account-qr-modal .subwallet-modal {
@@ -529,5 +582,53 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
   .home__back-icon {
     padding-right: 7px;
   }
+  .total-text {
+    position: absolute;
+    width: 48px;
+    height: 20px;
+    left: 151px;
+    top: 24px;
+    
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 100%;
+    /* identical to box height, or 20px */
+    
+    display: flex;
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.03em;
+    
+    color: #FFFFFF;
+    
+  }
+  .accountlist {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0px;
+    
+    position: absolute;
+    width: 404px;
+    height: 312px;
+    left: 26px;
+    top: 313px;
+    
+  }
 
+  .total-balances {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    width: 350px;
+    height: 150px;
+    left: 55px;
+    top: 18px;
+    
+    background: radial-gradient(98.81% 537.96% at 0% 58.33%, #8380C2 0%, #D4D3FF 100%) /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */;
+    border-radius: 6px;
+    }
 `));
