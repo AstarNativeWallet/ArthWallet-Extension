@@ -37,37 +37,10 @@ var _utilCrypto = require("@polkadot/util-crypto");
 
 // Copyright 2019-2022 @polkadot/extension-koni-base authors & contributors
 // SPDX-License-Identifier: Apache-2.0
-// console.log('Arth TEST 123456!!!!');
-// import { AbstractInt } from '@polkadot/types-codec';
 console.log('ethereumChains: ');
 console.log(_apiHelper.ethereumChains);
 console.log('moonbeamBaseChains: ');
-console.log(_apiHelper.moonbeamBaseChains);
-
-async function getBalanceAstarEvm(networkKey) {
-  //  let address: string = '0x3908f5b9f831c1e74C0B1312D0f06126a58f4Ac0';
-  // let address: string = '0x46ebddef8cd9bb167dc30878d7113b7e168e6f06';
-  let wssURL = '';
-
-  if (networkKey === 'astarEvm') {
-    wssURL = 'wss://rpc.astar.network';
-  } else if (networkKey === 'shidenEvm') {
-    wssURL = 'wss://rpc.shiden.astar.network';
-  } else if (networkKey === 'shibuyaEvm') {
-    wssURL = 'wss://rpc.shibuya.astar.network';
-  }
-
-  const ss58Address = 'ZM24FujhBK3XaDsdkpYBf4QQAvRkoMq42aqrUQnxFo3qrAw'; // test address
-
-  const address = (0, _util.u8aToHex)((0, _utilCrypto.addressToEvm)(ss58Address));
-  const web3 = new _web.default(new _web.default.providers.WebsocketProvider(wssURL));
-  const balance = await web3.eth.getBalance(address);
-  console.log('Arth await balance: ' + networkKey + ', SS58:' + ss58Address + ' -> H160:' + address + ', ' + balance);
-  return balance;
-}
-
-getBalanceAstarEvm('astarEvm');
-getBalanceAstarEvm('shibuyaEvm'); // eslint-disable-next-line @typescript-eslint/no-unused-vars
+console.log(_apiHelper.moonbeamBaseChains); // eslint-disable-next-line @typescript-eslint/no-unused-vars
 // @ts-ignore
 
 function subscribeWithDerive(addresses, networkKey, networkAPI, callback) {
@@ -243,19 +216,80 @@ function subscribeTokensBalance(addresses, networkKey, api, originBalanceItem, c
 }
 
 function subscribeWithAccountMulti(addresses, networkKey, networkAPI, callback) {
-  const balanceItem = {
-    state: _KoniTypes.APIItemState.PENDING,
-    free: '0',
-    reserved: '0',
-    miscFrozen: '0',
-    feeFrozen: '0',
-    children: undefined
-  }; // @ts-ignore
-
+  // @ts-ignore
   let unsub;
+  let unsub2;
+
+  const balanceJson = _handlers.state.getBalance();
+
+  console.log('balanceJson networkKey: ', networkKey);
+  console.log('balanceJson.details[networkKey]: ', balanceJson.details[networkKey]);
+  const balanceItem = {
+    state: balanceJson.details[networkKey].state || _KoniTypes.APIItemState.PENDING,
+    free: balanceJson.details[networkKey].free || '0',
+    reserved: balanceJson.details[networkKey].reserved || '0',
+    miscFrozen: balanceJson.details[networkKey].miscFrozen || '0',
+    feeFrozen: balanceJson.details[networkKey].feeFrozen || '0',
+    children: balanceJson.details[networkKey].children || undefined
+  };
+
+  async function getBalanceAstarEvm(networkKey) {
+    let wssURL = '';
+
+    switch (networkKey) {
+      case 'astarEvm':
+        wssURL = 'wss://rpc.astar.network';
+        break;
+
+      case 'shidenEvm':
+        wssURL = 'wss://rpc.shiden.astar.network';
+        break;
+
+      case 'shibuyaEvm':
+        wssURL = 'wss://rpc.shibuya.astar.network';
+        break;
+
+      case 'astar':
+        wssURL = 'wss://rpc.astar.network';
+        break;
+
+      default:
+        break;
+    }
+
+    const ss58Address = addresses[0];
+    const address = (0, _util.u8aToHex)((0, _utilCrypto.addressToEvm)(ss58Address));
+    const web3 = new _web.default(new _web.default.providers.WebsocketProvider(wssURL));
+    const deposit = await web3.eth.getBalance(address);
+    const displayEvmDepositAmount = Number(_ethers.ethers.utils.formatEther(deposit.toString()));
+    const evmDepositAmount = deposit; // const evmDepositAmount = '100000000000000000';
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+
+    chrome.storage.local.set({
+      displayEvmDepositAmount: displayEvmDepositAmount
+    }); // eslint-disable-next-line @typescript-eslint/no-floating-promises
+
+    chrome.storage.local.set({
+      evmDepositAmount: evmDepositAmount
+    });
+
+    if (parseFloat(deposit) > 0) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      chrome.storage.local.set({
+        isEvmDeposit: true
+      });
+    } else {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      chrome.storage.local.set({
+        isEvmDeposit: false
+      });
+    }
+
+    return deposit;
+  }
 
   if (!['kintsugi', 'interlay', 'kintsugi_test'].includes(networkKey)) {
-    unsub = networkAPI.api.query.system.account.multi(addresses, balances => {
+    unsub = networkAPI.api.query.system.account.multi(addresses, async balances => {
       let [free, reserved, miscFrozen, feeFrozen] = [new _util.BN(0), new _util.BN(0), new _util.BN(0), new _util.BN(0)];
       balances.forEach(balance => {
         var _balance$data, _balance$data$free, _balance$data2, _balance$data2$reserv, _balance$data3, _balance$data3$miscFr, _balance$data4, _balance$data4$feeFro;
@@ -264,56 +298,36 @@ function subscribeWithAccountMulti(addresses, networkKey, networkAPI, callback) 
         reserved = reserved.add(((_balance$data2 = balance.data) === null || _balance$data2 === void 0 ? void 0 : (_balance$data2$reserv = _balance$data2.reserved) === null || _balance$data2$reserv === void 0 ? void 0 : _balance$data2$reserv.toBn()) || new _util.BN(0));
         miscFrozen = miscFrozen.add(((_balance$data3 = balance.data) === null || _balance$data3 === void 0 ? void 0 : (_balance$data3$miscFr = _balance$data3.miscFrozen) === null || _balance$data3$miscFr === void 0 ? void 0 : _balance$data3$miscFr.toBn()) || new _util.BN(0));
         feeFrozen = feeFrozen.add(((_balance$data4 = balance.data) === null || _balance$data4 === void 0 ? void 0 : (_balance$data4$feeFro = _balance$data4.feeFrozen) === null || _balance$data4$feeFro === void 0 ? void 0 : _balance$data4$feeFro.toBn()) || new _util.BN(0));
-      });
+      }); // console.log('networkKey: ', networkKey);
 
-      async function getBalanceAstarEvm(networkKey) {
-        const wssURL = 'wss://rpc.astar.network';
-        const ss58Address = addresses[0]; // 'ZM24FujhBK3XaDsdkpYBf4QQAvRkoMq42aqrUQnxFo3qrAw'; // test address
+      switch (networkKey) {
+        // case 'astarEVM':
+        //   feeFrozen = new BN(await getBalanceAstarEvm('astarEvm'));
+        //   break;
+        // case 'shidenEVM':
+        //   feeFrozen = new BN(await getBalanceAstarEvm('shidenEvm'));
+        //   break;
+        // case 'shibuyaEVM':
+        //   feeFrozen = new BN(await getBalanceAstarEvm('shibuyaEvm'));
+        //   break;
+        case 'astar':
+          feeFrozen = new _util.BN(await getBalanceAstarEvm('astar'));
+          break;
 
-        const address = (0, _util.u8aToHex)((0, _utilCrypto.addressToEvm)(ss58Address));
-        const web3 = new _web.default(new _web.default.providers.WebsocketProvider(wssURL));
-        balanceItem.feeFrozen = await web3.eth.getBalance(address);
-        const deposit = await web3.eth.getBalance(address); // const evmDepositAmount = Math.ceil(balanceItem.feeFrozen / 1000000000000000000) - 1;
-
-        const displayEvmDepositAmount = Number(_ethers.ethers.utils.formatEther(deposit.toString())); // const evmDepositAmount = deposit;
-
-        const evmDepositAmount = '100000000000000000';
-        chrome.storage.local.set({
-          displayEvmDepositAmount: displayEvmDepositAmount
-        });
-        chrome.storage.local.set({
-          evmDepositAmount: evmDepositAmount
-        });
-
-        if (parseFloat(balanceItem.feeFrozen) > 0) {
-          chrome.storage.local.set({
-            isEvmDeposit: true
-          });
-        } else {
-          chrome.storage.local.set({
-            isEvmDeposit: false
-          });
-        }
-
-        console.log('Arth subscribeWithAccountMulti');
-      }
-
-      if (networkKey === 'astar') {
-        getBalanceAstarEvm('astar');
-      } else {
-        balanceItem.feeFrozen = feeFrozen.toString();
+        default:
+          break;
       }
 
       balanceItem.state = _KoniTypes.APIItemState.READY;
       balanceItem.free = free.toString();
       balanceItem.reserved = reserved.toString();
-      balanceItem.miscFrozen = miscFrozen.toString(); // balanceItem.feeFrozen = feeFrozen.toString();
+      balanceItem.miscFrozen = miscFrozen.toString();
+      balanceItem.feeFrozen = feeFrozen.toString(); // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      // chrome.storage.local.set({ balanceItem: balanceItem });
 
       callback(networkKey, balanceItem);
-    });
+    }); // });
   }
-
-  let unsub2;
 
   if (['bifrost', 'acala', 'karura'].includes(networkKey)) {
     unsub2 = subscribeTokensBalance(addresses, networkKey, networkAPI.api, balanceItem, balanceItem => {
@@ -331,29 +345,38 @@ function subscribeWithAccountMulti(addresses, networkKey, networkAPI, callback) 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     unsub && (await unsub)();
     unsub2 && unsub2();
-  };
+  }; // });
 }
 
 function subscribeEVMBalance(networkKey, api, addresses, callback) {
-  const balanceItem = {
+  const balanceJson = _handlers.state.getBalance(); // console.log('balanceJson networkKey: ', networkKey);
+  // console.log('balanceJson.details[networkKey]: ', balanceJson.details[networkKey]);
+
+
+  const balanceItemEVM = {
     state: _KoniTypes.APIItemState.PENDING,
-    free: '0',
-    reserved: '0',
-    miscFrozen: '0',
-    feeFrozen: '0'
+    free: balanceJson.details[networkKey].free || '0',
+    reserved: balanceJson.details[networkKey].reserved || '0',
+    miscFrozen: balanceJson.details[networkKey].miscFrozen || '0',
+    feeFrozen: balanceJson.details[networkKey].feeFrozen || '0'
   };
 
   function getBalance() {
     (0, _balance.getEVMBalance)(networkKey, addresses).then(balances => {
-      balanceItem.free = (0, _utils.sumBN)(balances.map(b => new _util.BN(b || '0'))).toString();
-      balanceItem.state = _KoniTypes.APIItemState.READY;
-      callback(networkKey, balanceItem);
+      balanceItemEVM.free = (0, _utils.sumBN)(balances.map(b => new _util.BN(b || '0'))).toString();
+      balanceItemEVM.state = _KoniTypes.APIItemState.READY;
+      callback(networkKey, balanceItemEVM);
     }).catch(console.error);
   }
 
   getBalance();
   const interval = setInterval(getBalance, _constants.ASTAR_REFRESH_BALANCE_INTERVAL);
-  const unsub2 = subscribeERC20Interval(addresses, networkKey, api, balanceItem, callback);
+  const unsub2 = subscribeERC20Interval(addresses, networkKey, api, balanceItemEVM, callback);
+  console.log(balanceItemEVM); // eslint-disable-next-line @typescript-eslint/no-floating-promises
+
+  chrome.storage.local.set({
+    balanceItemEVM: balanceItemEVM
+  });
   return () => {
     clearInterval(interval);
     unsub2 && unsub2();
@@ -367,7 +390,7 @@ function subscribeBalance(addresses, dotSamaAPIMap, callback) {
     const networkAPI = await apiProps.isReady;
     const useAddresses = _apiHelper.ethereumChains.indexOf(networkKey) > -1 ? evmAddresses : substrateAddresses;
 
-    if (networkKey === 'astarEvm' || networkKey === 'shidenEvm') {
+    if (networkKey === 'astarEvm' || networkKey === 'shidenEvm' || networkKey === 'shibuyaEvm') {
       return subscribeEVMBalance(networkKey, networkAPI.api, useAddresses, callback);
     }
 

@@ -313,6 +313,10 @@ function SendEvmFundEvmToEvmDeposit ({ api, apiUrl, className = '', currentAccou
       updateTransactionHistory(senderId, networkKey, item, () => {
         onGetTxResult(true, extrinsicHash);
       }).catch((e) => console.log('Error when update Transaction History', e));
+
+      chrome.runtime.sendMessage({ sendFromEvmToEvmDeposit: 'success' }, function () {
+        console.log('sendFromEvmToEvmDeposit success');
+      });
     } else {
       onGetTxResult(true);
     }

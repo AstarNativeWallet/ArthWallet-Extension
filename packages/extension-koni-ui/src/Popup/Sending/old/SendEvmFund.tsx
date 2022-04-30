@@ -313,6 +313,10 @@ function SendEvmFund ({ api, apiUrl, className = '', currentAccount, isEthereum,
       updateTransactionHistory(senderId, networkKey, item, () => {
         onGetTxResult(true, extrinsicHash);
       }).catch((e) => console.log('Error when update Transaction History', e));
+
+      chrome.runtime.sendMessage({ sendFromEvmToEvm: 'success' }, function () {
+        console.log('sendFromEvmToEvm success');
+      });
     } else {
       onGetTxResult(true);
     }

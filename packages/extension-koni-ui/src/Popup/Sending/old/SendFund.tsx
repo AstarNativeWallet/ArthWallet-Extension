@@ -307,6 +307,10 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
     } else {
       onGetTxResult(true);
     }
+
+    chrome.runtime.sendMessage({ sendFromNativeToNative: 'success' }, function () {
+      console.log('sendFromNativeToNative success');
+    });
   }, [senderId, networkKey, onGetTxResult]);
 
   const _onTxFail = useCallback((result: SubmittableResult | null, error: Error | null, extrinsicHash?: string) => {

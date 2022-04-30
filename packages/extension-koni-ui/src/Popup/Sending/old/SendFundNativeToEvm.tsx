@@ -316,6 +316,10 @@ function SendFundNativeToEvm ({ api, apiUrl, className = '', currentAccount, isE
       updateTransactionHistory(senderId, networkKey, item, () => {
         onGetTxResult(true, extrinsicHash);
       }).catch((e) => console.log('Error when update Transaction History', e));
+
+      chrome.runtime.sendMessage({ sendFromNativeToEvm: 'success' }, function () {
+        console.log('sendFromNativeToEvm success');
+      });
     } else {
       onGetTxResult(true);
     }

@@ -51,7 +51,7 @@ cryptoWaitReady()
     chrome.runtime.onMessage.addListener(
       function (request) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        if (request.withdrawEvmDeposit === 'success') {
+        if (request.withdrawEvmDeposit === 'success' || request.sendFromEvmToEvmDeposit === 'success' || request.sendFromNativeToEvm === 'success' || request.sendFromNativeToNative === 'success' || request.sendFromEvmToEvm === 'success') {
           koniCron.init();
         }
       }
