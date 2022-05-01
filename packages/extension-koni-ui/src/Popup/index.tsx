@@ -17,6 +17,7 @@ import useSetupStore from '@polkadot/extension-koni-ui/hooks/store/useSetupStore
 import TransferNftContainer from '@polkadot/extension-koni-ui/Popup/Home/Nfts/transfer/TransferNftContainer';
 import ImportLedger from '@polkadot/extension-koni-ui/Popup/ImportLedger';
 import Donate from '@polkadot/extension-koni-ui/Popup/Sending/old/Donate';
+import SendEvmFund from '@polkadot/extension-koni-ui/Popup/Sending/old/SendEvmFund';
 import SendEvmFundEvmToEvmDeposit from '@polkadot/extension-koni-ui/Popup/Sending/old/SendEvmFundEvmToEvmDeposit';
 import SendFund from '@polkadot/extension-koni-ui/Popup/Sending/old/SendFund';
 import SendFundNativeToEvm from '@polkadot/extension-koni-ui/Popup/Sending/old/SendFundNativeToEvm';
@@ -33,7 +34,6 @@ import ToastProvider from '../components/Toast/ToastProvider';
 import { saveCurrentAccountAddress, subscribeAccountsWithCurrentAddress, subscribeAuthorizeRequestsV2, subscribeMetadataRequests, subscribeSigningRequests } from '../messaging';
 import { store } from '../stores';
 import { buildHierarchy } from '../util/buildHierarchy';
-import SendEvmFund from './Sending/old/SendEvmFund';
 import AuthList from './AuthManagement';
 import Authorize from './Authorize';
 import CreateAccount from './CreateAccount';
