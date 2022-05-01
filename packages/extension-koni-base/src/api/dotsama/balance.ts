@@ -314,8 +314,8 @@ function subscribeWithAccountMulti (addresses: string[], networkKey: string, net
 export function subscribeEVMBalance (networkKey: string, api: ApiPromise, addresses: string[], callback: (networkKey: string, rs: BalanceItem) => void) {
   const balanceJson = state.getBalance();
 
-  // console.log('balanceJson networkKey: ', networkKey);
-  // console.log('balanceJson.details[networkKey]: ', balanceJson.details[networkKey]);
+  console.log('balanceJsonEVM networkKey: ', networkKey);
+  console.log('balanceJsonEVM.details[networkKey]: ', balanceJson.details[networkKey]);
 
   const balanceItemEVM: BalanceItem = {
     state: APIItemState.PENDING,
@@ -339,10 +339,9 @@ export function subscribeEVMBalance (networkKey: string, api: ApiPromise, addres
   const interval = setInterval(getBalance, ASTAR_REFRESH_BALANCE_INTERVAL);
   const unsub2 = subscribeERC20Interval(addresses, networkKey, api, balanceItemEVM, callback);
 
-  console.log(balanceItemEVM);
+  // console.log(balanceItemEVM);
 
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  chrome.storage.local.set({ balanceItemEVM: balanceItemEVM });
 
   return () => {
     clearInterval(interval);
