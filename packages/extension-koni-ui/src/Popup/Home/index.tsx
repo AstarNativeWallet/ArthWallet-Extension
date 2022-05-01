@@ -47,7 +47,7 @@ import buyIcon from '../../assets/buy-icon.svg';
 // import donateIcon from '../../assets/donate-icon.svg';
 import sendIcon from '../../assets/send-icon.svg';
 // import swapIcon from '../../assets/swap-icon.svg';
-// import ChainBalances from './ChainBalances/ChainBalances';
+import ChainBalances from './ChainBalances/ChainBalances';
 import Crowdloans from './Crowdloans/Crowdloans';
 import TransactionHistory from './TransactionHistory/TransactionHistory';
 import ActionButton from './ActionButton';
@@ -160,7 +160,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
     window.localStorage.getItem('show_zero_balances') === '1'
   );
   const [isQrModalOpen, setQrModalOpen] = useState<boolean>(false);
-  const [selectedNetworkBalance] = useState<BigN>(BN_ZERO);
+  const [selectedNetworkBalance, setSelectedNetworkBalance] = useState<BigN>(BN_ZERO);
   const [trigger] = useState(() => `home-balances-${++tooltipId}`);
   const [
     { iconTheme: qrModalIconTheme,
@@ -213,7 +213,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
   }, [address, activatedTab, _setActiveTab]);
 
   const { crowdloanContributeMap,
-    // networkBalanceMaps,
+    networkBalanceMaps,
     totalBalanceValue } = useAccountBalance(networkKey, showedNetworks, crowdloanNetworks);
 
   const _toggleZeroBalances = useCallback(() => {
@@ -239,7 +239,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
     setQrModalOpen(false);
   }, []);
 
-  // const _isAccountAll = isAccountAll(address);
+  const _isAccountAll = isAccountAll(address);
 
   const tabItems = useMemo<TabHeaderItemType[]>(() => {
     return getTabHeaderItems(address, t);
@@ -273,7 +273,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
       <Header
         changeAccountCallback={onChangeAccount}
         className={'home-header'}
-        // isContainDetailHeader={true}
+        isContainDetailHeader={true}
         isShowZeroBalances={isShowZeroBalances}
         setShowBalanceDetail={setShowBalanceDetail}
         showAdd
@@ -378,47 +378,53 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
       }
 
       <div className={'home-tab-contents'}>
-        <div className='total-balances'>
-          <a className = 'total-text'>{t<string>('Total')}</a>
-          <div
-            className={'account-total-btn'}
-            data-for={trigger}
-            data-tip={true}
-            onClick={_toggleBalances}
-          >
-            {isShowBalance
+      
+        {activatedTab === 1 && (
+          <div 
+          className='Home-contents'>
+          <div className='total-balances'>
+            <a className = 'total-text'>{t<string>('Total')}</a>
+            <div
+              className={'account-total-btn'}
+              data-for={trigger}
+              data-tip={true}
+              onClick={_toggleBalances}
+              >
+              {isShowBalance
               ? <BalanceVal
                 startWithSymbol
                 symbol={'$'}
                 value={isShowBalanceDetail ? selectedNetworkBalance : totalBalanceValue}
               />
               : <span>*********</span>
-            }
+              }
+            </div>
           </div>
-        </div>
+          <div className='action-button-wrapper'>
+              <ActionButton
+                className='action-button-recieve'
+                iconSrc={buyIcon}
+                onClick={_showQrModal}
+                tooltipContent={t<string>('Receive')}
+              />
+            <Link
+              className={'action-button-send'}
+              to={'/account/send-fund'}
+            >
+              <ActionButton
+                iconSrc={sendIcon}
+                tooltipContent={t<string>('Send')}
+              />
+            </Link>
 
-        <div className='action-button-wrapper'>
-          <ActionButton
-            iconSrc={buyIcon}
-            onClick={_showQrModal}
-            tooltipContent={t<string>('Receive')}
-          />
-        </div>
+          </div>
+          {_isAccountAll && (
+          <AccountMenuLists
+            class = 'accountlist'>
 
-        <Link
-          className={'action-button-wrapper'}
-          to={'/account/send-fund'}
-        >
-          <ActionButton
-            iconSrc={sendIcon}
-            tooltipContent={t<string>('Send')}
-          />
-        </Link>
-
-        {activatedTab === 1 && (
-
-          <AccountMenuLists></AccountMenuLists>
-          /*
+          </AccountMenuLists>
+          )}
+          {!_isAccountAll && (
           <ChainBalances
             address={address}
             currentNetworkKey={networkKey}
@@ -431,7 +437,9 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
             setQrModalProps={setQrModalProps}
             setSelectedNetworkBalance={setSelectedNetworkBalance}
             setShowBalanceDetail={setShowBalanceDetail}
-          /> */
+          />
+          )}
+          </div>
         )}
 
         {activatedTab === 2 && (
@@ -517,6 +525,9 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
   display: flex;
   flex-direction: column;
   height: 100%;
+  .account-menu-lists {
+    margin-top : 100px;
+  }
 
   .home-tab-contents {
     flex: 1;
@@ -561,7 +572,26 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
   }
 
   .action-button-wrapper {
-    margin-right: 10px;
+    display: block;
+    width: 100%;
+    padding:0 54px;
+  }
+  .action-button-send {
+    display: inline-block;
+    width: 164px;
+    height: 40px;
+    background: #494B56;
+    border-radius: 4px;
+    margin-left:22px;
+
+  }
+  .action-button-recieve {
+    display: inline-block;
+    width: 164px;
+    height: 40px;
+    background: #494B56;
+    border-radius: 4px;
+
   }
 
   .home__account-qr-modal .subwallet-modal {
@@ -609,12 +639,11 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
     flex-direction: column;
     align-items: flex-start;
     padding: 0px;
+    margin-top: 18px;
     
     position: absolute;
     width: 404px;
     height: 312px;
-    left: 26px;
-    top: 313px;
     
   }
 
@@ -625,8 +654,7 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
     position: relative;
     width: 350px;
     height: 150px;
-    left: 55px;
-    top: 18px;
+    margin: 18px auto;
     
     background: radial-gradient(98.81% 537.96% at 0% 58.33%, #8380C2 0%, #D4D3FF 100%) /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */;
     border-radius: 6px;

@@ -59,7 +59,7 @@ export default styled(HomeActionButton)(({ theme }: Props) => `
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: ${theme.buttonBackground};
+    
     cursor: pointer;
     height: 40px;
     width: 174px;
