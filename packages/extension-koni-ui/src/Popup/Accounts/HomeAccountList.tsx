@@ -134,6 +134,7 @@ function HomeAccountList ({ address, changeAccountCallback, className, closeSett
       className={className}
       onClick={_changeAccount}
     >
+      {/**
       {isSelected
         ? (
           <img
@@ -144,7 +145,7 @@ function HomeAccountList ({ address, changeAccountCallback, className, closeSett
         : (
           <div className='account-unchecked-item' />
         )
-      }
+      } */}
       <AccountInfoEl
         address={address}
         className='account__account-item'
