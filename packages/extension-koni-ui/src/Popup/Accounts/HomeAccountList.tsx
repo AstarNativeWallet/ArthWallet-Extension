@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { CurrentAccountInfo } from '@polkadot/extension-base/background/KoniTypes';
-import check from '@polkadot/extension-koni-ui/assets/check.svg';
+//import check from '@polkadot/extension-koni-ui/assets/check.svg';
 import changeAvatar from '@polkadot/extension-koni-ui/assets/icon/camera.svg';
 import changeAvatarHover from '@polkadot/extension-koni-ui/assets/icon/camera-hover.svg';
 import { AccountContext, AccountInfoEl, ActionContext } from '@polkadot/extension-koni-ui/components';
@@ -134,8 +134,9 @@ function HomeAccountList ({ address, changeAccountCallback, className, closeSett
       className={className}
       onClick={_changeAccount}
     >
-      {/**
+      
       {isSelected
+      /**
         ? (
           <img
             alt='check'
@@ -152,7 +153,7 @@ function HomeAccountList ({ address, changeAccountCallback, className, closeSett
         genesisHash={genesisHash}
         name={name}
         parentName={parentName}
-        showCopyBtn={false}
+        showCopyBtn={true}
         suri={suri}
         type={type}
       />
