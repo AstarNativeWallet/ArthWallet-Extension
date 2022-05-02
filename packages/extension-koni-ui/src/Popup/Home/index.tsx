@@ -401,7 +401,35 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                 }
               </div>
             </div>
+
+            {_isAccountAll && (
+            <div className='IsAccountALL'>
             <div className='action-button-wrapper'>
+              <ActionButton
+                className='action-button-recieve'
+                isDisabled
+                iconSrc={buyIcon}
+                tooltipContent={t<string>('Receive')}
+              />
+              <Link
+                isDisabled
+                className={'action-button-send'}
+                to={'/account/send-fund'}
+              >
+                <ActionButton
+                  isDisabled
+                  iconSrc={sendIcon}
+                  tooltipContent={t<string>('Send')}
+                />
+              </Link>
+
+            </div>
+              <AccountMenuLists></AccountMenuLists>
+              </div>
+            )}
+            {!_isAccountAll && (
+              <div className='not-isAccountAll'>
+                <div className='action-button-wrapper'>
               <ActionButton
                 className='action-button-recieve'
                 iconSrc={buyIcon}
@@ -419,10 +447,6 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
               </Link>
 
             </div>
-            {_isAccountAll && (
-              <AccountMenuLists></AccountMenuLists>
-            )}
-            {!_isAccountAll && (
               <ChainBalances
                 address={address}
                 currentNetworkKey={networkKey}
@@ -436,6 +460,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                 setSelectedNetworkBalance={setSelectedNetworkBalance}
                 setShowBalanceDetail={setShowBalanceDetail}
               />
+              </div>
             )}
           </div>
         )}
