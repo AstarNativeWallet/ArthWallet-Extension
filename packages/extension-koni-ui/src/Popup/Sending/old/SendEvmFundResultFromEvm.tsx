@@ -15,8 +15,6 @@ import { ThemeProps } from '@polkadot/extension-koni-ui/types';
 import { getScanExplorerTransactionHistoryUrl, isSupportSubscan, toShort } from '@polkadot/extension-koni-ui/util';
 
 import cloneLogo from '../../../assets/clone.svg';
-// /Users/noda/ArthWallet-Extension/ArthWallet-Extension/packages/extension-koni-ui/src/assets/clone.svg
-// /Users/noda/ArthWallet-Extension/ArthWallet-Extension/packages/extension-koni-ui/src/Popup/Sending/old/SendEvmFundResult.tsx
 
 export interface Props extends ThemeProps {
   className?: string;
