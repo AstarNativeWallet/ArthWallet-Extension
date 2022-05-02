@@ -45,6 +45,7 @@ interface Props {
   withEllipsis?: boolean;
   withLabel?: boolean;
   isEthereum?: boolean;
+  networkKey?: string;
 }
 
 type ExportedType = React.ComponentType<Props> & {
@@ -224,15 +225,21 @@ class InputAddress extends React.PureComponent<Props, State> {
   }
 
   private getFiltered (): Option[] {
-    const { filter, optionsAll, isEthereum, type = DEFAULT_TYPE } = this.props;
+    const { filter, optionsAll, isEthereum, type = DEFAULT_TYPE, networkKey } = this.props;
+
+    console.log('networkKey in inputAddress component is :', networkKey);
 
     let options: Option[] = [];
 
     if (optionsAll) {
-      if (isEthereum) {
-        options = optionsAll[type].filter((opt) => opt.key && (opt.key.includes('0x') || opt.key === 'header-accounts'));
+      if (networkKey === ('astar' || 'astarEvm')) {
+        options = optionsAll[type].filter((opt) => (opt.key && (opt.key.includes('0x') || !opt.key.includes('0x'))) || opt.key === 'header-accounts');
       } else {
-        options = optionsAll[type].filter((opt) => opt.key && (!opt.key.includes('0x') || opt.key === 'header-accounts'));
+        if (isEthereum) {
+          options = optionsAll[type].filter((opt) => opt.key && (opt.key.includes('0x') || opt.key === 'header-accounts'));
+        } else {
+          options = optionsAll[type].filter((opt) => opt.key && (!opt.key.includes('0x') || opt.key === 'header-accounts'));
+        }
       }
     }
 

@@ -29,9 +29,9 @@ import { BN, BN_HUNDRED, BN_ZERO, isFunction } from '@polkadot/util';
 
 import Available from './component/Available';
 import InputAddress from './component/InputAddress';
-import AuthTransactionNativeToEvm from './AuthTransactionNativeToEvm';
+import AuthTransactionFromNative from './AuthTransactionFromNative';
 import { toSS58Address } from './convert';
-import SendFundResultNativeToEvm from './SendFundResultNativeToEvm';
+import SendFundResultFromNative from './SendFundResultFromNative';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -133,7 +133,7 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
       isApiReady
         ? isProviderSupportSendFund
           ? (
-            <SendFundNativeToEvm
+            <SendFundFromNative
               api={api}
               apiUrl={apiUrl}
               className={'send-fund-container'}
@@ -166,7 +166,7 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
   );
 }
 
-function SendFundNativeToEvm ({ api, apiUrl, className = '', currentAccount, isEthereum, networkKey, setWrapperClass }: ContentProps): React.ReactElement {
+function SendFundFromNative ({ api, apiUrl, className = '', currentAccount, isEthereum, networkKey, setWrapperClass }: ContentProps): React.ReactElement {
   const { t } = useTranslation();
   const propSenderId = currentAccount?.address;
   const [amount, setAmount] = useState<BN | undefined>(BN_ZERO);
@@ -183,6 +183,8 @@ function SendFundNativeToEvm ({ api, apiUrl, className = '', currentAccount, isE
   const [isShowTxModal, setShowTxModal] = useState<boolean>(false);
   const [txResult, setTxResult] = useState<TxResult>({ isShowTxResult: false, isTxSuccess: false });
   const { isShowTxResult } = txResult;
+
+  console.log('networkKey in fn SendFundFromNative is : ', networkKey);
 
   useEffect(() => {
     const fromId = senderId as string;
@@ -402,6 +404,7 @@ function SendFundNativeToEvm ({ api, apiUrl, className = '', currentAccount, isE
                 params={recipientId}
               />
             }
+            networkKey={networkKey}
             onChange={setRecipientId}
             type='allPlus'
             withEllipsis
@@ -513,14 +516,14 @@ function SendFundNativeToEvm ({ api, apiUrl, className = '', currentAccount, isE
           </div>
         </div>
       ) : (
-        <SendFundResultNativeToEvm
+        <SendFundResultFromNative
           networkKey={networkKey}
           onResend={_onResend}
           txResult={txResult}
         />
       )}
       {extrinsic && isShowTxModal && (
-        <AuthTransactionNativeToEvm
+        <AuthTransactionFromNative
           api={api}
           apiUrl={apiUrl}
           extrinsic={extrinsic}

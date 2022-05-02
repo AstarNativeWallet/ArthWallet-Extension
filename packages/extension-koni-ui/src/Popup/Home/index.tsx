@@ -338,20 +338,11 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
             </Link>
             <Link
               className={'action-button-wrapper'}
-              to={'/account/send-native-to-evm-fund'}
+              to={'/account/send-from-native-fund'}
             >
               <ActionButton
                 iconSrc={sendIcon}
-                tooltipContent={t<string>('Native → EVM Send')}
-              />
-            </Link>
-            <Link
-              className={'action-button-wrapper'}
-              to={'/account/send-fund'}
-            >
-              <ActionButton
-                iconSrc={sendIcon}
-                tooltipContent={t<string>('Native → Native Send')}
+                tooltipContent={ networkKey === ('astar' || 'astarEvm') ? t<string>('Native → Native/EVM Send') : t<string>('Native → Native Send') }
               />
             </Link>
             <Link

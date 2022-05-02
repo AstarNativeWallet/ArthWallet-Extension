@@ -349,10 +349,10 @@ function subscribeWithAccountMulti(addresses, networkKey, networkAPI, callback) 
 }
 
 function subscribeEVMBalance(networkKey, api, addresses, callback) {
-  const balanceJson = _handlers.state.getBalance(); // console.log('balanceJson networkKey: ', networkKey);
-  // console.log('balanceJson.details[networkKey]: ', balanceJson.details[networkKey]);
+  const balanceJson = _handlers.state.getBalance();
 
-
+  console.log('balanceJsonEVM networkKey: ', networkKey);
+  console.log('balanceJsonEVM.details[networkKey]: ', balanceJson.details[networkKey]);
   const balanceItemEVM = {
     state: _KoniTypes.APIItemState.PENDING,
     free: balanceJson.details[networkKey].free || '0',
@@ -371,12 +371,9 @@ function subscribeEVMBalance(networkKey, api, addresses, callback) {
 
   getBalance();
   const interval = setInterval(getBalance, _constants.ASTAR_REFRESH_BALANCE_INTERVAL);
-  const unsub2 = subscribeERC20Interval(addresses, networkKey, api, balanceItemEVM, callback);
-  console.log(balanceItemEVM); // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  const unsub2 = subscribeERC20Interval(addresses, networkKey, api, balanceItemEVM, callback); // console.log(balanceItemEVM);
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
 
-  chrome.storage.local.set({
-    balanceItemEVM: balanceItemEVM
-  });
   return () => {
     clearInterval(interval);
     unsub2 && unsub2();

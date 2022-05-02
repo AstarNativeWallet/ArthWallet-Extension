@@ -126,7 +126,7 @@ async function extractParams (api: ApiPromise, address: string, options: Partial
   return [address, { ...options, signer: new AccountSigner(api.registry, pair) }];
 }
 
-function AuthTransactionNativeToEvm ({ api, apiUrl, className, extrinsic, onCancel, requestAddress, txHandler }: Props): React.ReactElement<Props> | null {
+function AuthTransactionFromNative ({ api, apiUrl, className, extrinsic, onCancel, requestAddress, txHandler }: Props): React.ReactElement<Props> | null {
   const { t } = useTranslation();
   const [error, setError] = useState<Error | null>(null);
   const [isBusy, setBusy] = useState(false);
@@ -284,7 +284,7 @@ function AuthTransactionNativeToEvm ({ api, apiUrl, className, extrinsic, onCanc
   );
 }
 
-export default React.memo(styled(AuthTransactionNativeToEvm)(({ theme }: ThemeProps) => `
+export default React.memo(styled(AuthTransactionFromNative)(({ theme }: ThemeProps) => `
   .subwallet-modal {
     max-width: 460px;
     left: 0;

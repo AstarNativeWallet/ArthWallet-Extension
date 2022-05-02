@@ -33,7 +33,7 @@ function getErrorMessage (txError?: Error | null): string | null {
   return null;
 }
 
-function SendFundResultNativeToEvm ({ className = '', failResultText = 'Send Fund Fail', networkKey, onResend, successResultText = 'Send Fund Successful', txResult: { extrinsicHash, isTxSuccess, txError } }: Props): React.ReactElement<Props> {
+function SendFundResultFromNative ({ className = '', failResultText = 'Send Fund Fail', networkKey, onResend, successResultText = 'Send Fund Successful', txResult: { extrinsicHash, isTxSuccess, txError } }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const navigate = useContext(ActionContext);
   const _backToHome = useCallback(
@@ -117,7 +117,7 @@ function SendFundResultNativeToEvm ({ className = '', failResultText = 'Send Fun
   );
 }
 
-export default React.memo(styled(SendFundResultNativeToEvm)(({ theme }: ThemeProps) => `
+export default React.memo(styled(SendFundResultFromNative)(({ theme }: ThemeProps) => `
   margin: 20px 45px 0;
 
   .kn-send-fund-result {
