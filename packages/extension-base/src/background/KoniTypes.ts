@@ -225,7 +225,7 @@ export interface ApiProps extends ApiState {
   useEvmAddress?: boolean
 }
 
-export type NetWorkGroup = 'RELAY_CHAIN' | 'POLKADOT_PARACHAIN' | 'KUSAMA_PARACHAIN' | 'MAIN_NET' | 'TEST_NET' | 'UNKNOWN';
+export type NetWorkGroup = 'RELAY_CHAIN' | 'POLKADOT_PARACHAIN' | 'KUSAMA_PARACHAIN' | 'ASTAR_MAINNET' | 'TEST_NET' | 'UNKNOWN' |'MAIN_NET';
 
 export interface NetWorkInfo {
   chain: string;
