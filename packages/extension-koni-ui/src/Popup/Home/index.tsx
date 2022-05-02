@@ -378,67 +378,65 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
       }
 
       <div className={'home-tab-contents'}>
-      
+
         {activatedTab === 1 && (
-          <div 
-          className='Home-contents'>
-          <div className='total-balances'>
-            <a className = 'total-text'>{t<string>('Total')}</a>
-            <div
-              className={'account-total-btn'}
-              data-for={trigger}
-              data-tip={true}
-              onClick={_toggleBalances}
+          <div
+            className='Home-contents'
+          >
+            <div className='total-balances'>
+              <a className = 'total-text'>{t<string>('Total')}</a>
+              <div
+                className={'account-total-btn'}
+                data-for={trigger}
+                data-tip={true}
+                onClick={_toggleBalances}
               >
-              {isShowBalance
-              ? <BalanceVal
-                startWithSymbol
-                symbol={'$'}
-                value={isShowBalanceDetail ? selectedNetworkBalance : totalBalanceValue}
-              />
-              : <span>*********</span>
-              }
+                {isShowBalance
+                  ? <BalanceVal
+                    startWithSymbol
+                    symbol={'$'}
+                    value={isShowBalanceDetail ? selectedNetworkBalance : totalBalanceValue}
+                    />
+                  : <span>*********</span>
+                }
+              </div>
             </div>
-          </div>
-          <div className='action-button-wrapper'>
+            <div className='action-button-wrapper'>
               <ActionButton
                 className='action-button-recieve'
                 iconSrc={buyIcon}
                 onClick={_showQrModal}
                 tooltipContent={t<string>('Receive')}
               />
-            <Link
-              className={'action-button-send'}
-              to={'/account/send-fund'}
-            >
-              <ActionButton
-                iconSrc={sendIcon}
-                tooltipContent={t<string>('Send')}
+              <Link
+                className={'action-button-send'}
+                to={'/account/send-fund'}
+              >
+                <ActionButton
+                  iconSrc={sendIcon}
+                  tooltipContent={t<string>('Send')}
+                />
+              </Link>
+
+            </div>
+            {_isAccountAll && (
+              <AccountMenuLists></AccountMenuLists>
+            )}
+            {!_isAccountAll && (
+              <ChainBalances
+                address={address}
+                currentNetworkKey={networkKey}
+                isShowBalanceDetail={isShowBalanceDetail}
+                isShowZeroBalances={isShowZeroBalances}
+                networkBalanceMaps={networkBalanceMaps}
+                networkKeys={showedNetworks}
+                networkMetadataMap={networkMetadataMap}
+                setQrModalOpen={setQrModalOpen}
+                setQrModalProps={setQrModalProps}
+                setSelectedNetworkBalance={setSelectedNetworkBalance}
+                setShowBalanceDetail={setShowBalanceDetail}
               />
-            </Link>
-
-          </div>
-          {_isAccountAll && (
-          <AccountMenuLists
-            class = 'accountlist'>
-
-          </AccountMenuLists>
-          )}
-          {!_isAccountAll && (
-          <ChainBalances
-            address={address}
-            currentNetworkKey={networkKey}
-            isShowBalanceDetail={isShowBalanceDetail}
-            isShowZeroBalances={isShowZeroBalances}
-            networkBalanceMaps={networkBalanceMaps}
-            networkKeys={showedNetworks}
-            networkMetadataMap={networkMetadataMap}
-            setQrModalOpen={setQrModalOpen}
-            setQrModalProps={setQrModalProps}
-            setSelectedNetworkBalance={setSelectedNetworkBalance}
-            setShowBalanceDetail={setShowBalanceDetail}
-          />
-          )}
+            )}
           </div>
         )}
 
@@ -525,9 +523,6 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
   display: flex;
   flex-direction: column;
   height: 100%;
-  .account-menu-lists {
-    margin-top : 100px;
-  }
 
   .home-tab-contents {
     flex: 1;
@@ -634,17 +629,13 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
     color: #FFFFFF;
     
   }
-  .accountlist {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 0px;
-    margin-top: 18px;
-    
-    position: absolute;
-    width: 404px;
-    height: 312px;
-    
+
+  .account-menu-lists {
+    position: relative;
+    width: 406px;
+    left: 28px;
+    margin-top: 14px;
+
   }
 
   .total-balances {
@@ -656,7 +647,7 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
     height: 150px;
     margin: 18px auto;
     
-    background: radial-gradient(98.81% 537.96% at 0% 58.33%, #8380C2 0%, #D4D3FF 100%) /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */;
+    background: radial-gradient(98.81% 537.96% at 0% 58.33%, #8380C2 0%, #D4D3FF 100%);
     border-radius: 6px;
     }
 `));

@@ -101,12 +101,11 @@ function AccountMenuLists ({ changeAccountCallback, className, closeSetting, onF
 }
 
 export default React.memo(styled(AccountMenuLists)(({ theme }: Props) => `
-  margin-top: 50px;
   right: 5px;
   user-select: none;
 
   .account-menu-lists {
-    margin-top : 30px;
+    margin-top : 10px;
     background-color: #FFFFF;
 
   }
