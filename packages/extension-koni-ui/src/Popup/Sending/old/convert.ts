@@ -39,7 +39,7 @@ export const toSS58Address = (h160Address: string) => {
 // Memo: The EVM address won't be same as the address shown in MetaMask imported from the same private key of the SS58
 // Ref: https://github.com/polkadot-js/common/issues/931
 
-const isValidAddressPolkadotAddress = (address: string) => {
+export const isValidAddressPolkadotAddress = (address: string) => {
   try {
     encodeAddress(isHex(address) ? hexToU8a(address) : decodeAddress(address));
 

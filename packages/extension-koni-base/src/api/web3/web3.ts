@@ -23,7 +23,7 @@ export const connectWeb3Apis = (networks = EVM_NETWORKS): Record<string, Web3> =
       if (networkInfo.provider.startsWith('ws')) {
         const reconnectOptions: WebsocketProviderOptions = { reconnect: {
           auto: true,
-          delay: 1000,
+          delay: 3000,
           maxAttempts: 10
         } };
 

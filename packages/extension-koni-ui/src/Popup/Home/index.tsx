@@ -329,29 +329,20 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
             </div>
             <Link
               className={'action-button-wrapper'}
-              to={'/account/send-evm-to-evmdeposit-fund'}
-            >
-              <ActionButton
-                iconSrc={sendIcon}
-                tooltipContent={t<string>('EVM → EVMDeposit Send')}
-              />
-            </Link>
-            <Link
-              className={'action-button-wrapper'}
               to={'/account/send-from-native-fund'}
             >
               <ActionButton
                 iconSrc={sendIcon}
-                tooltipContent={ networkKey === ('astar' || 'astarEvm') ? t<string>('Native → Native/EVM Send') : t<string>('Native → Native Send') }
+                tooltipContent={(networkKey === 'astar' || networkKey === 'astarEvm' || networkKey === 'shiden' || networkKey === 'shidenEvm') ? t<string>('Native → Native/EVM Send') : t<string>('Native → Native Send') }
               />
             </Link>
             <Link
               className={'action-button-wrapper'}
-              to={'/account/send-evm-fund'}
+              to={'/account/send-from-evm-fund'}
             >
               <ActionButton
                 iconSrc={sendIcon}
-                tooltipContent={t<string>('EVM → EVM Send')}
+                tooltipContent={(networkKey === 'astar' || networkKey === 'astarEvm' || networkKey === 'shiden' || networkKey === 'shidenEvm') ? t<string>('EVM → EVM/EVMDeposit Send') : t<string>('EVM → EVM Send') }
               />
             </Link>
             {/* <Link

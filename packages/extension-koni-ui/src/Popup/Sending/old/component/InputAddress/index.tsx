@@ -14,6 +14,7 @@ import { ThemeProps } from '@polkadot/extension-koni-ui/types';
 import { createOptionItem } from '@polkadot/ui-keyring/options/item';
 import { isNull, isUndefined } from '@polkadot/util';
 
+import { isValidAddressPolkadotAddress, isValidEvmAddress } from '../../convert';
 import Dropdown from '../Dropdown';
 import Static from '../Static';
 import { toAddress } from '../util';
@@ -227,13 +228,13 @@ class InputAddress extends React.PureComponent<Props, State> {
   private getFiltered (): Option[] {
     const { filter, optionsAll, isEthereum, type = DEFAULT_TYPE, networkKey } = this.props;
 
-    console.log('networkKey in inputAddress component is :', networkKey);
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 
     let options: Option[] = [];
 
     if (optionsAll) {
-      if (networkKey === ('astar' || 'astarEvm')) {
-        options = optionsAll[type].filter((opt) => (opt.key && (opt.key.includes('0x') || !opt.key.includes('0x'))) || opt.key === 'header-accounts');
+      if (networkKey === 'astar' || networkKey === 'astarEvm' || networkKey === 'shiden' || networkKey === 'shidenEvm') {
+        options = optionsAll[type].filter((opt) => (opt.key && (isValidEvmAddress(opt.key) || isValidAddressPolkadotAddress(opt.key) || opt.key === 'header-accounts')));
       } else {
         if (isEthereum) {
           options = optionsAll[type].filter((opt) => opt.key && (opt.key.includes('0x') || opt.key === 'header-accounts'));

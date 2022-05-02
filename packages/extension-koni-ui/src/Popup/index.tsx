@@ -17,8 +17,7 @@ import useSetupStore from '@polkadot/extension-koni-ui/hooks/store/useSetupStore
 import TransferNftContainer from '@polkadot/extension-koni-ui/Popup/Home/Nfts/transfer/TransferNftContainer';
 import ImportLedger from '@polkadot/extension-koni-ui/Popup/ImportLedger';
 import Donate from '@polkadot/extension-koni-ui/Popup/Sending/old/Donate';
-import SendEvmFund from '@polkadot/extension-koni-ui/Popup/Sending/old/SendEvmFund';
-import SendEvmFundEvmToEvmDeposit from '@polkadot/extension-koni-ui/Popup/Sending/old/SendEvmFundEvmToEvmDeposit';
+import SendFundFromEvm from '@polkadot/extension-koni-ui/Popup/Sending/old/SendFundFromEvm';
 import SendFundFromNative from '@polkadot/extension-koni-ui/Popup/Sending/old/SendFundFromNative';
 import WithdrawEvmDeposit from '@polkadot/extension-koni-ui/Popup/Sending/old/WithdrawEvmDeposit';
 import Settings from '@polkadot/extension-koni-ui/Popup/Settings';
@@ -235,9 +234,8 @@ export default function Popup (): React.ReactElement {
                           <Route path='/account/networks'>{wrapWithErrorBoundary(<Networks />, 'account-networks')}</Route>
                           <Route path='/account/network-edit'>{wrapWithErrorBoundary(<NetworkEdit />, 'account-network-edit')}</Route>
                           <Route path='/account/withdraw-evm-deposit'>{wrapWithErrorBoundary(<WithdrawEvmDeposit />, 'withdraw-evm-deposit')}</Route>
-                          <Route path='/account/send-evm-to-evmdeposit-fund'>{wrapWithErrorBoundary(<SendEvmFundEvmToEvmDeposit />, 'send-evm-to-evmdeposit-fund')}</Route>
+                          <Route path='/account/send-from-evm-fund'>{wrapWithErrorBoundary(<SendFundFromEvm />, 'send-from-evm-fund')}</Route>
                           <Route path='/account/send-from-native-fund'>{wrapWithErrorBoundary(<SendFundFromNative />, 'send-from-native-fund')}</Route>
-                          <Route path='/account/send-evm-fund'>{wrapWithErrorBoundary(<SendEvmFund />, 'send-evm-fund')}</Route>
                           <Route path='/account/donate'>{wrapWithErrorBoundary(<Donate />, 'donate')}</Route>
                           <Route path='/account/send-nft'>{wrapWithErrorBoundary(<TransferNftContainer />, 'send-nft')}</Route>
                           <Route path={`${PHISHING_PAGE_REDIRECT}/:website`}>{wrapWithErrorBoundary(<PhishingDetected />, 'phishing-page-redirect')}</Route>

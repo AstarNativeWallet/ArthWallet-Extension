@@ -4,10 +4,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-// import { PromiEvent, TransactionConfig, TransactionReceipt } from 'web3-core';
 import { TransactionReceipt } from 'web3-core';
 
-// import { ApiPromise, SubmittableResult } from '@polkadot/api';
 import { ApiPromise } from '@polkadot/api';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { DeriveBalancesAll } from '@polkadot/api-derive/types';
@@ -20,8 +18,10 @@ import useTranslation from '@polkadot/extension-koni-ui/hooks/useTranslation';
 import { updateTransactionHistory } from '@polkadot/extension-koni-ui/messaging';
 import { Header } from '@polkadot/extension-koni-ui/partials';
 import InputBalance from '@polkadot/extension-koni-ui/Popup/Sending/old/component/InputBalance';
+import EvmAuthTransactionFromEvm from '@polkadot/extension-koni-ui/Popup/Sending/old/EvmAuthTransactionFromEvm';
 import useApi from '@polkadot/extension-koni-ui/Popup/Sending/old/hook/useApi';
 import { useCall } from '@polkadot/extension-koni-ui/Popup/Sending/old/hook/useCall';
+import SendEvmFundResultFromEvm from '@polkadot/extension-koni-ui/Popup/Sending/old/SendEvmFundResultFromEvm';
 import { TxResult } from '@polkadot/extension-koni-ui/Popup/Sending/old/types';
 import { RootState } from '@polkadot/extension-koni-ui/stores';
 import { ThemeProps } from '@polkadot/extension-koni-ui/types';
@@ -32,8 +32,6 @@ import { BN, BN_HUNDRED, BN_ZERO, isFunction } from '@polkadot/util';
 
 import Available from './component/Available';
 import InputAddress from './component/InputAddress';
-import EvmAuthTransactionEvmToEvmDeposit from './EvmAuthTransactionEvmToEvmDeposit';
-import SendEvmFundResultEvmToEvmDeposit from './SendEvmFundResultEvmToEvmDeposit';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -65,23 +63,6 @@ function extractTxResult (result: TransactionReceipt): ExtractTxResultType {
   const { events } = result;
 
   console.log('extractTxResult(events): ', events);
-
-  // const transferEvent = events.find((e) =>
-  //   e.event.section === 'balances' &&
-  //   e.event.method.toLowerCase() === 'transfer'
-  // );
-
-  // if (transferEvent) {
-  //   change = transferEvent.event.data[2]?.toString() || '0';
-  // }
-
-  // const withdrawEvent = events.find((e) =>
-  //   e.event.section === 'balances' &&
-  //   e.event.method.toLowerCase() === 'withdraw');
-
-  // if (withdrawEvent) {
-  //   fee = withdrawEvent.event.data[1]?.toString();
-  // }
 
   return {
     change,
@@ -137,7 +118,7 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
       isApiReady
         ? isProviderSupportSendFund
           ? (
-            <SendEvmFundEvmToEvmDeposit
+            <SendFundFromEvm
               api={api}
               apiUrl={apiUrl}
               className={'send-fund-container'}
@@ -170,7 +151,7 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
   );
 }
 
-function SendEvmFundEvmToEvmDeposit ({ api, apiUrl, className = '', currentAccount, isEthereum, networkKey, setWrapperClass }: ContentProps): React.ReactElement {
+function SendFundFromEvm ({ api, apiUrl, className = '', currentAccount, isEthereum, networkKey, setWrapperClass }: ContentProps): React.ReactElement {
   const { t } = useTranslation();
   const propSenderId = currentAccount?.address;
   const [amount, setAmount] = useState<BN | undefined>(BN_ZERO);
@@ -388,7 +369,7 @@ function SendEvmFundEvmToEvmDeposit ({ api, apiUrl, className = '', currentAccou
             autoPrefill={false}
             className={'kn-field -field-2'}
             help={t<string>('Select a contact or paste the address you want to send funds to.')}
-            isEthereum={false}
+            isEthereum={isEthereum}
             // isDisabled={!!propRecipientId}
             label={t<string>('Send to address')}
             labelExtra={
@@ -399,6 +380,7 @@ function SendEvmFundEvmToEvmDeposit ({ api, apiUrl, className = '', currentAccou
                 params={recipientId}
               />
             }
+            networkKey={networkKey}
             onChange={setRecipientId}
             type='allPlus'
             withEllipsis
@@ -510,14 +492,14 @@ function SendEvmFundEvmToEvmDeposit ({ api, apiUrl, className = '', currentAccou
           </div>
         </div>
       ) : (
-        <SendEvmFundResultEvmToEvmDeposit
+        <SendEvmFundResultFromEvm
           networkKey={networkKey}
           onResend={_onResend}
           txResult={txResult}
         />
       )}
       {extrinsic && isShowTxModal && (
-        <EvmAuthTransactionEvmToEvmDeposit
+        <EvmAuthTransactionFromEvm
           amount={amount}
           api={api}
           apiUrl={apiUrl}
