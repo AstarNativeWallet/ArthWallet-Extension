@@ -13,7 +13,6 @@ import { withMulti, withObservable } from '@polkadot/extension-koni-ui/Popup/Sen
 import { ThemeProps } from '@polkadot/extension-koni-ui/types';
 import { createOptionItem } from '@polkadot/ui-keyring/options/item';
 import { isNull, isUndefined } from '@polkadot/util';
-
 import Dropdown from '../Dropdown';
 import Static from '../Static';
 import { toAddress } from '../util';
@@ -44,7 +43,8 @@ interface Props {
   value?: string | Uint8Array | string[] | null;
   withEllipsis?: boolean;
   withLabel?: boolean;
-  isEtherium?: boolean;
+  isEthereum?: boolean;
+  networkKey?: string;
 }
 
 type ExportedType = React.ComponentType<Props> & {
@@ -224,12 +224,14 @@ class InputAddressNew extends React.PureComponent<Props, State> {
   }
 
   private getFiltered (): Option[] {
-    const { filter, optionsAll, isEtherium, type = DEFAULT_TYPE } = this.props;
+    const { filter, optionsAll, isEthereum, type = DEFAULT_TYPE } = this.props;
+
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 
     let options: Option[] = [];
 
     if (optionsAll) {
-      if (isEtherium) {
+      if (isEthereum) {
         options = optionsAll[type].filter((opt) => opt.key && (opt.key.includes('0x') || opt.key === 'header-accounts'));
       } else {
         options = optionsAll[type].filter((opt) => opt.key && (!opt.key.includes('0x') || opt.key === 'header-accounts'));
@@ -288,7 +290,6 @@ class InputAddressNew extends React.PureComponent<Props, State> {
 
 const ExportedComponent = withMulti(
   styled(InputAddressNew)(({ theme }: ThemeProps) => `
-  
   padding-left: 60px;
   padding-right: 10px;
   display: flex;

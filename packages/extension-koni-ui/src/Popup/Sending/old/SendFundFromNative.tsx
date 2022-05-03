@@ -32,6 +32,7 @@ import InputAddress from './component/InputAddress';
 import AuthTransactionFromNative from './AuthTransactionFromNative';
 import { toSS58Address } from './convert';
 import SendFundResultFromNative from './SendFundResultFromNative';
+import LabelHelp from './component/LabelHelp';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -370,12 +371,36 @@ function SendFundFromNative ({ api, apiUrl, className = '', currentAccount, isEt
       {/* eslint-disable-next-line multiline-ternary */}
       {!isShowTxResult ? (
         <div className={`${className} -main-content`}>
+          <div className='subtitle-transfer'>
+            {t<string>('Transfer')}
+          </div>
+          <div className = {'transferable-container'}>
+            <div>
+              <p className = {'transfer-total'}>Transferable Total</p>
+              <div className='transferable-amount'>
+                <Available
+                  api={api}
+                  apiUrl={apiUrl}
+                  params={senderId}
+                />
+              </div>
+            </div>
+          </div>
+          <div>
+            <a className='address-text'>
+              {t<string>('Send from account')}
+            </a>
+            <LabelHelp
+              className = 'send-help'
+              help= {t<string>('The account you will send funds from.')}
+            />
           <InputAddress
             className={'kn-field -field-1'}
             defaultValue={propSenderId}
-            help={t<string>('The account you will send funds from.')}
-            isEthereum={isEthereum}
-            // isDisabled={!!propSenderId}
+            // help={t<string>('The account you will send funds from.')}
+            //isEthereum={isEthereum}
+            /*
+            isDisabled={!!propSenderId}
             label={t<string>('Send from account')}
             labelExtra={
               <Available
@@ -384,16 +409,27 @@ function SendFundFromNative ({ api, apiUrl, className = '', currentAccount, isEt
                 label={t<string>('Transferable')}
                 params={senderId}
               />
-            }
+            } */
             onChange={setSenderId}
             type='account'
             withEllipsis
           />
+          </div>
+          <div>
+          <a className='address-text'>
+              {t<string>('Send to address')}
+            </a>
+            <LabelHelp
+              className = 'send-help'
+              help= {t<string>('Select a contact or paste the address you want to send funds to.')}
+            />
           <InputAddress
             autoPrefill={false}
             className={'kn-field -field-2'}
-            help={t<string>('Select a contact or paste the address you want to send funds to.')}
             isEthereum={true}
+            // help={t<string>('Select a contact or paste the address you want to send funds to.')}
+            
+            /*
             label={t<string>('Send to address')}
             // isDisabled={!!propRecipientId}
             labelExtra={
@@ -403,12 +439,13 @@ function SendFundFromNative ({ api, apiUrl, className = '', currentAccount, isEt
                 label={t<string>('Transferable')}
                 params={recipientId}
               />
-            }
+            }*/
             networkKey={networkKey}
             onChange={setRecipientId}
             type='allPlus'
             withEllipsis
           />
+          </div>
           {recipientPhish && (
             <Warning
               className={'kn-l-warning'}
@@ -624,4 +661,70 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
     margin-right: -15px;
     background-color: ${theme.background};
   }
+  .transfer-total {
+    position: relative;
+    top: 28px;
+
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 100%;
+    
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.05em;
+    
+    color: #F0F0F0;
+  }
+  .transferable-amount {
+    position: relative;
+    bottom: -20px;
+
+
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 100%;
+    /* identical to box height, or 24px */
+
+    text-align : center;
+    letter-spacing: 0.05em;
+    
+    color: #F0F0F0; 
+  }
+  .transferable-container {
+    margin 21px auto 16px;
+    width: 328px;
+    height: 104px;
+    background: rgba(79, 88, 128, 1);
+    border-radius: 8px;
+  }
+  .subtitle-transfer {
+    font-family: 'Roboto';
+    font-style: bold;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 100%;
+    /* identical to box height, or 24px */
+
+    text-align: center;
+    letter-spacing: 0.05em;
+    
+    color: #FFFFFF;
+    }
+    .send-help {
+      color: #FDFDFD;
+      opacity: 0.5;
+    }
+    .address-text {
+      font-family: 'Roboto';
+      font-style: normal;
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 100%;
+      letter-spacing: 0.03em;
+      color: #FFFFF;
+    }
 `));

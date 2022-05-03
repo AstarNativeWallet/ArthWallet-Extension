@@ -414,7 +414,7 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
               className={'kn-field -field-1'}
               defaultValue={propSenderId}
               // help={t<string>('The account you will send funds from.')}
-              isEtherium={isEthereum}
+              isEthereum={isEthereum}
               // isDisabled={!!propSenderId}
 
               // label={t<string>('Send from account')}
@@ -445,7 +445,7 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
               autoPrefill={false}
               className={'kn-field -field-2'}
               // help={t<string>('Select a contact or paste the address you want to send funds to.')}
-              isEtherium={isEthereum}
+              isEthereum={isEthereum}
               // label={t<string>('Send to address')}
 
               // isDisabled={!!propRecipientId}
