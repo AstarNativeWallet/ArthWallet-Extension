@@ -162,7 +162,6 @@ function SeedAndPath ({ account, className, evmAccount, evmName, keyTypes, name,
               name={name}
             />
           </div>
-
           <div className='account-info-item'>
             <RadioStatus
               checked={isEvmAccountSelected}
@@ -177,7 +176,6 @@ function SeedAndPath ({ account, className, evmAccount, evmName, keyTypes, name,
               type={EVM_ACCOUNT_TYPE}
             />
           </div>
-
           <TextAreaWithLabel
             className='seed-and-path__seed-input'
             isError={!!error}
@@ -206,7 +204,6 @@ function SeedAndPath ({ account, className, evmAccount, evmName, keyTypes, name,
               value={genesis}
             />
           }
-
           {isEvmAccountSelected && seed &&
             <Dropdown
               className='seed-and-path__genesis-selection'
@@ -217,7 +214,6 @@ function SeedAndPath ({ account, className, evmAccount, evmName, keyTypes, name,
               value={evmGenesis}
             />
           }
-
           {!!error && !!seed && (
             <Warning
               className='seed-and-path__error'

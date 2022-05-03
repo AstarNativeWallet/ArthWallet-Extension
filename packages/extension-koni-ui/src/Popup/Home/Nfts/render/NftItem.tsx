@@ -157,7 +157,6 @@ function NftItem ({ className, collectionId, collectionImage, data, onClickBack 
           </div>
           <div></div>
         </div>
-
         <div className={'detail-container'}>
           <div className={'img-container'}>
             {
@@ -189,7 +188,6 @@ function NftItem ({ className, collectionId, collectionImage, data, onClickBack 
                 </video>
             }
           </div>
-
           {
             // @ts-ignore
             account.account.address !== 'ALL' &&
@@ -203,7 +201,6 @@ function NftItem ({ className, collectionId, collectionImage, data, onClickBack 
               </div>
             </div>
           }
-
           {
             data.description &&
             <div>

@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.KoniSubcription = void 0;
+exports.KoniSubscription = void 0;
 
 var _rxjs = require("rxjs");
 
@@ -21,7 +21,7 @@ var _accounts = require("@polkadot/ui-keyring/observable/accounts");
 
 // Copyright 2019-2022 @polkadot/extension-koni authors & contributors
 // SPDX-License-Identifier: Apache-2.0
-class KoniSubcription {
+class KoniSubscription {
   subscriptionMap = {}; // @ts-ignore
 
   getSubscriptionMap() {
@@ -78,7 +78,7 @@ class KoniSubcription {
   }
 
   detectAddresses(currentAccountAddress) {
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       if (currentAccountAddress === _constants.ALL_ACCOUNT_KEY) {
         _accounts.accounts.subject.pipe((0, _rxjs.take)(1)).subscribe(accounts => {
           resolve([...Object.keys(accounts)]);
@@ -190,4 +190,4 @@ class KoniSubcription {
 
 }
 
-exports.KoniSubcription = KoniSubcription;
+exports.KoniSubscription = KoniSubscription;

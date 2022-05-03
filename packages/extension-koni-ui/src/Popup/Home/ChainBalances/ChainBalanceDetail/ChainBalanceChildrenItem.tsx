@@ -37,18 +37,15 @@ function ChainBalanceChildrenItem ({ accountInfo, balanceInfo, className, isLoad
             className='chain-balance--children-item__logo'
             src={getLogoByNetworkKey(balanceInfo.key.toLowerCase(), accountInfo.networkKey)}
           />
-
           <div className='chain-balance--children-item__meta-wrapper'>
             <div className='chain-balance--children-item__chain-name'>{balanceInfo.key}</div>
           </div>
         </div>
-
         {isLoading && (
           <div className='chain-balance--children-item__main-area-part-2'>
             <Loading />
           </div>
         )}
-
         {!isLoading && (
           <div className='chain-balance--children-item__main-area-part-2'>
             <div className='chain-balance--children-item__balance'>
@@ -64,14 +61,12 @@ function ChainBalanceChildrenItem ({ accountInfo, balanceInfo, className, isLoad
                 value={balanceInfo.convertedBalanceValue}
               />
             </div>
-
             {/* {(!!mockDetailData.length || !!mockDetailData.length) && ( */}
             {/*  <div className='chain-balance--children-item__toggle' /> */}
             {/* )} */}
           </div>
         )}
       </div>
-
       <div className='chain-balance--children-item__separator' />
     </div>
   );

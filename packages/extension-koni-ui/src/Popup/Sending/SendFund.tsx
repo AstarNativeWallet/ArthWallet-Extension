@@ -87,7 +87,6 @@ function SendFund ({ className }: Props): React.ReactElement {
               type='allPlus'
               withEllipsis
             />
-
             <InputAddress
               autoPrefill={false}
               className={'send-fund-item'}
@@ -104,7 +103,6 @@ function SendFund ({ className }: Props): React.ReactElement {
               type='allPlus'
               withEllipsis
             />
-
             {/* <InputBalance */}
             {/*  autoFocus */}
             {/*  className={'send-fund-balance-item'} */}
@@ -133,7 +131,6 @@ function SendFund ({ className }: Props): React.ReactElement {
           txResult={txResult}
         />
       )}
-
       {isShowTxModal && (
         <AuthTransaction
           extrinsic={extrinsic}

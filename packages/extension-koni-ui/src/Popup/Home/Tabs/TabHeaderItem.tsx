@@ -51,7 +51,6 @@ function TabHeaderItem ({ className, isActivated, isDarkTheme, item, onSelect }:
           className={'tab-header-item__icon'}
           src={getImgSrc(item, isActivated, isDarkTheme)}
         />
-
         <div className='tab-header-item__label'>{item.label}</div>
       </div>
     </div>

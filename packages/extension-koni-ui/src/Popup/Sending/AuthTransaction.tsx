@@ -104,12 +104,10 @@ function AuthTransaction ({ className, extrinsic, onCancel, requestAddress }: Pr
             passwordError={passwordError}
             requestAddress={requestAddress}
           />
-
           <Tip
             className={'auth-transaction__tip-block'}
             onChange={setTip}
           />
-
           <Output
             className={'auth-transaction__call-hash'}
             isDisabled
@@ -118,7 +116,6 @@ function AuthTransaction ({ className, extrinsic, onCancel, requestAddress }: Pr
             value={'0x9d32effb1d8573d6ce02f6721bc5442c33a23eed88ea194815f473582550b508'}
             withCopy
           />
-
           <div className='auth-transaction__submit-wrapper'>
             <Button
               className={'auth-transaction__submit-btn'}

@@ -13,6 +13,7 @@ var _endpoints = require("@polkadot/extension-koni-base/api/endpoints");
 
 // Copyright 2019-2022 @polkadot/extension-koni-base authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+// import { numberToHex } from '@polkadot/util';
 // eslint-disable-next-line @typescript-eslint/no-var-requires,@typescript-eslint/no-unsafe-assignment
 const ERC20Contract = require('./api-helper/ERC20Contract.json'); // eslint-disable-next-line @typescript-eslint/no-var-requires,@typescript-eslint/no-unsafe-assignment
 
@@ -36,7 +37,14 @@ const connectWeb3Apis = function () {
 
     if (networkInfo && networkInfo.provider) {
       if (networkInfo.provider.startsWith('ws')) {
-        apiMap[networkKey] = new _web.default(new _web.default.providers.WebsocketProvider(networkInfo.provider));
+        const reconnectOptions = {
+          reconnect: {
+            auto: true,
+            delay: 1000,
+            maxAttempts: 10
+          }
+        };
+        apiMap[networkKey] = new _web.default(new _web.default.providers.WebsocketProvider(networkInfo.provider, reconnectOptions));
       } else if (networkInfo.provider.startsWith('http')) {
         apiMap[networkKey] = new _web.default(new _web.default.providers.HttpProvider(networkInfo.provider));
       }

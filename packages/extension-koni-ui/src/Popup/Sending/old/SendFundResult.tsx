@@ -86,7 +86,6 @@ function SendFundResult ({ className = '', failResultText = 'Send Fund Fail', ne
           >
             {t<string>('Back To Home')}
           </Button>
-
           {extrinsicHash && viewTransactionBtn(networkKey, extrinsicHash)}
         </div>
         : <div className='kn-send-fund-result'>
@@ -101,19 +100,16 @@ function SendFundResult ({ className = '', failResultText = 'Send Fund Fail', ne
               ? (t<string>('There was a problem with your request. You can track its progress on the Transaction History page.'))
               : (t<string>('There was a problem with your request.'))
             }
-
             {errorMessage && (
               <div className={'kn-l-text-danger'}>{errorMessage}</div>
             )}
           </div>
-
           <Button
             className='kn-send-fund-stt-btn'
             onClick={onResend}
           >
             {t<string>('Resend')}
           </Button>
-
           {extrinsicHash && viewTransactionBtn(networkKey, extrinsicHash)}
         </div>
       }

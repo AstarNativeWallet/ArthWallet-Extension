@@ -43,33 +43,27 @@ function NetworkEdit ({ className }: Props): React.ReactElement {
         showSubHeader
         subHeaderName={t<string>('Network Edit')}
       />
-
       <div className={className}>
         <InputWithLabel
           label={t<string>('Network name')}
           value={networkInfo.name}
         />
-
         <InputWithLabel
           label={t<string>('New RPC URL')}
           value={networkInfo.rpcUrl}
         />
-
         <InputWithLabel
           label={t<string>('Chain id')}
           value={networkInfo.chainId}
         />
-
         <InputWithLabel
           label={t<string>('Currency symbol')}
           value={networkInfo.currencySymbol}
         />
-
         <InputWithLabel
           label={t<string>('Block Explorer (Optional)')}
           value={networkInfo.blockExplorerUrl}
         />
-
         <ButtonArea>
           <Button
             className='network-edit-button'

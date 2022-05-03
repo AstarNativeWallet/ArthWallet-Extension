@@ -91,29 +91,24 @@ function TransactionHistoryItem ({ className,
               </>
             }
           </div>
-
           <div className='history-item__meta-wrapper'>
             <div className='history-item__meta-item-1 history-item__name'>
               {toShort(item.extrinsicHash, 6, 4)}
             </div>
-
             <div className='history-item__meta-item-2'>
               <span className='history-item__action-name'>{item.action}</span>
               <span className='history-item__date'>{customFormatDate(item.time, '#MMM# #DD#')}</span>
             </div>
           </div>
         </div>
-
         <div className='history-item__part-2'>
           <div className='history-item__value'>
             <span>{item.action === 'received' ? '+' : '-'}</span>
-
             <BalanceVal
               symbol={registry.chainTokens[0]}
               value={transactionValue.balanceValue}
             />
           </div>
-
           {
             !!item.fee && (<div className='history-item__fee'>
               <span className={'history-item__fee-label'}>{t<string>('Fee:')}</span>
@@ -125,7 +120,6 @@ function TransactionHistoryItem ({ className,
           }
         </div>
       </div>
-
       {!isSupportScanExplorer && (<Tooltip
         text={t<string>('You can\'t view this transaction because it isn\'t supported on Subscan')}
         trigger={trigger}

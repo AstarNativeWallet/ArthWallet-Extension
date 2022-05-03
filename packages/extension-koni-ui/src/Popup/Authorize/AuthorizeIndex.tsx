@@ -47,13 +47,11 @@ function AuthorizeIndex ({ className, index, name, onNextClick, onPreviousClick,
             size='sm'
           />
         </div>
-
         <div>
           <span>{name}</span>
           <span className='currentStep'>{index + 1}</span>
           <span className='totalSteps'>/{totalItems}</span>
         </div>
-
         <div className='step-arrow-right'>
           <FontAwesomeIcon
             className={`stepArrow arrowRight ${nextClickActive ? 'active' : ''}`}

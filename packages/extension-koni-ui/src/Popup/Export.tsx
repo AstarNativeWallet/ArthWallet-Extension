@@ -114,7 +114,6 @@ function ExportAccount ({ className, match: { params: { address } } }: Props): R
             <Warning>
               {t<string>('Account "All" doesn\'t support this action. Please switch to another account')}
             </Warning>
-
             <ActionBar className='export__action-bar'>
               <ActionText
                 className='cancel-button'
@@ -131,7 +130,6 @@ function ExportAccount ({ className, match: { params: { address } } }: Props): R
             <Warning className='export-warning'>
               {t<string>('You are exporting your account. Keep it safe and don\'t share it with anyone.')}
             </Warning>
-
             {!privateKey && <div className='export__password-area'>
               <InputWithLabel
                 className='export__input-label'
@@ -151,7 +149,6 @@ function ExportAccount ({ className, match: { params: { address } } }: Props): R
                 </Warning>
               )}
             </div>}
-
             {privateKey && <div className='export__private-key-area'>
               <Label label={t<string>('Private Key')}>
                 <div className='private-key'>
@@ -169,7 +166,6 @@ function ExportAccount ({ className, match: { params: { address } } }: Props): R
                 </div>
               </Label>
             </div>}
-
             <div className='export__action-area'>
               <Button
                 className='export-button'

@@ -43,7 +43,6 @@ function HomeActionButton ({ className, iconSrc, isDisabled = false, onClick, to
           src={iconSrc}
         />
       </div>
-
       {tooltipContent && (
         <Tooltip
           offset={{ top: 8 }}

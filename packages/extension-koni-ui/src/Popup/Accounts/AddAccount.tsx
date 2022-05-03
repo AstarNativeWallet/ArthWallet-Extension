@@ -55,7 +55,6 @@ function AddAccount ({ className }: Props): React.ReactElement<Props> {
           <div className='no-accounts'>
             <p>{t<string>("You currently don't have any accounts. Create your first account or import another account to get started.")}</p>
           </div>
-
           <Button
             className='add-account-btn create-account'
             data-export-button
@@ -68,7 +67,6 @@ function AddAccount ({ className }: Props): React.ReactElement<Props> {
               {t<string>('Create new account')}
             </Link>
           </Button>
-
           <Button
             className='add-account-btn'
             data-export-button
@@ -80,7 +78,6 @@ function AddAccount ({ className }: Props): React.ReactElement<Props> {
               {t<string>('Import account from pre-existing seed')}
             </Link>
           </Button>
-
           <Button
             className='add-account-btn'
             data-export-button

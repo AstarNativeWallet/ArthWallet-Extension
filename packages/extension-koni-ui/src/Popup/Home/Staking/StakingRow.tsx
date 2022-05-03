@@ -89,7 +89,6 @@ function StakingRow ({ amount, chainName, className, index, logo, price, reward,
           onClick={handleToggleReward}
           src={logo}
         />
-
         <div className={'staking-info-container'}>
           <div
             className={'info-wrapper'}
@@ -99,7 +98,6 @@ function StakingRow ({ amount, chainName, className, index, logo, price, reward,
               <div className={'chain-name'}>{chainName}</div>
               <div className={'balance-description'}>Staking balance</div>
             </div>
-
             <div className={'balance-container'}>
               <div className={'meta-container'}>
                 <div className={'staking-amount'}>
@@ -108,7 +106,6 @@ function StakingRow ({ amount, chainName, className, index, logo, price, reward,
                 </div>
                 <div className={'price-container'}>${parsePrice(price, amount as string)}</div>
               </div>
-
               <div>
                 <div className={'toggle-container'}>
                   <div className={'chain-balance-item__toggle'} />
@@ -116,7 +113,6 @@ function StakingRow ({ amount, chainName, className, index, logo, price, reward,
               </div>
             </div>
           </div>
-
           {
             showReward &&
             <div className={'extra-container'}>
@@ -127,7 +123,6 @@ function StakingRow ({ amount, chainName, className, index, logo, price, reward,
                   <div className={'chain-unit'}>{unit}</div>
                 </div>
               </div>
-
               <div className={'reward-container'}>
                 <div className={'reward-title'}>Latest reward</div>
                 <div className={'reward-amount'}>
@@ -135,7 +130,6 @@ function StakingRow ({ amount, chainName, className, index, logo, price, reward,
                   <div className={'chain-unit'}>{unit}</div>
                 </div>
               </div>
-
               <div className={'reward-container'}>
                 <div className={'reward-title'}>Total slash</div>
                 <div className={'reward-amount'}>
@@ -143,7 +137,6 @@ function StakingRow ({ amount, chainName, className, index, logo, price, reward,
                   <div className={'chain-unit'}>{unit}</div>
                 </div>
               </div>
-
               {
                 chainName === 'astar' &&
                 <div className={'reward-container'}>

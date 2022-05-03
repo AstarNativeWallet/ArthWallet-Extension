@@ -25,12 +25,10 @@ function StakingContainer ({ className, data, loading, priceMap }: Props): React
       <div className={'staking-container'}>
 
         {loading && <Spinner />}
-
         {/* @ts-ignore */}
         {data.length === 0 && !loading &&
           <EmptyList />
         }
-
         {data.length > 0 && !loading &&
           // @ts-ignore
           data.map((stakingDataType: StakingDataType, index: number) => {

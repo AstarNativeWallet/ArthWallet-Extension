@@ -163,7 +163,6 @@ function NetworkMenu ({ className, currentNetwork, genesisOptions, isNotHaveAcco
                   className={'network-logo'}
                   src={getLogoByGenesisHash(value)}
                 />
-
                 <span className={value === currentNetwork ? 'network-text__selected' : 'network-text'}>{text}</span>
                 {value === currentNetwork
                   ? (

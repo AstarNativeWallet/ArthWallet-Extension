@@ -12,7 +12,7 @@ import { PORT_CONTENT, PORT_EXTENSION } from '@polkadot/extension-base/defaults'
 import { AccountsStore } from '@polkadot/extension-base/stores';
 import { KoniCron } from '@polkadot/extension-koni-base/background/cron';
 import handlers, { initBackgroundWindow } from '@polkadot/extension-koni-base/background/handlers';
-import { KoniSubcription } from '@polkadot/extension-koni-base/background/subscription';
+import { KoniSubscription } from '@polkadot/extension-koni-base/background/subscription';
 import keyring from '@polkadot/ui-keyring';
 import { assert } from '@polkadot/util';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
@@ -39,12 +39,23 @@ cryptoWaitReady()
     keyring.loadAll({ store: new AccountsStore(), type: 'sr25519' });
 
     // Init subcription
-    const subscriptions = new KoniSubcription();
+    const subscriptions = new KoniSubscription();
 
     subscriptions.init();
 
     // Init cron
-    (new KoniCron(subscriptions)).init();
+    const koniCron = new KoniCron(subscriptions);
+
+    koniCron.init();
+
+    chrome.runtime.onMessage.addListener(
+      function (request) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        if (request.withdrawEvmDeposit === 'success' || request.sendFromEvmToEvmDeposit === 'success' || request.sendFromNativeToEvm === 'success' || request.sendFromNativeToNative === 'success' || request.sendFromEvmToEvm === 'success') {
+          koniCron.init();
+        }
+      }
+    );
 
     initBackgroundWindow(keyring);
 

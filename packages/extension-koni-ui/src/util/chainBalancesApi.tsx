@@ -168,7 +168,7 @@ export const parseBalancesInfo = (priceMap: Record<string, number>, tokenPriceMa
       price: priceMap[networkKey]
     });
 
-    if (['free', 'reserved', 'locked'].includes(key)) {
+    if (['free', 'reserved', 'locked', 'frozen'].includes(key)) {
       totalBalanceValue = totalBalanceValue.plus(balanceValue);
       totalConvertedBalanceValue = totalConvertedBalanceValue.plus(convertedBalanceValue);
     }

@@ -65,6 +65,7 @@ class KoniCron {
 
     _handlers.state.getCurrentAccount(currentAccountInfo => {
       if (currentAccountInfo) {
+        this.addCron('refreshBalance', this.refreshBalance(currentAccountInfo.address), _constants.CRON_AUTO_RECOVER_DOTSAMA_INTERVAL);
         this.addCron('refreshNft', this.refreshNft(currentAccountInfo.address), _constants.CRON_REFRESH_NFT_INTERVAL);
         this.addCron('refreshStakingReward', this.refreshStakingReward(currentAccountInfo.address), _constants.CRON_REFRESH_STAKING_REWARD_INTERVAL);
         this.addCron('refreshHistory', this.refreshHistory(currentAccountInfo.address), _constants.CRON_REFRESH_HISTORY_INTERVAL);
@@ -79,9 +80,11 @@ class KoniCron {
           this.resetNftTransferMeta();
           this.resetStakingReward();
           this.resetHistory();
+          this.removeCron('refreshBalance');
           this.removeCron('refreshNft');
           this.removeCron('refreshStakingReward');
           this.removeCron('refreshHistory');
+          this.addCron('refreshBalance', this.refreshBalance(address), _constants.CRON_AUTO_RECOVER_DOTSAMA_INTERVAL);
           this.addCron('refreshNft', this.refreshNft(address), _constants.CRON_REFRESH_NFT_INTERVAL);
           this.addCron('refreshStakingReward', this.refreshStakingReward(address), _constants.CRON_REFRESH_STAKING_REWARD_INTERVAL);
           this.addCron('refreshHistory', this.refreshHistory(address), _constants.CRON_REFRESH_HISTORY_INTERVAL);
@@ -105,6 +108,15 @@ class KoniCron {
       });
       ((_this$subscriptions = this.subscriptions) === null || _this$subscriptions === void 0 ? void 0 : _this$subscriptions.subscribeBalancesAndCrowdloans) && this.subscriptions.subscribeBalancesAndCrowdloans(address);
     });
+  }
+
+  refreshBalance(address) {
+    return () => {
+      var _this$subscriptions2;
+
+      console.log('Refresh Balance state');
+      ((_this$subscriptions2 = this.subscriptions) === null || _this$subscriptions2 === void 0 ? void 0 : _this$subscriptions2.subscribeBalancesAndCrowdloans) && this.subscriptions.subscribeBalancesAndCrowdloans(address);
+    };
   }
 
   refreshPrice() {

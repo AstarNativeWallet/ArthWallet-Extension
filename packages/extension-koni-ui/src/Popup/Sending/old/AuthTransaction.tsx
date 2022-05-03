@@ -249,20 +249,17 @@ function AuthTransaction ({ api, apiUrl, className, extrinsic, onCancel, request
               onError={toggleRenderError}
             />
           </div>
-
           <Address
             onChange={setSenderInfo}
             onEnter={_doStart}
             passwordError={passwordError}
             requestAddress={requestAddress}
           />
-
           <Tip
             className={'kn-l-tip-block'}
             onChange={setTip}
             registry={api.registry}
           />
-
           <Output
             className={'kn-l-call-hash'}
             isDisabled
@@ -271,7 +268,6 @@ function AuthTransaction ({ api, apiUrl, className, extrinsic, onCancel, request
             value={callHash}
             withCopy
           />
-
           <div className='kn-l-submit-wrapper'>
             <Button
               className={'kn-l-submit-btn'}

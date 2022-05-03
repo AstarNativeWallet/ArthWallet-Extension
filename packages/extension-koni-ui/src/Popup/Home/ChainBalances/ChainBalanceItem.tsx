@@ -116,10 +116,8 @@ function ChainBalanceItem ({ accountInfo,
             className='chain-balance-item__logo'
             src={accountInfo.networkLogo}
           />
-
           <div className='chain-balance-item__meta-wrapper'>
             <div className='chain-balance-item__chain-name'>{accountInfo.networkDisplayName}</div>
-
             <div className='chain-balance-item__bottom-area'>
               {!_isAccountAll && (
                 <>
@@ -144,7 +142,6 @@ function ChainBalanceItem ({ accountInfo,
                   />
                 </>
               )}
-
               {_isAccountAll && (
                 <div className='chain-balance-item__address'>
                   <span className='chain-balance-item__address-text'>
@@ -155,13 +152,11 @@ function ChainBalanceItem ({ accountInfo,
             </div>
           </div>
         </div>
-
         {isLoading && (
           <div className='chain-balance-item__main-area-part-2'>
             <Loading />
           </div>
         )}
-
         {!isLoading && (
           <div className='chain-balance-item__main-area-part-2'>
             <div className='chain-balance-item__balance'>
@@ -174,14 +169,12 @@ function ChainBalanceItem ({ accountInfo,
                 value={getTotalConvertedBalanceValue(balanceInfo)}
               />
             </div>
-
             {(!!balanceInfo.detailBalances.length || !!balanceInfo.childrenBalances.length) && (
               <div className='chain-balance-item__toggle' />
             )}
           </div>
         )}
       </div>
-
       <div className='chain-balance-item__separator' />
     </div>
   );

@@ -158,10 +158,11 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
         // showCancelButton
         showSearch
         showSettings
+        showSubHeader
+        subHeaderName={t<string>('Send fund (Native to Native)')}
         // showSubHeader
         // subHeaderName={t<string>('Send fund')}
       />
-
       {renderContent()}
     </div>
   );
@@ -309,6 +310,10 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
     } else {
       onGetTxResult(true);
     }
+
+    chrome.runtime.sendMessage({ sendFromNativeToNative: 'success' }, function () {
+      console.log('sendFromNativeToNative success');
+    });
   }, [senderId, networkKey, onGetTxResult]);
 
   const _onTxFail = useCallback((result: SubmittableResult | null, error: Error | null, extrinsicHash?: string) => {
@@ -354,6 +359,36 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
       {/* eslint-disable-next-line multiline-ternary */}
       {!isShowTxResult ? (
         <div className={`${className} -main-content`}>
+          {/*
+
+          <InputAddress
+            className={'kn-field -field-1'}
+            defaultValue={propSenderId}
+            help={t<string>('The account you will send funds from.')}
+            isEthereum={isEthereum}
+            // isDisabled={!!propSenderId}
+            label={t<string>('Send from account')}
+            labelExtra={
+              <Available
+                api={api}
+                apiUrl={apiUrl}
+                label={t<string>('Transferable')}
+                params={senderId}
+              />
+            }
+            onChange={setSenderId}
+            type='account'
+            withEllipsis
+          />
+          <InputAddress
+            autoPrefill={false}
+            className={'kn-field -field-2'}
+            help={t<string>('Select a contact or paste the address you want to send funds to.')}
+            isEthereum={isEthereum}
+            label={t<string>('Send to address')}
+            // isDisabled={!!propRecipientId}
+            */}
+          
           <div className='subtitle-transfer'>
             {t<string>('Transfer')}
           </div>
@@ -531,7 +566,6 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
               {t<string>('The transaction, after application of the transfer fees, will drop the available balance below the existential deposit. As such the transfer will fail. The account needs more free funds to cover the transaction fees.')}
             </Warning>
           )}
-
           <div className={'kn-l-submit-wrapper'}>
             <Button
               className={'cancel-btn'}
@@ -555,7 +589,6 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
           txResult={txResult}
         />
       )}
-
       {extrinsic && isShowTxModal && (
         <AuthTransaction
           api={api}

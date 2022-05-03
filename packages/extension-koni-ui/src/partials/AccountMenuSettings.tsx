@@ -108,7 +108,6 @@ function AccountMenuSettings ({ changeAccountCallback, className, closeSetting, 
           />
         ))}
       </div>
-
       <div className='koni-menu-items-container'>
         <div className='account-menu-settings-items-wrapper'>
           <MenuSettingItem className='account-menu-settings__menu-item'>
@@ -135,7 +134,6 @@ function AccountMenuSettings ({ changeAccountCallback, className, closeSetting, 
           {/*  </MenuSettingItem> */}
           {/* )} */}
         </div>
-
         <div className='account-menu-settings-items-wrapper'>
           {/* <MenuSettingItem className='account-menu-settings__menu-item'> */}
           {/*  <Link */}
@@ -179,7 +177,6 @@ function AccountMenuSettings ({ changeAccountCallback, className, closeSetting, 
             </Link>
           </MenuSettingItem>
         </div>
-
         <div className='account-menu-settings-items-wrapper'>
           <MenuSettingItem className='account-menu-settings__menu-item'>
             <Link
@@ -196,7 +193,6 @@ function AccountMenuSettings ({ changeAccountCallback, className, closeSetting, 
               <span>{t<string>('Attach external QR-signer account')}</span>
             </Link>
           </MenuSettingItem>
-
           <MenuSettingItem className='account-menu-settings__menu-item ledger'>
             {isLedgerEnabled
               ? (

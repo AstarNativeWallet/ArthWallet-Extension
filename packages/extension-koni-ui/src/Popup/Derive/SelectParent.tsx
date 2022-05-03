@@ -196,7 +196,6 @@ function SelectParent ({ className, isBusy, isLocked, onDerivationConfirmed, par
             </>
           )}
         </div>
-
         <ButtonArea>
           <NextStepButton
             className='next-step-btn'
