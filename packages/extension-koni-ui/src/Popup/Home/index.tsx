@@ -297,7 +297,6 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
       }
 
       <div className={'home-tab-contents'}>
-
         {activatedTab === 1 && (
           <div
             className='Home-contents'
