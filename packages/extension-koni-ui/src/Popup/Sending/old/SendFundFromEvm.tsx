@@ -141,7 +141,7 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
     <div className={`-wrapper ${className} ${wrapperClass}`}>
       <Header
         showAdd
-        showCancelButton
+        // showCancelButton
         showSearch
         showSettings
         showSubHeader
@@ -519,6 +519,12 @@ function SendFundFromEvm ({ api, apiUrl, className = '', currentAccount, isEther
           )}
           <div className={'kn-l-submit-wrapper'}>
             <Button
+              className={'cancel-btn'}
+              to='/'
+            >
+              {t<string>('cancel')}
+            </Button>
+            <Button
               className={'kn-submit-btn'}
               isDisabled={isSameAddress || !hasAvailable || !(recipientId) || (!amount && !isAll) || amountGtAvailableBalance || !!recipientPhish}
               onClick={_onSend}
@@ -566,10 +572,6 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
       cursor: not-allowed;
       opacity: 0.5;
       pointer-events: none !important;
-    }
-
-    .subheader-container__part-3 .kn-l-cancel-btn {
-      display: none;
     }
   }
 
@@ -631,13 +633,31 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
 
   .kn-l-submit-wrapper {
     position: sticky;
+    position: sticky;
     bottom: -15px;
-    padding: 15px;
+    padding: 15px 0px;
     margin-left: -15px;
     margin-bottom: -15px;
     margin-right: -15px;
     background-color: ${theme.background};
   }
+  .kn-submit-btn {
+    display: inline-block;
+    height: 48px;
+    width: 256px;
+    border-radius: 6px;
+    
+  }
+    .cancel-btn {
+      display: inline-block;
+      margin-right: 28px;
+      margin-left: 15px;
+      height: 48px;
+      width: 144px;
+      background: rgba(48, 59, 87, 1);
+      border-radius: 6px;
+  }
+
 
   .transfer-total {
     position: relative;
