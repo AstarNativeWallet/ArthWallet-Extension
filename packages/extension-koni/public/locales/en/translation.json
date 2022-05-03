@@ -312,5 +312,9 @@
   "Send fund (EVM to EVM)": "",
   "Send fund (EVM to Deposit)": "",
   "Send fund (Native to Native)": "",
-  "Send fund (Native to EVM)": ""
+  "Send fund (Native to EVM)": "",
+  "Native → Native/EVM Send": "",
+  "EVM → EVM/EVMDeposit Send": "",
+  "Send fund from EVM": "",
+  "Send fund from Native": ""
 }

@@ -1,7 +1,7 @@
 // Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { TransactionReceipt } from 'web3-core';
@@ -11,7 +11,8 @@ import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { DeriveBalancesAll } from '@polkadot/api-derive/types';
 import { TransactionHistoryItemType } from '@polkadot/extension-base/background/KoniTypes';
 import { AccountJson } from '@polkadot/extension-base/background/types';
-import { Button, Warning } from '@polkadot/extension-koni-ui/components';
+// import { state } from '@polkadot/extension-koni-base/background/handlers';
+import { AccountContext, Button, Warning } from '@polkadot/extension-koni-ui/components';
 import LoadingContainer from '@polkadot/extension-koni-ui/components/LoadingContainer';
 import Toggle from '@polkadot/extension-koni-ui/components/Toggle';
 import useTranslation from '@polkadot/extension-koni-ui/hooks/useTranslation';
@@ -45,6 +46,8 @@ interface ContentProps extends ThemeProps {
   currentAccount?: AccountJson | null;
   isEthereum: boolean;
   networkKey: string;
+  handlerInputAddress: () => void;
+  isInvalidToAddress: boolean;
 }
 
 function isRefcount (accountInfo: AccountInfoWithProviders | AccountInfoWithRefCount): accountInfo is AccountInfoWithRefCount {
@@ -91,8 +94,11 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
     currentNetwork: { isEthereum, networkKey } } = useSelector((state: RootState) => state);
   const [wrapperClass, setWrapperClass] = useState<string>('');
   const { api, apiUrl, isApiReady, isNotSupport } = useApi(networkKey);
+  const [isInvalidToAddress, setIsInvalidToAddress] = useState<boolean>(false);
 
   const isProviderSupportSendFund = !!api && !!api.tx && !!api.tx.balances;
+
+  console.log('isInvalidToAddress in Wrapper is: ', isInvalidToAddress);
 
   const notSupportSendFund = (supportType: SupportType = 'NETWORK') => {
     return (
@@ -109,6 +115,14 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
     );
   };
 
+  const _onInvalidToAddress = useCallback(() => {
+    setIsInvalidToAddress(true);
+    setTimeout(() => {
+      setIsInvalidToAddress(false);
+      console.log('isInvalidToAddress is: ', isInvalidToAddress);
+    }, 3000);
+  }, [isInvalidToAddress]);
+
   const renderContent = () => {
     if (currentAccount && isAccountAll(currentAccount.address)) {
       return notSupportSendFund('ACCOUNT');
@@ -123,7 +137,9 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
               apiUrl={apiUrl}
               className={'send-fund-container'}
               currentAccount={currentAccount}
+              handlerInputAddress={_onInvalidToAddress}
               isEthereum={isEthereum}
+              isInvalidToAddress={isInvalidToAddress}
               networkKey={networkKey}
               setWrapperClass={setWrapperClass}
               theme={theme}
@@ -144,14 +160,14 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
         showSearch
         showSettings
         showSubHeader
-        subHeaderName={t<string>('Send fund (EVM to Deposit)')}
+        subHeaderName={t<string>('Send fund from EVM')}
       />
       {renderContent()}
     </div>
   );
 }
 
-function SendFundFromEvm ({ api, apiUrl, className = '', currentAccount, isEthereum, networkKey, setWrapperClass }: ContentProps): React.ReactElement {
+function SendFundFromEvm ({ api, apiUrl, className = '', currentAccount, handlerInputAddress, isEthereum, isInvalidToAddress, networkKey, setWrapperClass }: ContentProps): React.ReactElement {
   const { t } = useTranslation();
   const propSenderId = currentAccount?.address;
   const [amount, setAmount] = useState<BN | undefined>(BN_ZERO);
@@ -168,6 +184,22 @@ function SendFundFromEvm ({ api, apiUrl, className = '', currentAccount, isEther
   const [isShowTxModal, setShowTxModal] = useState<boolean>(false);
   const [txResult, setTxResult] = useState<TxResult>({ isShowTxResult: false, isTxSuccess: false });
   const { isShowTxResult } = txResult;
+  const [addresses, setAddresses] = useState<string[]>();
+
+  const { hierarchy } = useContext(AccountContext);
+
+  useEffect((): void => {
+    const newAddresses: string[] = [];
+
+    for (const [key, value] of Object.entries(hierarchy)) {
+      console.log(`${key}: ${value.address}`);
+      newAddresses.push(value.address);
+    }
+
+    setAddresses(newAddresses);
+    console.log('newAddresses: ', newAddresses);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hierarchy]);
 
   useEffect((): void => {
     console.log('amount: ', amount);
@@ -344,160 +376,173 @@ function SendFundFromEvm ({ api, apiUrl, className = '', currentAccount, isEther
   return (
     <>
       {/* eslint-disable-next-line multiline-ternary */}
-      {!isShowTxResult ? (
-        <div className={`${className} -main-content`}>
-          <InputAddress
-            className={'kn-field -field-1'}
-            defaultValue={propSenderId}
-            help={t<string>('The account you will send funds from.')}
-            isEthereum={isEthereum}
-            // isDisabled={!!propSenderId}
-            label={t<string>('Send from account')}
-            labelExtra={
-              <Available
-                api={api}
-                apiUrl={apiUrl}
-                label={t<string>('Transferable')}
-                params={senderId}
-              />
-            }
-            onChange={setSenderId}
-            type='account'
-            withEllipsis
-          />
-          <InputAddress
-            autoPrefill={false}
-            className={'kn-field -field-2'}
-            help={t<string>('Select a contact or paste the address you want to send funds to.')}
-            isEthereum={isEthereum}
-            // isDisabled={!!propRecipientId}
-            label={t<string>('Send to address')}
-            labelExtra={
-              <Available
-                api={api}
-                apiUrl={apiUrl}
-                label={t<string>('Transferable')}
-                params={recipientId}
-              />
-            }
-            networkKey={networkKey}
-            onChange={setRecipientId}
-            type='allPlus'
-            withEllipsis
-          />
-          {recipientPhish && (
-            <Warning
-              className={'kn-l-warning'}
-              isDanger
-            >
-              {t<string>('The recipient is associated with a known phishing site on {{url}}', { replace: { url: recipientPhish } })}
-            </Warning>
-          )}
-          {isSameAddress && (
-            <Warning
-              className={'kn-l-warning'}
-              isDanger
-            >
-              {t<string>('The recipient address is the same as the sender address.')}
-            </Warning>
-          )}
-          {canToggleAll && isAll
-            ? (
-              <InputBalance
-                autoFocus
-                className={'kn-field -field-3'}
-                defaultValue={maxTransfer}
-                help={t<string>('The full account balance to be transferred, minus the transaction fees')}
-                isDisabled
-                key={maxTransfer?.toString()}
-                label={t<string>('transferable minus fees')}
-                registry={api.registry}
-              />
-            )
-            : (
-              <>
-                <InputBalance
-                  autoFocus
-                  className={'kn-field -field-3'}
-                  help={t<string>('Type the amount you want to transfer. Note that you can select the unit on the right e.g sending 1 milli is equivalent to sending 0.001.')}
-                  isError={!hasAvailable}
-                  isZeroable
-                  label={t<string>('amount')}
-                  onChange={setAmount}
-                  // maxValue={maxTransfer}
-                  placeholder={'0'}
-                  registry={api.registry}
-                />
-                {amountGtAvailableBalance && (
-                  <Warning
-                    className={'kn-l-warning'}
-                    isDanger
-                  >
-                    {t<string>('The amount you want to transfer is greater than your available balance.')}
-                  </Warning>
-                )}
-                <InputBalance
-                  className={'kn-field -field-4'}
-                  defaultValue={api.consts.balances.existentialDeposit}
-                  help={t<string>('The minimum amount that an account should have to be deemed active')}
-                  isDisabled
-                  label={t<string>('existential deposit')}
-                  registry={api.registry}
-                />
-              </>
-            )
-          }
-          {isFunction(api.tx.balances.transferKeepAlive) && (
-            <div className={'kn-field -toggle -toggle-1'}>
-              <Toggle
-                className='typeToggle'
-                label={
-                  isProtected
-                    ? t<string>('Transfer with account keep-alive checks')
-                    : t<string>('Normal transfer without keep-alive checks')
+      { isInvalidToAddress ? <div>
+        <Warning>{
+          <div>
+            <h3>Invalid destination address.</h3>
+            <a>Preventing you from GOX, you can only input this wallet account address.</a>
+          </div>}
+        </Warning>
+      </div>
+        : !isShowTxResult
+          ? (
+            <div className={`${className} -main-content`}>
+              <InputAddress
+                className={'kn-field -field-1'}
+                defaultValue={propSenderId}
+                help={t<string>('The account you will send funds from.')}
+                isEthereum={isEthereum}
+                // isDisabled={!!propSenderId}
+                label={t<string>('Send from account')}
+                labelExtra={
+                  <Available
+                    api={api}
+                    apiUrl={apiUrl}
+                    label={t<string>('Transferable')}
+                    params={senderId}
+                  />
                 }
-                onChange={setIsProtected}
-                value={isProtected}
+                onChange={setSenderId}
+                type='account'
+                withEllipsis
               />
-            </div>
-          )}
-          {canToggleAll && (
-            <div className={'kn-field -toggle -toggle-2'}>
-              <Toggle
-                className='typeToggle'
-                label={t<string>('Transfer the full account balance, reap the sender')}
-                onChange={setIsAll}
-                value={isAll}
+              <InputAddress
+                addresses={addresses}
+                autoPrefill={false}
+                className={'kn-field -field-2'}
+                handlerInputAddress={handlerInputAddress}
+                // isDisabled={!!propRecipientId}
+                help={t<string>('Select a contact or paste the address you want to send funds to.')}
+                isEthereum={isEthereum}
+                label={t<string>('Send to address')}
+                labelExtra={
+                  <Available
+                    api={api}
+                    apiUrl={apiUrl}
+                    label={t<string>('Transferable')}
+                    params={recipientId}
+                  />
+                }
+                networkKey={networkKey}
+                // eslint-disable-next-line react/jsx-no-bind
+                onChange={setRecipientId}
+                type='allPlus'
+                withEllipsis
               />
+              {recipientPhish && (
+                <Warning
+                  className={'kn-l-warning'}
+                  isDanger
+                >
+                  {t<string>('The recipient is associated with a known phishing site on {{url}}', { replace: { url: recipientPhish } })}
+                </Warning>
+              )}
+              {isSameAddress && (
+                <Warning
+                  className={'kn-l-warning'}
+                  isDanger
+                >
+                  {t<string>('The recipient address is the same as the sender address.')}
+                </Warning>
+              )}
+              {canToggleAll && isAll
+                ? (
+                  <InputBalance
+                    autoFocus
+                    className={'kn-field -field-3'}
+                    defaultValue={maxTransfer}
+                    help={t<string>('The full account balance to be transferred, minus the transaction fees')}
+                    isDisabled
+                    key={maxTransfer?.toString()}
+                    label={t<string>('transferable minus fees')}
+                    registry={api.registry}
+                  />
+                )
+                : (
+                  <>
+                    <InputBalance
+                      autoFocus
+                      className={'kn-field -field-3'}
+                      help={t<string>('Type the amount you want to transfer. Note that you can select the unit on the right e.g sending 1 milli is equivalent to sending 0.001.')}
+                      isError={!hasAvailable}
+                      isZeroable
+                      label={t<string>('amount')}
+                      onChange={setAmount}
+                      // maxValue={maxTransfer}
+                      placeholder={'0'}
+                      registry={api.registry}
+                    />
+                    {amountGtAvailableBalance && (
+                      <Warning
+                        className={'kn-l-warning'}
+                        isDanger
+                      >
+                        {t<string>('The amount you want to transfer is greater than your available balance.')}
+                      </Warning>
+                    )}
+                    <InputBalance
+                      className={'kn-field -field-4'}
+                      defaultValue={api.consts.balances.existentialDeposit}
+                      help={t<string>('The minimum amount that an account should have to be deemed active')}
+                      isDisabled
+                      label={t<string>('existential deposit')}
+                      registry={api.registry}
+                    />
+                  </>
+                )
+              }
+              {isFunction(api.tx.balances.transferKeepAlive) && (
+                <div className={'kn-field -toggle -toggle-1'}>
+                  <Toggle
+                    className='typeToggle'
+                    label={
+                      isProtected
+                        ? t<string>('Transfer with account keep-alive checks')
+                        : t<string>('Normal transfer without keep-alive checks')
+                    }
+                    onChange={setIsProtected}
+                    value={isProtected}
+                  />
+                </div>
+              )}
+              {canToggleAll && (
+                <div className={'kn-field -toggle -toggle-2'}>
+                  <Toggle
+                    className='typeToggle'
+                    label={t<string>('Transfer the full account balance, reap the sender')}
+                    onChange={setIsAll}
+                    value={isAll}
+                  />
+                </div>
+              )}
+              {!isProtected && !noReference && (
+                <Warning className={'kn-l-warning'}>
+                  {t<string>('There is an existing reference count on the sender account. As such the account cannot be reaped from the state.')}
+                </Warning>
+              )}
+              {!amountGtAvailableBalance && !isSameAddress && noFees && (
+                <Warning className={'kn-l-warning'}>
+                  {t<string>('The transaction, after application of the transfer fees, will drop the available balance below the existential deposit. As such the transfer will fail. The account needs more free funds to cover the transaction fees.')}
+                </Warning>
+              )}
+              <div className={'kn-l-submit-wrapper'}>
+                <Button
+                  className={'kn-submit-btn'}
+                  isDisabled={isSameAddress || !hasAvailable || !(recipientId) || (!amount && !isAll) || amountGtAvailableBalance || !!recipientPhish}
+                  onClick={_onSend}
+                >
+                  {t<string>('Make Transfer')}
+                </Button>
+              </div>
             </div>
+          )
+          : (
+            <SendEvmFundResultFromEvm
+              networkKey={networkKey}
+              onResend={_onResend}
+              txResult={txResult}
+            />
           )}
-          {!isProtected && !noReference && (
-            <Warning className={'kn-l-warning'}>
-              {t<string>('There is an existing reference count on the sender account. As such the account cannot be reaped from the state.')}
-            </Warning>
-          )}
-          {!amountGtAvailableBalance && !isSameAddress && noFees && (
-            <Warning className={'kn-l-warning'}>
-              {t<string>('The transaction, after application of the transfer fees, will drop the available balance below the existential deposit. As such the transfer will fail. The account needs more free funds to cover the transaction fees.')}
-            </Warning>
-          )}
-          <div className={'kn-l-submit-wrapper'}>
-            <Button
-              className={'kn-submit-btn'}
-              isDisabled={isSameAddress || !hasAvailable || !(recipientId) || (!amount && !isAll) || amountGtAvailableBalance || !!recipientPhish}
-              onClick={_onSend}
-            >
-              {t<string>('Make Transfer')}
-            </Button>
-          </div>
-        </div>
-      ) : (
-        <SendEvmFundResultFromEvm
-          networkKey={networkKey}
-          onResend={_onResend}
-          txResult={txResult}
-        />
-      )}
       {extrinsic && isShowTxModal && (
         <EvmAuthTransactionFromEvm
           amount={amount}

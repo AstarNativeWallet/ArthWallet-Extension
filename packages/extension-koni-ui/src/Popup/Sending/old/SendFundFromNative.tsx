@@ -159,7 +159,7 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
         showSearch
         showSettings
         showSubHeader
-        subHeaderName={t<string>('Send fund (Native to EVM)')}
+        subHeaderName={t<string>('Send fund from Native')}
       />
       {renderContent()}
     </div>
