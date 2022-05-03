@@ -632,7 +632,7 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
   }
 
   .kn-l-submit-wrapper {
-    position: sticky;
+    z-index:9;
     position: sticky;
     bottom: -15px;
     padding: 15px 0px;

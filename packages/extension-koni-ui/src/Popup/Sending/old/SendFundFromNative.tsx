@@ -655,9 +655,10 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
   }
 
   .kn-l-submit-wrapper {
+    z-index:9;
     position: sticky;
     bottom: -15px;
-    padding: 15px;
+    padding: 15px 0px;
     margin-left: -15px;
     margin-bottom: -15px;
     margin-right: -15px;
