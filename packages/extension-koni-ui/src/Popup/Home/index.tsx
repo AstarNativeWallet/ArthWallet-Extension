@@ -51,7 +51,7 @@ import ChainBalances from './ChainBalances/ChainBalances';
 import Crowdloans from './Crowdloans/Crowdloans';
 import TransactionHistory from './TransactionHistory/TransactionHistory';
 import ActionButton from './ActionButton';
-import WithdrawButton from './WithdrawButton';
+//import WithdrawButton from './WithdrawButton';
 
 interface WrapperProps extends ThemeProps {
   className?: string;
@@ -150,7 +150,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
   const { t } = useTranslation();
   const { address } = currentAccount;
   const [isShowBalanceDetail, setShowBalanceDetail] = useState<boolean>(false);
-  const [isEvmDeposit, setIsEvmDeposit] = useState<boolean>(false);
+  // const [isEvmDeposit, setIsEvmDeposit] = useState<boolean>(false);
   const backupTabId = window.localStorage.getItem('homeActiveTab') || '1';
   const [activatedTab, setActivatedTab] = useState<number>(Number(backupTabId));
   const _setActiveTab = useCallback((tabId: number) => {
@@ -272,7 +272,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
 
   chrome.storage.local.get(['isEvmDeposit'], function (result) {
     if (typeof result.isEvmDeposit === 'boolean') {
-      setIsEvmDeposit(result.isEvmDeposit);
+      // setIsEvmDeposit(result.isEvmDeposit);
     }
 
     console.log('isEvmDeposit: ', result.isEvmDeposit);
@@ -356,7 +356,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                 iconSrc={donateIcon}
                 tooltipContent={t<string>('Donate')}
               />
-            </Link> */}
+            </Link> 
           </div>
         )}
         {_isAccountAll && (
