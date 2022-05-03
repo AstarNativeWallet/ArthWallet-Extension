@@ -148,7 +148,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
     networkKey,
     networkPrefix } = network;
   const { t } = useTranslation();
-    const { currentNetwork: { isEthereum } } = useSelector((state: RootState) => state);
+  const { currentNetwork: { isEthereum } } = useSelector((state: RootState) => state);
 
   const { address } = currentAccount;
   const [isShowBalanceDetail, setShowBalanceDetail] = useState<boolean>(false);
@@ -425,7 +425,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                 }
               </div>
             </div>
-            {console.log('tanaka:',networkKey)}
+            {console.log('tanaka:', networkKey)}
             {_isAccountAll && (
               <div className='IsAccountALL'>
                 <div className='action-button-wrapper'>
@@ -450,7 +450,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                 </div>
                 <AccountMenuLists></AccountMenuLists>
               </div>
-            )}  
+            )}
             {!_isAccountAll && (
               <div className='not-isAccountAll'>
                 <div className='action-button-wrapper'>
@@ -460,26 +460,25 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                     onClick={_showQrModal}
                     tooltipContent={t<string>('Receive')}
                   />
-                  {isEthereum ?
-                  <Link
-                    className={'action-button-send'}
-                    to={'/account/send-from-evm-fund'}
-                  >
-                    <ActionButton
-                      iconSrc={sendIcon}
-                      tooltipContent={t<string>('Send')}
-                    />
-                  </Link>
-                  :
-                  <Link
-                    className={'action-button-send'}
-                    to={'/account/send-from-native-fund'}
-                  >
-                    <ActionButton
-                      iconSrc={sendIcon}
-                      tooltipContent={t<string>('Send')}
-                    />
-                  </Link>
+                  {isEthereum
+                    ? <Link
+                      className={'action-button-send'}
+                      to={'/account/send-from-evm-fund'}
+                    >
+                      <ActionButton
+                        iconSrc={sendIcon}
+                        tooltipContent={t<string>('Send')}
+                      />
+                    </Link>
+                    : <Link
+                      className={'action-button-send'}
+                      to={'/account/send-from-native-fund'}
+                    >
+                      <ActionButton
+                        iconSrc={sendIcon}
+                        tooltipContent={t<string>('Send')}
+                      />
+                    </Link>
                   }
                 </div>
                 <ChainBalances

@@ -361,21 +361,21 @@ function SendFundFromEvm ({ api, apiUrl, className = '', currentAccount, isEther
             </div>
           </div>
           <div>
-          <a className='address-text'>
+            <a className='address-text'>
               {t<string>('Send from account')}
             </a>
             <LabelHelp
               className = 'send-help'
               help= {t<string>('The account you will send funds from.')}
             />
-          <InputAddress
-            className={'kn-field -field-1'}
-            defaultValue={propSenderId}
-            //help={t<string>('The account you will send funds from.')}
-            isEthereum={isEthereum}
-            // isDisabled={!!propSenderId}
-            //label={t<string>('Send from account')}
-            /*
+            <InputAddress
+              className={'kn-field -field-1'}
+              defaultValue={propSenderId}
+              // help={t<string>('The account you will send funds from.')}
+              isEthereum={isEthereum}
+              // isDisabled={!!propSenderId}
+              // label={t<string>('Send from account')}
+              /*
             labelExtra={
               <Available
                 api={api}
@@ -383,28 +383,28 @@ function SendFundFromEvm ({ api, apiUrl, className = '', currentAccount, isEther
                 label={t<string>('Transferable')}
                 params={senderId}
               />
-            }*/
-            onChange={setSenderId}
-            type='account'
-            withEllipsis
-          />
+            } */
+              onChange={setSenderId}
+              type='account'
+              withEllipsis
+            />
           </div>
           <div>
-          <a className='address-text'>
+            <a className='address-text'>
               {t<string>('Send to address')}
             </a>
             <LabelHelp
               className = 'send-help'
               help= {t<string>('Select a contact or paste the address you want to send funds to.')}
             />
-          <InputAddress
-            autoPrefill={false}
-            className={'kn-field -field-2'}
-            // help={t<string>('Select a contact or paste the address you want to send funds to.')}
-            isEthereum={isEthereum}
-            // isDisabled={!!propRecipientId}
-            // label={t<string>('Send to address')}
-            /*
+            <InputAddress
+              autoPrefill={false}
+              className={'kn-field -field-2'}
+              // help={t<string>('Select a contact or paste the address you want to send funds to.')}
+              isEthereum={isEthereum}
+              // isDisabled={!!propRecipientId}
+              // label={t<string>('Send to address')}
+              /*
             labelExtra={
               <Available
                 api={api}
@@ -412,12 +412,12 @@ function SendFundFromEvm ({ api, apiUrl, className = '', currentAccount, isEther
                 label={t<string>('Transferable')}
                 params={recipientId}
               />
-            }*/
-            networkKey={networkKey}
-            onChange={setRecipientId}
-            type='allPlus'
-            withEllipsis
-          />
+            } */
+              networkKey={networkKey}
+              onChange={setRecipientId}
+              type='allPlus'
+              withEllipsis
+            />
           </div>
           {recipientPhish && (
             <Warning

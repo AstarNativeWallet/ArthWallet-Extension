@@ -13,6 +13,7 @@ import { withMulti, withObservable } from '@polkadot/extension-koni-ui/Popup/Sen
 import { ThemeProps } from '@polkadot/extension-koni-ui/types';
 import { createOptionItem } from '@polkadot/ui-keyring/options/item';
 import { isNull, isUndefined } from '@polkadot/util';
+
 import Dropdown from '../Dropdown';
 import Static from '../Static';
 import { toAddress } from '../util';

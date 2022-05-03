@@ -29,10 +29,10 @@ import { BN, BN_HUNDRED, BN_ZERO, isFunction } from '@polkadot/util';
 
 import Available from './component/Available';
 import InputAddress from './component/InputAddress';
+import LabelHelp from './component/LabelHelp';
 import AuthTransactionFromNative from './AuthTransactionFromNative';
 import { toSS58Address } from './convert';
 import SendFundResultFromNative from './SendFundResultFromNative';
-import LabelHelp from './component/LabelHelp';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -392,12 +392,12 @@ function SendFundFromNative ({ api, apiUrl, className = '', currentAccount, isEt
               className = 'send-help'
               help= {t<string>('The account you will send funds from.')}
             />
-          <InputAddress
-            className={'kn-field -field-1'}
-            defaultValue={propSenderId}
-            // help={t<string>('The account you will send funds from.')}
-            //isEthereum={isEthereum}
-            /*
+            <InputAddress
+              className={'kn-field -field-1'}
+              defaultValue={propSenderId}
+              // help={t<string>('The account you will send funds from.')}
+              // isEthereum={isEthereum}
+              /*
             isDisabled={!!propSenderId}
             label={t<string>('Send from account')}
             labelExtra={
@@ -408,26 +408,26 @@ function SendFundFromNative ({ api, apiUrl, className = '', currentAccount, isEt
                 params={senderId}
               />
             } */
-            onChange={setSenderId}
-            type='account'
-            withEllipsis
-          />
+              onChange={setSenderId}
+              type='account'
+              withEllipsis
+            />
           </div>
           <div>
-          <a className='address-text'>
+            <a className='address-text'>
               {t<string>('Send to address')}
             </a>
             <LabelHelp
               className = 'send-help'
               help= {t<string>('Select a contact or paste the address you want to send funds to.')}
             />
-          <InputAddress
-            autoPrefill={false}
-            className={'kn-field -field-2'}
-            isEthereum={true}
-            // help={t<string>('Select a contact or paste the address you want to send funds to.')}
-            
-            /*
+            <InputAddress
+              autoPrefill={false}
+              className={'kn-field -field-2'}
+              isEthereum={true}
+              // help={t<string>('Select a contact or paste the address you want to send funds to.')}
+
+              /*
             label={t<string>('Send to address')}
             // isDisabled={!!propRecipientId}
             labelExtra={
@@ -437,12 +437,12 @@ function SendFundFromNative ({ api, apiUrl, className = '', currentAccount, isEt
                 label={t<string>('Transferable')}
                 params={recipientId}
               />
-            }*/
-            networkKey={networkKey}
-            onChange={setRecipientId}
-            type='allPlus'
-            withEllipsis
-          />
+            } */
+              networkKey={networkKey}
+              onChange={setRecipientId}
+              type='allPlus'
+              withEllipsis
+            />
           </div>
           {recipientPhish && (
             <Warning
