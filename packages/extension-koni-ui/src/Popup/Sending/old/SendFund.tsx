@@ -323,7 +323,6 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
 
     if (result && extrinsicHash) {
       const { change, fee } = extractTxResult(result);
-
       const item: TransactionHistoryItemType = {
         action: 'send',
         change,
@@ -360,7 +359,6 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
       {!isShowTxResult ? (
         <div className={`${className} -main-content`}>
           {/*
-
           <InputAddress
             className={'kn-field -field-1'}
             defaultValue={propSenderId}
@@ -392,7 +390,6 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
           <div className='subtitle-transfer'>
             {t<string>('Transfer')}
           </div>
-
           <div className = {'transferable-container'}>
             <div>
               <p className = {'transfer-total'}>Transferable Total</p>
@@ -405,7 +402,6 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
               </div>
             </div>
           </div>
-
           <div>
             <a className='address-text'>
               {t<string>('Send from account')}

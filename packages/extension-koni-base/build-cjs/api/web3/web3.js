@@ -40,7 +40,7 @@ const connectWeb3Apis = function () {
         const reconnectOptions = {
           reconnect: {
             auto: true,
-            delay: 1000,
+            delay: 3000,
             maxAttempts: 10
           }
         };

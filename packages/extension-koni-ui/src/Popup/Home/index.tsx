@@ -51,7 +51,7 @@ import ChainBalances from './ChainBalances/ChainBalances';
 import Crowdloans from './Crowdloans/Crowdloans';
 import TransactionHistory from './TransactionHistory/TransactionHistory';
 import ActionButton from './ActionButton';
-//import WithdrawButton from './WithdrawButton';
+// import WithdrawButton from './WithdrawButton';
 
 interface WrapperProps extends ThemeProps {
   className?: string;
@@ -148,6 +148,8 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
     networkKey,
     networkPrefix } = network;
   const { t } = useTranslation();
+    const { currentNetwork: { isEthereum } } = useSelector((state: RootState) => state);
+
   const { address } = currentAccount;
   const [isShowBalanceDetail, setShowBalanceDetail] = useState<boolean>(false);
   // const [isEvmDeposit, setIsEvmDeposit] = useState<boolean>(false);
@@ -292,7 +294,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
         text={t<string>('Accounts')}
         toggleZeroBalances={_toggleZeroBalances}
       />
-        {/*
+      {/*
       <div className={'home-action-block'}>
         <div className='account-total-balance'>
           <div
@@ -356,7 +358,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                 iconSrc={donateIcon}
                 tooltipContent={t<string>('Donate')}
               />
-            </Link> 
+            </Link>
           </div>
         )}
         {_isAccountAll && (
@@ -423,7 +425,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                 }
               </div>
             </div>
-
+            {console.log('tanaka:',networkKey)}
             {_isAccountAll && (
               <div className='IsAccountALL'>
                 <div className='action-button-wrapper'>
@@ -436,7 +438,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                   <Link
                     className={'action-button-send'}
                     isDisabled
-                    to={'/account/send-fund'}
+                    to={'/account/send-from-evm-fund'}
                   >
                     <ActionButton
                       iconSrc={sendIcon}
@@ -448,7 +450,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                 </div>
                 <AccountMenuLists></AccountMenuLists>
               </div>
-            )}
+            )}  
             {!_isAccountAll && (
               <div className='not-isAccountAll'>
                 <div className='action-button-wrapper'>
@@ -458,16 +460,27 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                     onClick={_showQrModal}
                     tooltipContent={t<string>('Receive')}
                   />
+                  {isEthereum ?
                   <Link
                     className={'action-button-send'}
-                    to={'/account/send-fund'}
+                    to={'/account/send-from-evm-fund'}
                   >
                     <ActionButton
                       iconSrc={sendIcon}
                       tooltipContent={t<string>('Send')}
                     />
                   </Link>
-
+                  :
+                  <Link
+                    className={'action-button-send'}
+                    to={'/account/send-from-native-fund'}
+                  >
+                    <ActionButton
+                      iconSrc={sendIcon}
+                      tooltipContent={t<string>('Send')}
+                    />
+                  </Link>
+                  }
                 </div>
                 <ChainBalances
                   address={address}

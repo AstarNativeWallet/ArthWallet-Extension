@@ -105,7 +105,6 @@ const NETWORKS = {
     ss58Format: 5,
     provider: 'wss://rpc.astar.network',
     groups: ['POLKADOT_PARACHAIN', 'ASTAR_MAINNET'],
-
     isEthereum: true,
     nativeToken: 'ASTR',
     decimals: 18
