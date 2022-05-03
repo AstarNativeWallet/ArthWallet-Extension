@@ -156,10 +156,8 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
     <div className={`-wrapper ${className} ${wrapperClass}`}>
       <Header
         showAdd
-        // showCancelButton
         showSearch
         showSettings
-        showSubHeader
         subHeaderName={t<string>('Send fund (Native to EVM)')}
       />
       {renderContent()}
@@ -655,7 +653,6 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
   }
 
   .kn-l-submit-wrapper {
-    z-index:9;
     position: sticky;
     bottom: -15px;
     padding: 15px 0px;
@@ -735,7 +732,7 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
       height: 48px;
       width: 256px;
       border-radius: 6px;
-      
+      background: rgba(40, 78, 169, 1);
     }
       .cancel-btn {
         display: inline-block;

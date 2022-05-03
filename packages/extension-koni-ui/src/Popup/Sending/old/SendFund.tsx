@@ -751,6 +751,7 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
     height: 48px;
     width: 256px;
     border-radius: 6px;
+    background: rgba(40, 78, 169, 1);
   }
     .cancel-btn {
       display: inline-block;
