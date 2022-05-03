@@ -322,63 +322,63 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
             </div>
 
             {_isAccountAll && (
-            <div className='IsAccountALL'>
-            <div className='action-button-wrapper'>
-              <ActionButton
-                className='action-button-recieve'
-                isDisabled
-                iconSrc={buyIcon}
-                tooltipContent={t<string>('Receive')}
-              />
-              <Link
-                isDisabled
-                className={'action-button-send'}
-                to={'/account/send-fund'}
-              >
-                <ActionButton
-                  isDisabled
-                  iconSrc={sendIcon}
-                  tooltipContent={t<string>('Send')}
-                />
-              </Link>
+              <div className='IsAccountALL'>
+                <div className='action-button-wrapper'>
+                  <ActionButton
+                    className='action-button-recieve'
+                    iconSrc={buyIcon}
+                    isDisabled
+                    tooltipContent={t<string>('Receive')}
+                  />
+                  <Link
+                    className={'action-button-send'}
+                    isDisabled
+                    to={'/account/send-fund'}
+                  >
+                    <ActionButton
+                      iconSrc={sendIcon}
+                      isDisabled
+                      tooltipContent={t<string>('Send')}
+                    />
+                  </Link>
 
-            </div>
-              <AccountMenuLists></AccountMenuLists>
+                </div>
+                <AccountMenuLists></AccountMenuLists>
               </div>
             )}
             {!_isAccountAll && (
               <div className='not-isAccountAll'>
                 <div className='action-button-wrapper'>
-              <ActionButton
-                className='action-button-recieve'
-                iconSrc={buyIcon}
-                onClick={_showQrModal}
-                tooltipContent={t<string>('Receive')}
-              />
-              <Link
-                className={'action-button-send'}
-                to={'/account/send-fund'}
-              >
-                <ActionButton
-                  iconSrc={sendIcon}
-                  tooltipContent={t<string>('Send')}
-                />
-              </Link>
+                  <ActionButton
+                    className='action-button-recieve'
+                    iconSrc={buyIcon}
+                    onClick={_showQrModal}
+                    tooltipContent={t<string>('Receive')}
+                  />
+                  <Link
+                    className={'action-button-send'}
+                    to={'/account/send-fund'}
+                  >
+                    <ActionButton
+                      iconSrc={sendIcon}
+                      tooltipContent={t<string>('Send')}
+                    />
+                  </Link>
 
-            </div>
-              <ChainBalances
-                address={address}
-                currentNetworkKey={networkKey}
-                isShowBalanceDetail={isShowBalanceDetail}
-                isShowZeroBalances={isShowZeroBalances}
-                networkBalanceMaps={networkBalanceMaps}
-                networkKeys={showedNetworks}
-                networkMetadataMap={networkMetadataMap}
-                setQrModalOpen={setQrModalOpen}
-                setQrModalProps={setQrModalProps}
-                setSelectedNetworkBalance={setSelectedNetworkBalance}
-                setShowBalanceDetail={setShowBalanceDetail}
-              />
+                </div>
+                <ChainBalances
+                  address={address}
+                  currentNetworkKey={networkKey}
+                  isShowBalanceDetail={isShowBalanceDetail}
+                  isShowZeroBalances={isShowZeroBalances}
+                  networkBalanceMaps={networkBalanceMaps}
+                  networkKeys={showedNetworks}
+                  networkMetadataMap={networkMetadataMap}
+                  setQrModalOpen={setQrModalOpen}
+                  setQrModalProps={setQrModalProps}
+                  setSelectedNetworkBalance={setSelectedNetworkBalance}
+                  setShowBalanceDetail={setShowBalanceDetail}
+                />
               </div>
             )}
           </div>
@@ -512,8 +512,7 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
 
   .action-button-wrapper {
     display: block;
-    width: 100%;
-    padding:0 54px;
+    padding-left: 54px;
   }
   .action-button-send {
     display: inline-block;

@@ -1,9 +1,7 @@
 // Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
-// modified AccountMenuSettings.tsx
 
 import type { ThemeProps } from '../types';
-
 // import { faUsb } from '@fortawesome/free-brands-svg-icons';
 // import { faCog, faFileUpload, faKey, faPlusCircle, faQrcode, faSeedling } from '@fortawesome/free-solid-svg-icons';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
