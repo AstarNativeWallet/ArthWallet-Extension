@@ -3,6 +3,8 @@
 
 const LogosMap: Record<string, string> = {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  ethereum: require('./ethereum.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   acala: require('./acala.svg'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   ausd: require('./ausd.svg'),

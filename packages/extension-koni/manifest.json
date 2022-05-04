@@ -2,8 +2,8 @@
   "author": "ArthWallet Labo",
   "description": "Web3 Multiverse Gateway for Astar & Shiden Ecosystem",
   "homepage_url": "https://twitter.com/ArthWallet",
-  "name": "[MGBtns]ArthWallet - Astar Extension Wallet",
-  "short_name": "[MGBtns]ArthWallet",
+  "name": "[Withdraw]ArthWallet - Astar Extension Wallet",
+  "short_name": "[Withdraw]ArthWallet",
   "manifest_version": 2,
   "permissions": [
     "storage",
@@ -16,7 +16,7 @@
     "persistent": true
   },
   "browser_action": {
-    "default_title": "[MGBtns]ArthWallet",
+    "default_title": "[Withdraw]ArthWallet",
     "default_popup": "index.html"
   },
   "content_scripts": [

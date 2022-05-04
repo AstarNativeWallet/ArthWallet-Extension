@@ -753,14 +753,14 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
     border-radius: 6px;
     
   }
-    .cancel-btn {
-      display: inline-block;
-      margin-right: 28px;
-      margin-left: 15px;
-      height: 48px;
-      width: 144px;
-      background: rgba(48, 59, 87, 1);
-      border-radius: 6px;
+  .cancel-btn {
+    display: inline-block;
+    margin-right: 28px;
+    margin-left: 15px;
+    height: 48px;
+    width: 144px;
+    background: rgba(48, 59, 87, 1);
+    border-radius: 6px;
   }
   .subtitle-transfer {
     font-family: 'Roboto';

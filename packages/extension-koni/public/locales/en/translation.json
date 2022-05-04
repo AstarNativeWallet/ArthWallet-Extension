@@ -316,5 +316,8 @@
   "Total": "",
   "Transfer": "",
   "cancel": "",
-  "Confirm": ""
+  "Confirm": "",
+  "Authorize Transaction Withdraw": "",
+  "Authorize Transaction Native": "",
+  "EVM Withdraw": ""
 }

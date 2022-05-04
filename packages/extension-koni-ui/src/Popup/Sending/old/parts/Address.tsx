@@ -54,7 +54,7 @@ function Address ({ className, onChange, onEnter, passwordError, requestAddress 
         defaultValue={requestAddress}
         isDisabled
         isInput
-        label={t<string>('Sending from my account')}
+        //label={t<string>('Sending from my account')}
         withEllipsis
         withLabel
       />

@@ -222,7 +222,7 @@ function AuthTransactionFromNative ({ api, apiUrl, className, extrinsic, onCance
         <div className='kn-l-header'>
           <div className='kn-l-header__part-1' />
           <div className='kn-l-header__part-2'>
-            {t<string>('Authorize Transaction')}
+            {t<string>('Authorize Transaction Native')}
           </div>
           <div className='kn-l-header__part-3'>
             {isBusy
