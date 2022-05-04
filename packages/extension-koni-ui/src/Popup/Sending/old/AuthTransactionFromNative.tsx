@@ -220,10 +220,10 @@ function AuthTransactionFromNative ({ api, apiUrl, className, extrinsic, onCance
     <div className={className}>
       <Modal className={'kn-signer-modal'}>
         <div className='kn-l-header'>
-          <div className='kn-l-header__part-1' />
           <div className='kn-l-header__part-2'>
             {t<string>('Authorize Transaction')}
           </div>
+          {/**
           <div className='kn-l-header__part-3'>
             {isBusy
               ? (
@@ -236,7 +236,7 @@ function AuthTransactionFromNative ({ api, apiUrl, className, extrinsic, onCance
                 >{t('Cancel')}</span>
               )
             }
-          </div>
+          </div> */}
         </div>
         <div className='kn-l-body'>
           <div className={'kn-l-transaction-info-block'}>
@@ -269,6 +269,12 @@ function AuthTransactionFromNative ({ api, apiUrl, className, extrinsic, onCance
             withCopy
           />
           <div className='kn-l-submit-wrapper'>
+          <Button
+              className={'cancel-btn'}
+              onClick={_onCancel}
+            >
+              {t<string>('cancel')}
+            </Button>
             <Button
               className={'kn-l-submit-btn'}
               isBusy={isBusy}
@@ -300,7 +306,7 @@ export default React.memo(styled(AuthTransactionFromNative)(({ theme }: ThemePro
   }
 
   .kn-l-header {
-    display: flex;
+    display: block;
     align-items: center;
     height: 72px;
     box-shadow: ${theme.headerBoxShadow};
@@ -315,14 +321,13 @@ export default React.memo(styled(AuthTransactionFromNative)(({ theme }: ThemePro
     overflow-y: auto;
   }
 
-  .kn-l-header__part-1 {
-    flex: 1;
-  }
-
   .kn-l-header__part-2 {
     color: ${theme.textColor};
     font-size: 20px;
     font-weight: 500;
+    text-align:center;
+    align-items:center;
+    margin: 20px 0;
   }
 
   .kn-l-header__part-3 {
@@ -360,12 +365,29 @@ export default React.memo(styled(AuthTransactionFromNative)(({ theme }: ThemePro
   }
 
   .kn-l-submit-wrapper {
+    z-index:10;
     position: sticky;
     bottom: -15px;
-    padding: 15px;
+    padding: 15px 0px;
     margin-left: -15px;
     margin-bottom: -15px;
     margin-right: -15px;
     background-color: ${theme.background};
+  }
+  .cancel-btn {
+    display: inline-block;
+    margin-right: 28px;
+    margin-left: 15px;
+    height: 48px;
+    width: 144px;
+    background: rgba(48, 59, 87, 1);
+    border-radius: 6px;
+}
+  .kn-l-submit-btn {
+    display: inline-block;
+    height: 48px;
+    width: 256px;
+    border-radius: 6px;
+    background: rgba(40, 78, 169, 1);
   }
 `));
