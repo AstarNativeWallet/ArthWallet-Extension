@@ -381,38 +381,22 @@ function SendFundFromEvm ({ api, apiUrl, className = '', currentAccount, handler
   return (
     <>
       {/* eslint-disable-next-line multiline-ternary */}
-        {/*
-      { isInvalidToAddress ? <div>
-        <Warning>{
-          <div>
-            <a>When you send from <span style={{ fontSize: '1.2em' }}>EVM</span> → to <span style={{ fontSize: '1.5em', fontWeight: 'bold' }}>Native</span></a>
-            <br />
-            <a>For Native assdress, allow </a>
-            <br />
-            <a style={{ fontSize: '1.5em', fontWeight: 'bold' }}>only your wallet address.</a>
-            <br />
-            <a>Preventing you from GOX, you can only input this wallet account address.</a>
-          </div>}
-        </Warning>
-      </div>
-        : !isShowTxResult
-          ? (
-            <div className={`${className} -main-content`}>
-              <InputAddress
-                className={'kn-field -field-1'}
-                defaultValue={propSenderId}
-                help={t<string>('The account you will send funds from.')}
-                isEthereum={isEthereum}
-                // isDisabled={!!propSenderId}
-                label={t<string>('Send from account')}
-                labelExtra={
-                  <Available
-                    api={api}
-                    apiUrl={apiUrl}
-                    label={t<string>('Transferable')}
-                    params={senderId}
-                  />
-                  */}
+      {/* Disable to send Native Addresses (Not Imported) */}
+      {/**
+      { isInvalidToAddress ? 
+        <div>
+          <Warning>{
+            <div>
+              <a>When you send from <span style={{ fontSize: '1.2em' }}>EVM</span> → to <span style={{ fontSize: '1.5em', fontWeight: 'bold' }}>Native</span></a>
+              <br />
+              <a>For Native assdress, allow </a>
+              <br />
+              <a style={{ fontSize: '1.5em', fontWeight: 'bold' }}>only your wallet address.</a>
+              <br />
+              <a>Preventing you from GOX, you can only input this wallet account address.</a>
+            </div>}
+          </Warning>
+        </div> */}
       {!isShowTxResult ? (
         <div className={`${className} -main-content`}>
           <div className='subtitle-transfer'>
@@ -468,8 +452,12 @@ function SendFundFromEvm ({ api, apiUrl, className = '', currentAccount, handler
               help= {t<string>('Select a contact or paste the address you want to send funds to.')}
             />
             <InputAddress
+              addresses={addresses}
               autoPrefill={false}
               className={'kn-field -field-2'}
+              //↓check Imported or NotImported
+              handlerInputAddress={handlerInputAddress}
+              isStopMultitimeExecution={isStopMultitimeExecution}
               // help={t<string>('Select a contact or paste the address you want to send funds to.')}
               isEthereum={isEthereum}
               // isDisabled={!!propRecipientId}
@@ -552,105 +540,6 @@ function SendFundFromEvm ({ api, apiUrl, className = '', currentAccount, handler
             )
           }
           {isFunction(api.tx.balances.transferKeepAlive) && (
-            <div className={'kn-field -toggle -toggle-1'}>
-              <Toggle
-                className='typeToggle'
-                label={
-                  isProtected
-                    ? t<string>('Transfer with account keep-alive checks')
-                    : t<string>('Normal transfer without keep-alive checks')
-                }
-                onChange={setSenderId}
-                type='account'
-                withEllipsis
-              />
-              <InputAddress
-                addresses={addresses}
-                autoPrefill={false}
-                className={'kn-field -field-2'}
-                handlerInputAddress={handlerInputAddress}
-                // isDisabled={!!propRecipientId}
-                help={t<string>('Select a contact or paste the address you want to send funds to.')}
-                isEthereum={isEthereum}
-                isStopMultitimeExecution={isStopMultitimeExecution}
-                label={t<string>('Send to address')}
-                labelExtra={
-                  <Available
-                    api={api}
-                    apiUrl={apiUrl}
-                    label={t<string>('Transferable')}
-                    params={recipientId}
-                  />
-                }
-                // eslint-disable-next-line react/jsx-no-bind
-                networkKey={networkKey}
-                onChange={setRecipientId}
-                type='allPlus'
-                withEllipsis
-              />
-              {recipientPhish && (
-                <Warning
-                  className={'kn-l-warning'}
-                  isDanger
-                >
-                  {t<string>('The recipient is associated with a known phishing site on {{url}}', { replace: { url: recipientPhish } })}
-                </Warning>
-              )}
-              {isSameAddress && (
-                <Warning
-                  className={'kn-l-warning'}
-                  isDanger
-                >
-                  {t<string>('The recipient address is the same as the sender address.')}
-                </Warning>
-              )}
-              {canToggleAll && isAll
-                ? (
-                  <InputBalance
-                    autoFocus
-                    className={'kn-field -field-3'}
-                    defaultValue={maxTransfer}
-                    help={t<string>('The full account balance to be transferred, minus the transaction fees')}
-                    isDisabled
-                    key={maxTransfer?.toString()}
-                    label={t<string>('transferable minus fees')}
-                    registry={api.registry}
-                  />
-                )
-                : (
-                  <>
-                    <InputBalance
-                      autoFocus
-                      className={'kn-field -field-3'}
-                      help={t<string>('Type the amount you want to transfer. Note that you can select the unit on the right e.g sending 1 milli is equivalent to sending 0.001.')}
-                      isError={!hasAvailable}
-                      isZeroable
-                      label={t<string>('amount')}
-                      onChange={setAmount}
-                      // maxValue={maxTransfer}
-                      placeholder={'0'}
-                      registry={api.registry}
-                    />
-                    {amountGtAvailableBalance && (
-                      <Warning
-                        className={'kn-l-warning'}
-                        isDanger
-                      >
-                        {t<string>('The amount you want to transfer is greater than your available balance.')}
-                      </Warning>
-                    )}
-                    <InputBalance
-                      className={'kn-field -field-4'}
-                      defaultValue={api.consts.balances.existentialDeposit}
-                      help={t<string>('The minimum amount that an account should have to be deemed active')}
-                      isDisabled
-                      label={t<string>('existential deposit')}
-                      registry={api.registry}
-                    />
-                  </>
-                )
-              }
-              {isFunction(api.tx.balances.transferKeepAlive) && (
                 <div className={'kn-field -toggle -toggle-1'}>
                   <Toggle
                     className='typeToggle'
@@ -674,34 +563,6 @@ function SendFundFromEvm ({ api, apiUrl, className = '', currentAccount, handler
                   />
                 </div>
               )}
-              {!isProtected && !noReference && (
-                <Warning className={'kn-l-warning'}>
-                  {t<string>('There is an existing reference count on the sender account. As such the account cannot be reaped from the state.')}
-                </Warning>
-              )}
-              {!amountGtAvailableBalance && !isSameAddress && noFees && (
-                <Warning className={'kn-l-warning'}>
-                  {t<string>('The transaction, after application of the transfer fees, will drop the available balance below the existential deposit. As such the transfer will fail. The account needs more free funds to cover the transaction fees.')}
-                </Warning>
-              )}
-              <div className={'kn-l-submit-wrapper'}>
-                <Button
-                  className={'kn-submit-btn'}
-                  isDisabled={isSameAddress || !hasAvailable || !(recipientId) || (!amount && !isAll) || amountGtAvailableBalance || !!recipientPhish}
-                  onClick={_onSend}
-                >
-                  {t<string>('Make Transfer')}
-                </Button>
-              </div>
-            </div>
-          )
-          : (
-            <SendEvmFundResultFromEvm
-              networkKey={networkKey}
-              onResend={_onResend}
-              txResult={txResult}
-            />
-          )}
           {!isProtected && !noReference && (
             <Warning className={'kn-l-warning'}>
               {t<string>('There is an existing reference count on the sender account. As such the account cannot be reaped from the state.')}
