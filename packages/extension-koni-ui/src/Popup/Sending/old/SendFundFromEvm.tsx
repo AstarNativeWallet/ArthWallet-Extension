@@ -172,7 +172,7 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
   );
 }
 
-function SendFundFromEvm ({ api, apiUrl, className = '', currentAccount, handlerInputAddress, isEthereum, isInvalidToAddress, isStopMultitimeExecution, networkKey, setWrapperClass }: ContentProps): React.ReactElement {
+function SendFundFromEvm ({ api, apiUrl, className = '', currentAccount, handlerInputAddress, isEthereum, isStopMultitimeExecution, networkKey, setWrapperClass }: ContentProps): React.ReactElement {
   const { t } = useTranslation();
   const propSenderId = currentAccount?.address;
   const [amount, setAmount] = useState<BN | undefined>(BN_ZERO);
@@ -378,12 +378,21 @@ function SendFundFromEvm ({ api, apiUrl, className = '', currentAccount, handler
 
   const isSameAddress = !!recipientId && !!senderId && (recipientId === senderId);
 
+  console.log('isDisabled={isSameAddress || !hasAvailable || !(recipientId) || (!amount && !isAll) || amountGtAvailableBalance || !!recipientPhish}');
+  console.log('isSameAddress ', isSameAddress);
+  console.log('hasAvailable ', hasAvailable);
+  console.log('recipientId ', recipientId);
+  console.log('amount ', amount);
+  console.log('isAll', isAll);
+  console.log('amountGtAvailableBalance', amountGtAvailableBalance);
+  console.log('recipientPhish', recipientPhish);
+
   return (
     <>
       {/* eslint-disable-next-line multiline-ternary */}
       {/* Disable to send Native Addresses (Not Imported) */}
       {/**
-      { isInvalidToAddress ? 
+      { isInvalidToAddress ?
         <div>
           <Warning>{
             <div>
@@ -397,8 +406,9 @@ function SendFundFromEvm ({ api, apiUrl, className = '', currentAccount, handler
             </div>}
           </Warning>
         </div> */}
-      {!isShowTxResult ? (
-        <div className={`${className} -main-content`}>
+      { !isShowTxResult
+        // eslint-disable-next-line multiline-ternary
+        ? (<div className={`${className} -main-content`}>
           <div className='subtitle-transfer'>
             {t<string>('Transfer')}
           </div>
@@ -455,11 +465,11 @@ function SendFundFromEvm ({ api, apiUrl, className = '', currentAccount, handler
               addresses={addresses}
               autoPrefill={false}
               className={'kn-field -field-2'}
-              //↓check Imported or NotImported
+              // ↓check Imported or NotImported
               handlerInputAddress={handlerInputAddress}
-              isStopMultitimeExecution={isStopMultitimeExecution}
-              // help={t<string>('Select a contact or paste the address you want to send funds to.')}
               isEthereum={isEthereum}
+              // help={t<string>('Select a contact or paste the address you want to send funds to.')}
+              isStopMultitimeExecution={isStopMultitimeExecution}
               // isDisabled={!!propRecipientId}
               // label={t<string>('Send to address')}
               /*
@@ -540,29 +550,29 @@ function SendFundFromEvm ({ api, apiUrl, className = '', currentAccount, handler
             )
           }
           {isFunction(api.tx.balances.transferKeepAlive) && (
-                <div className={'kn-field -toggle -toggle-1'}>
-                  <Toggle
-                    className='typeToggle'
-                    label={
-                      isProtected
-                        ? t<string>('Transfer with account keep-alive checks')
-                        : t<string>('Normal transfer without keep-alive checks')
-                    }
-                    onChange={setIsProtected}
-                    value={isProtected}
-                  />
-                </div>
-              )}
-              {canToggleAll && (
-                <div className={'kn-field -toggle -toggle-2'}>
-                  <Toggle
-                    className='typeToggle'
-                    label={t<string>('Transfer the full account balance, reap the sender')}
-                    onChange={setIsAll}
-                    value={isAll}
-                  />
-                </div>
-              )}
+            <div className={'kn-field -toggle -toggle-1'}>
+              <Toggle
+                className='typeToggle'
+                label={
+                  isProtected
+                    ? t<string>('Transfer with account keep-alive checks')
+                    : t<string>('Normal transfer without keep-alive checks')
+                }
+                onChange={setIsProtected}
+                value={isProtected}
+              />
+            </div>
+          )}
+          {canToggleAll && (
+            <div className={'kn-field -toggle -toggle-2'}>
+              <Toggle
+                className='typeToggle'
+                label={t<string>('Transfer the full account balance, reap the sender')}
+                onChange={setIsAll}
+                value={isAll}
+              />
+            </div>
+          )}
           {!isProtected && !noReference && (
             <Warning className={'kn-l-warning'}>
               {t<string>('There is an existing reference count on the sender account. As such the account cannot be reaped from the state.')}
@@ -589,13 +599,13 @@ function SendFundFromEvm ({ api, apiUrl, className = '', currentAccount, handler
             </Button>
           </div>
         </div>
-      ) : (
-        <SendEvmFundResultFromEvm
-          networkKey={networkKey}
-          onResend={_onResend}
-          txResult={txResult}
-        />
-      )}
+        ) : (
+          <SendEvmFundResultFromEvm
+            networkKey={networkKey}
+            onResend={_onResend}
+            txResult={txResult}
+          />
+        )}
       {extrinsic && isShowTxModal && (
         <EvmAuthTransactionFromEvm
           amount={amount}
