@@ -294,7 +294,7 @@ function EvmAuthTransactionEvmToEvmDeposit ({ amount, api, apiUrl, className, ex
             withCopy
           />
           <div className='kn-l-submit-wrapper'>
-          <Button
+            <Button
               className={'cancel-btn'}
               onClick={_onCancel}
             >

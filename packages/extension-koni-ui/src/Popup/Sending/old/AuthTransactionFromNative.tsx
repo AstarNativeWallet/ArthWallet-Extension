@@ -269,7 +269,7 @@ function AuthTransactionFromNative ({ api, apiUrl, className, extrinsic, onCance
             withCopy
           />
           <div className='kn-l-submit-wrapper'>
-          <Button
+            <Button
               className={'cancel-btn'}
               onClick={_onCancel}
             >
