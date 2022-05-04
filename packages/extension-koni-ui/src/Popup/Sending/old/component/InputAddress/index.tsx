@@ -49,6 +49,7 @@ interface Props {
   isEthereum?: boolean;
   networkKey?: string;
   handlerInputAddress?: () => void;
+  isStopMultitimeExecution?: boolean;
 }
 
 type ExportedType = React.ComponentType<Props> & {
@@ -228,7 +229,9 @@ class InputAddress extends React.PureComponent<Props, State> {
   }
 
   private getFiltered (): Option[] {
-    const { filter, optionsAll, isEthereum, type = DEFAULT_TYPE, networkKey, addresses, handlerInputAddress } = this.props;
+    const { filter, optionsAll, isEthereum, type = DEFAULT_TYPE, networkKey, addresses, handlerInputAddress, isStopMultitimeExecution } = this.props;
+
+    console.log('WatchTEST1 first in the getFiltered readOptions() is : ', readOptions());
 
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 
@@ -237,35 +240,36 @@ class InputAddress extends React.PureComponent<Props, State> {
     if (optionsAll) {
       if (networkKey === 'astar' || networkKey === 'astarEvm' || networkKey === 'shiden' || networkKey === 'shidenEvm') {
         if (networkKey === 'astarEvm' || networkKey === 'shidenEvm') {
-          console.log('WatchTEST optionsAll[type] is: ', optionsAll[type]);
-          console.log('WatchTEST addresses is: ', addresses);
+          console.log('WatchTEST2 optionsAll[type] is: ', optionsAll[type]);
+          console.log('WatchTEST3 addresses is: ', addresses);
 
           const MatchResultWhetherContainingNotThisWalletSS58Address = optionsAll[type].map((opt) => {
-            console.log('WatchTEST opt.key is: ', opt.key);
+            console.log('WatchTEST4 opt.key is: ', opt.key);
 
             return Boolean(
               opt.key && isValidAddressPolkadotAddress(opt.key) && addresses && !addresses.includes(opt.key)
             );
           });
 
-          console.log('WatchTEST MatchResultWhetherContainingNotThisWalletSS58Address is: ', MatchResultWhetherContainingNotThisWalletSS58Address);
+          console.log('WatchTEST5 MatchResultWhetherContainingNotThisWalletSS58Address is: ', MatchResultWhetherContainingNotThisWalletSS58Address);
 
           const isContainNotThisWalletSS58Address = MatchResultWhetherContainingNotThisWalletSS58Address.includes(true);
 
           const lastOption = Object.values(optionsAll[type])[Object.keys(optionsAll[type]).length - 1].key;
 
-          console.log('WatchTEST isContainNotThisWalletSS58Address: ', isContainNotThisWalletSS58Address);
-          console.log('WatchTEST lastOption', lastOption);
+          console.log('WatchTEST6 isContainNotThisWalletSS58Address: ', isContainNotThisWalletSS58Address);
+          console.log('WatchTEST7 lastOption', lastOption);
 
           if (lastOption) {
             if (!isValidEvmAddress(lastOption) && isContainNotThisWalletSS58Address) {
-              this.setState(() => {
-                return { lastValue: lastOption };
-              });
+              console.log('WatchTEST beforePOP readOptions() is : ', readOptions());
+              // this.setState(() => {
+              //   return { lastValue: lastOption };
+              // });
 
-              console.log('WatchTEST lastValue is: ', this.state.lastValue);
+              // console.log('WatchTEST lastValue is: ', this.state.lastValue);
 
-              console.log('WatchTEST optionsAll is: ', optionsAll);
+              console.log('WatchTEST8 optionsAll is: ', optionsAll);
               // console.log('WatchTEST allState', allState);
 
               // console.log('WatchTEST lastValue is ', lastValue, 'value is ', value);
@@ -277,30 +281,34 @@ class InputAddress extends React.PureComponent<Props, State> {
               // optionsAll.recent.pop();
               // allState = this.state;
 
-              console.log('WatchTEST popValues: ', popValues);
+              console.log('WatchTEST9 popValues: ', popValues);
 
-              if (popValues[0]?.key) {
-                this.setState(
-                  { value: popValues[0] && popValues[0].key }
-                );
-              }
+              // if (popValues[0]?.key) {
+              //   this.setState(
+              //     { value: popValues[0] && popValues[0].key }
+              //   );
+              // }
 
               // console.log('WatchTEST getLastValue is', getLastValue('all'));
 
-              console.log('WatchTEST lastValue is ', this.state.lastValue, 'value is ', this.state.value);
+              // console.log('WatchTEST lastValue is ', this.state.lastValue, 'value is ', this.state.value);
 
-              console.log('WatchTEST pop()!!!!!!!!!!!!');
+              console.log('WatchTEST10 pop()!!!!!!!!!!!!');
 
-              console.log('WatchTEST lastValue is ', this.state.lastValue, 'value is ', this.state.value);
-              console.log('WatchTEST optionsAll is: ', optionsAll);
+              // console.log('WatchTEST lastValue is ', this.state.lastValue, 'value is ', this.state.value);
+              console.log('WatchTEST11 optionsAll is: ', optionsAll);
               // console.log('WatchTEST allState', allState);
 
-              if (handlerInputAddress) {
-                console.log('WatchTEST hello!! optionsAll[type]', optionsAll[type]);
+              console.log('WatchTEST12 afterPOP readOptions() is : ', readOptions());
+
+              if (handlerInputAddress && (isStopMultitimeExecution === false)) {
+                console.log('WatchTEST13 hello!! optionsAll[type]', optionsAll[type]);
                 handlerInputAddress();
               }
             }
           }
+
+          console.log('WatchTEST14 before options assign readOptions() is : ', readOptions());
 
           options = optionsAll[type].filter((opt) => (opt.key && (isValidEvmAddress(opt.key) || (addresses && addresses.includes(opt.key)) || opt.key === 'header-accounts')));
         } else {
@@ -323,16 +331,18 @@ class InputAddress extends React.PureComponent<Props, State> {
   private onChange = (address: string): void => {
     const { addresses, filter, networkKey, onChange, type } = this.props;
 
-    console.log('WatchTEST onChange address is: ', address);
+    console.log('WatchTEST15 onChange address is: ', address);
 
     if (networkKey === 'astarEvm' || networkKey === 'shidenEvm') {
       if (addresses && !isValidEvmAddress(address) && !addresses.includes(address)) {
-        console.log('WatchTEST onChange!!!!!!!!!!!!!!!!!!!!!!!!!!!return');
+        console.log('WatchTEST16 onChange!!!!!!!!!!!!!!!!!!!!!!!!!!! return');
       }
     } else {
-      console.log('WatchTEST onChange!!!!!!!!!!!!!!!!!!!!!!!!!!NOT return');
+      console.log('WatchTEST17 onChange!!!!!!!!!!!!!!!!!!!!!!!!!! NOT return');
 
+      // if (isValidEvmAddress(address) || (addresses && addresses.includes(address))) {
       !filter && setLastValue(type, address);
+      // }
 
       onChange && onChange(
         this.hasValue(address)

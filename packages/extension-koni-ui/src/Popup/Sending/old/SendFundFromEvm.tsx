@@ -1,6 +1,7 @@
 // Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+// import { use } from 'i18next';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -48,6 +49,7 @@ interface ContentProps extends ThemeProps {
   networkKey: string;
   handlerInputAddress: () => void;
   isInvalidToAddress: boolean;
+  isStopMultitimeExecution: boolean;
 }
 
 function isRefcount (accountInfo: AccountInfoWithProviders | AccountInfoWithRefCount): accountInfo is AccountInfoWithRefCount {
@@ -95,6 +97,7 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
   const [wrapperClass, setWrapperClass] = useState<string>('');
   const { api, apiUrl, isApiReady, isNotSupport } = useApi(networkKey);
   const [isInvalidToAddress, setIsInvalidToAddress] = useState<boolean>(false);
+  const [isStopMultitimeExecution, setIsStopMultitimeExecution] = useState<boolean>(false);
 
   const isProviderSupportSendFund = !!api && !!api.tx && !!api.tx.balances;
 
@@ -116,6 +119,7 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
   };
 
   const _onInvalidToAddress = useCallback(() => {
+    setIsStopMultitimeExecution(true);
     setIsInvalidToAddress(true);
     setTimeout(() => {
       setIsInvalidToAddress(false);
@@ -140,6 +144,7 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
               handlerInputAddress={_onInvalidToAddress}
               isEthereum={isEthereum}
               isInvalidToAddress={isInvalidToAddress}
+              isStopMultitimeExecution={isStopMultitimeExecution}
               networkKey={networkKey}
               setWrapperClass={setWrapperClass}
               theme={theme}
@@ -167,7 +172,7 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
   );
 }
 
-function SendFundFromEvm ({ api, apiUrl, className = '', currentAccount, handlerInputAddress, isEthereum, isInvalidToAddress, networkKey, setWrapperClass }: ContentProps): React.ReactElement {
+function SendFundFromEvm ({ api, apiUrl, className = '', currentAccount, handlerInputAddress, isEthereum, isInvalidToAddress, isStopMultitimeExecution, networkKey, setWrapperClass }: ContentProps): React.ReactElement {
   const { t } = useTranslation();
   const propSenderId = currentAccount?.address;
   const [amount, setAmount] = useState<BN | undefined>(BN_ZERO);
@@ -379,7 +384,12 @@ function SendFundFromEvm ({ api, apiUrl, className = '', currentAccount, handler
       { isInvalidToAddress ? <div>
         <Warning>{
           <div>
-            <h3>Invalid destination address.</h3>
+            <a>When you send from <span style={{ fontSize: '1.2em' }}>EVM</span> → to <span style={{ fontSize: '1.5em', fontWeight: 'bold' }}>Native</span></a>
+            <br />
+            <a>For Native assdress, allow </a>
+            <br />
+            <a style={{ fontSize: '1.5em', fontWeight: 'bold' }}>only your wallet address.</a>
+            <br />
             <a>Preventing you from GOX, you can only input this wallet account address.</a>
           </div>}
         </Warning>
@@ -414,6 +424,7 @@ function SendFundFromEvm ({ api, apiUrl, className = '', currentAccount, handler
                 // isDisabled={!!propRecipientId}
                 help={t<string>('Select a contact or paste the address you want to send funds to.')}
                 isEthereum={isEthereum}
+                isStopMultitimeExecution={isStopMultitimeExecution}
                 label={t<string>('Send to address')}
                 labelExtra={
                   <Available
@@ -423,8 +434,8 @@ function SendFundFromEvm ({ api, apiUrl, className = '', currentAccount, handler
                     params={recipientId}
                   />
                 }
-                networkKey={networkKey}
                 // eslint-disable-next-line react/jsx-no-bind
+                networkKey={networkKey}
                 onChange={setRecipientId}
                 type='allPlus'
                 withEllipsis
