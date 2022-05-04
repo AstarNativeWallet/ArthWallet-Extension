@@ -25,6 +25,7 @@ const bWindow = chrome.extension.getBackgroundPage() as BackgroundWindow;
 const { keyring } = bWindow.pdotApi;
 
 interface Props {
+  addresses?: string[];
   className?: string;
   defaultValue?: Uint8Array | string | null;
   filter?: string[] | null;
@@ -47,6 +48,8 @@ interface Props {
   withLabel?: boolean;
   isEthereum?: boolean;
   networkKey?: string;
+  handlerInputAddress?: () => void;
+  isStopMultitimeExecution?: boolean;
 }
 
 type ExportedType = React.ComponentType<Props> & {
@@ -226,7 +229,9 @@ class InputAddress extends React.PureComponent<Props, State> {
   }
 
   private getFiltered (): Option[] {
-    const { filter, optionsAll, isEthereum, type = DEFAULT_TYPE, networkKey } = this.props;
+    const { filter, optionsAll, isEthereum, type = DEFAULT_TYPE, networkKey, addresses, handlerInputAddress, isStopMultitimeExecution } = this.props;
+
+    console.log('WatchTEST1 first in the getFiltered readOptions() is : ', readOptions());
 
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 
@@ -234,7 +239,81 @@ class InputAddress extends React.PureComponent<Props, State> {
 
     if (optionsAll) {
       if (networkKey === 'astar' || networkKey === 'astarEvm' || networkKey === 'shiden' || networkKey === 'shidenEvm') {
-        options = optionsAll[type].filter((opt) => (opt.key && (isValidEvmAddress(opt.key) || isValidAddressPolkadotAddress(opt.key) || opt.key === 'header-accounts')));
+        if (networkKey === 'astarEvm' || networkKey === 'shidenEvm') {
+          console.log('WatchTEST2 optionsAll[type] is: ', optionsAll[type]);
+          console.log('WatchTEST3 addresses is: ', addresses);
+
+          const MatchResultWhetherContainingNotThisWalletSS58Address = optionsAll[type].map((opt) => {
+            console.log('WatchTEST4 opt.key is: ', opt.key);
+
+            return Boolean(
+              opt.key && isValidAddressPolkadotAddress(opt.key) && addresses && !addresses.includes(opt.key)
+            );
+          });
+
+          console.log('WatchTEST5 MatchResultWhetherContainingNotThisWalletSS58Address is: ', MatchResultWhetherContainingNotThisWalletSS58Address);
+
+          const isContainNotThisWalletSS58Address = MatchResultWhetherContainingNotThisWalletSS58Address.includes(true);
+
+          const lastOption = Object.values(optionsAll[type])[Object.keys(optionsAll[type]).length - 1].key;
+
+          console.log('WatchTEST6 isContainNotThisWalletSS58Address: ', isContainNotThisWalletSS58Address);
+          console.log('WatchTEST7 lastOption', lastOption);
+
+          if (lastOption) {
+            if (!isValidEvmAddress(lastOption) && isContainNotThisWalletSS58Address) {
+              console.log('WatchTEST beforePOP readOptions() is : ', readOptions());
+              // this.setState(() => {
+              //   return { lastValue: lastOption };
+              // });
+
+              // console.log('WatchTEST lastValue is: ', this.state.lastValue);
+
+              console.log('WatchTEST8 optionsAll is: ', optionsAll);
+              // console.log('WatchTEST allState', allState);
+
+              // console.log('WatchTEST lastValue is ', lastValue, 'value is ', value);
+              // setLastValue(type, '');
+              const popValues = [optionsAll[type].pop(), optionsAll.address.pop(), optionsAll.all.pop(), optionsAll.recent.pop()];
+              // optionsAll[type].pop();
+              // optionsAll.address.pop();
+              // optionsAll.all.pop();
+              // optionsAll.recent.pop();
+              // allState = this.state;
+
+              console.log('WatchTEST9 popValues: ', popValues);
+
+              // if (popValues[0]?.key) {
+              //   this.setState(
+              //     { value: popValues[0] && popValues[0].key }
+              //   );
+              // }
+
+              // console.log('WatchTEST getLastValue is', getLastValue('all'));
+
+              // console.log('WatchTEST lastValue is ', this.state.lastValue, 'value is ', this.state.value);
+
+              console.log('WatchTEST10 pop()!!!!!!!!!!!!');
+
+              // console.log('WatchTEST lastValue is ', this.state.lastValue, 'value is ', this.state.value);
+              console.log('WatchTEST11 optionsAll is: ', optionsAll);
+              // console.log('WatchTEST allState', allState);
+
+              console.log('WatchTEST12 afterPOP readOptions() is : ', readOptions());
+
+              if (handlerInputAddress && (isStopMultitimeExecution === false)) {
+                console.log('WatchTEST13 hello!! optionsAll[type]', optionsAll[type]);
+                handlerInputAddress();
+              }
+            }
+          }
+
+          console.log('WatchTEST14 before options assign readOptions() is : ', readOptions());
+
+          options = optionsAll[type].filter((opt) => (opt.key && (isValidEvmAddress(opt.key) || (addresses && addresses.includes(opt.key)) || opt.key === 'header-accounts')));
+        } else {
+          options = optionsAll[type].filter((opt) => (opt.key && (isValidEvmAddress(opt.key) || isValidAddressPolkadotAddress(opt.key) || opt.key === 'header-accounts')));
+        }
       } else {
         if (isEthereum) {
           options = optionsAll[type].filter((opt) => opt.key && (opt.key.includes('0x') || opt.key === 'header-accounts'));
@@ -250,15 +329,27 @@ class InputAddress extends React.PureComponent<Props, State> {
   }
 
   private onChange = (address: string): void => {
-    const { filter, onChange, type } = this.props;
+    const { addresses, filter, networkKey, onChange, type } = this.props;
 
-    !filter && setLastValue(type, address);
+    console.log('WatchTEST15 onChange address is: ', address);
 
-    onChange && onChange(
-      this.hasValue(address)
-        ? transformToAccountId(address)
-        : null
-    );
+    if (networkKey === 'astarEvm' || networkKey === 'shidenEvm') {
+      if (addresses && !isValidEvmAddress(address) && !addresses.includes(address)) {
+        console.log('WatchTEST16 onChange!!!!!!!!!!!!!!!!!!!!!!!!!!! return');
+      }
+    } else {
+      console.log('WatchTEST17 onChange!!!!!!!!!!!!!!!!!!!!!!!!!! NOT return');
+
+      // if (isValidEvmAddress(address) || (addresses && addresses.includes(address))) {
+      !filter && setLastValue(type, address);
+      // }
+
+      onChange && onChange(
+        this.hasValue(address)
+          ? transformToAccountId(address)
+          : null
+      );
+    }
   };
 
   private onSearch = (filteredOptions: KeyringSectionOptions, _query: string): KeyringSectionOptions => {

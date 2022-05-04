@@ -14,6 +14,7 @@ interface Props extends ThemeProps {
   className?: string;
   isBelowInput?: boolean;
   isDanger?: boolean;
+  // _onClick?: () => void;
 }
 
 function Warning ({ children, className = '', isBelowInput, isDanger }: Props): React.ReactElement<Props> {
@@ -24,14 +25,17 @@ function Warning ({ children, className = '', isBelowInput, isDanger }: Props): 
           alt='danger'
           className='warning-image'
           src={danger}
-        />)
+          // eslint-disable-next-line @typescript-eslint/indent
+           />)
         : (<img
           alt='warning'
           className='warning-image'
           src={warning}
-        />)
+          // eslint-disable-next-line @typescript-eslint/indent
+           />)
       }
       <div className='warning-message'>{children}</div>
+      {/* {_onClick ? <button onClick={_onClick}>Press button for reset warning</button> : <></>} */}
     </div>
   );
 }
