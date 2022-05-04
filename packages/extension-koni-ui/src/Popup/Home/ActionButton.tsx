@@ -55,15 +55,15 @@ function HomeActionButton ({ className, iconSrc, isDisabled = false, onClick, to
 }
 
 export default styled(HomeActionButton)(({ theme }: Props) => `
-    width: 48px;
-    height: 48px;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 40%;
-    background-color: ${theme.buttonBackground};
+    
     cursor: pointer;
-
+    height: 40px;
+    width: 174px;
+    border-radius: 4px;
+    
     img {
       width: 24px;
       height: 24px;

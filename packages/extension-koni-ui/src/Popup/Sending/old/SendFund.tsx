@@ -30,12 +30,13 @@ import { AccountInfoWithProviders, AccountInfoWithRefCount } from '@polkadot/typ
 import { BN, BN_HUNDRED, BN_ZERO, isFunction } from '@polkadot/util';
 
 import Available from './component/Available';
-import InputAddress from './component/InputAddress';
+import InputAddressNew from './component/InputAddressNew';
+import LabelHelp from './component/LabelHelp';
 
 interface Props extends ThemeProps {
   className?: string;
+  help?: React.ReactNode;
 }
-
 interface ContentProps extends ThemeProps {
   className?: string;
   setWrapperClass: (classname: string) => void;
@@ -154,11 +155,13 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
     <div className={`-wrapper ${className} ${wrapperClass}`}>
       <Header
         showAdd
-        showCancelButton
+        // showCancelButton
         showSearch
         showSettings
         showSubHeader
         subHeaderName={t<string>('Send fund (Native to Native)')}
+        // showSubHeader
+        // subHeaderName={t<string>('Send fund')}
       />
       {renderContent()}
     </div>
@@ -320,7 +323,6 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
 
     if (result && extrinsicHash) {
       const { change, fee } = extractTxResult(result);
-
       const item: TransactionHistoryItemType = {
         action: 'send',
         change,
@@ -356,6 +358,7 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
       {/* eslint-disable-next-line multiline-ternary */}
       {!isShowTxResult ? (
         <div className={`${className} -main-content`}>
+          {/*
           <InputAddress
             className={'kn-field -field-1'}
             defaultValue={propSenderId}
@@ -382,6 +385,72 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
             isEthereum={isEthereum}
             label={t<string>('Send to address')}
             // isDisabled={!!propRecipientId}
+            */}
+          
+          <div className='subtitle-transfer'>
+            {t<string>('Transfer')}
+          </div>
+          <div className = {'transferable-container'}>
+            <div>
+              <p className = {'transfer-total'}>Transferable Total</p>
+              <div className='transferable-amount'>
+                <Available
+                  api={api}
+                  apiUrl={apiUrl}
+                  params={senderId}
+                />
+              </div>
+            </div>
+          </div>
+          <div>
+            <a className='address-text'>
+              {t<string>('Send from account')}
+            </a>
+            <LabelHelp
+              className = 'send-help'
+              help= {t<string>('The account you will send funds from.')}
+            />
+            <InputAddressNew
+              className={'kn-field -field-1'}
+              defaultValue={propSenderId}
+              // help={t<string>('The account you will send funds from.')}
+              isEthereum={isEthereum}
+              // isDisabled={!!propSenderId}
+
+              // label={t<string>('Send from account')}
+              /*
+              labelExtra={
+                <Available
+                  api={api}
+                  apiUrl={apiUrl}
+                  label={t<string>('Transferable')}
+                  params={senderId}
+                />
+              } */
+
+              onChange={setSenderId}
+              type='account'
+              withEllipsis
+            />
+          </div>
+          <div>
+            <a className='address-text'>
+              {t<string>('Send to address')}
+            </a>
+            <LabelHelp
+              className = 'send-help'
+              help= {t<string>('Select a contact or paste the address you want to send funds to.')}
+            />
+            <InputAddressNew
+              autoPrefill={false}
+              className={'kn-field -field-2'}
+              // help={t<string>('Select a contact or paste the address you want to send funds to.')}
+              isEthereum={isEthereum}
+              // label={t<string>('Send to address')}
+
+              // isDisabled={!!propRecipientId}
+
+              /*
             labelExtra={
               <Available
                 api={api}
@@ -390,10 +459,13 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
                 params={recipientId}
               />
             }
-            onChange={setRecipientId}
-            type='allPlus'
-            withEllipsis
-          />
+            */
+
+              onChange={setRecipientId}
+              type='allPlus'
+              withEllipsis
+            />
+          </div>
           {recipientPhish && (
             <Warning
               className={'kn-l-warning'}
@@ -492,11 +564,17 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
           )}
           <div className={'kn-l-submit-wrapper'}>
             <Button
+              className={'cancel-btn'}
+              to='/'
+            >
+              {t<string>('cancel')}
+            </Button>
+            <Button
               className={'kn-submit-btn'}
               isDisabled={isSameAddress || !hasAvailable || !(recipientId) || (!amount && !isAll) || amountGtAvailableBalance || !!recipientPhish}
               onClick={_onSend}
             >
-              {t<string>('Make Transfer')}
+              {t<string>('Confirm')}
             </Button>
           </div>
         </div>
@@ -543,13 +621,71 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
       display: none;
     }
   }
+  .send-help {
+    color: #FDFDFD;
+    opacity: 0.5;
+  }
+
+  .address-text {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 100%;
+    letter-spacing: 0.03em;
+    color: #FFFFF;
+    }
+
+  .transferable-container {
+    margin 21px auto 16px;
+    width: 328px;
+    height: 104px;
+    background: rgba(79, 88, 128, 1);
+    border-radius: 8px;
+  }
+  .transfer-total {
+    position: relative;
+    top: 28px;
+
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 100%;
+    
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.05em;
+    
+    color: #F0F0F0;
+  }
+  .transferable-amount {
+    position: relative;
+    bottom: -20px;
+
+
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 100%;
+    /* identical to box height, or 24px */
+
+    text-align : center;
+    letter-spacing: 0.05em;
+    
+    color: #F0F0F0;
+    
+  }
+
+
 
   .send-fund-container {
     padding-left: 15px;
     padding-right: 15px;
     padding-bottom: 15px;
     flex: 1;
-    padding-top: 25px;
+    padding-top: 13px;
     overflow-y: auto;
 
     // &::-webkit-scrollbar {
@@ -601,12 +737,43 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
   }
 
   .kn-l-submit-wrapper {
+    z-index:10;
     position: sticky;
     bottom: -15px;
-    padding: 15px;
+    padding: 15px 0px;
     margin-left: -15px;
     margin-bottom: -15px;
     margin-right: -15px;
     background-color: ${theme.background};
   }
+  .kn-submit-btn {
+    display: inline-block;
+    height: 48px;
+    width: 256px;
+    border-radius: 6px;
+    background: rgba(40, 78, 169, 1);
+  }
+    .cancel-btn {
+      display: inline-block;
+      margin-right: 28px;
+      margin-left: 15px;
+      height: 48px;
+      width: 144px;
+      background: rgba(48, 59, 87, 1);
+      border-radius: 6px;
+  }
+  .subtitle-transfer {
+    font-family: 'Roboto';
+    font-style: bold;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 100%;
+    /* identical to box height, or 24px */
+
+    text-align: center;
+    letter-spacing: 0.05em;
+    
+    color: #FFFFFF;
+      }
+
 `));

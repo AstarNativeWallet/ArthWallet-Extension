@@ -34,6 +34,7 @@ import { BN, BN_HUNDRED, BN_ZERO, isFunction } from '@polkadot/util';
 
 import Available from './component/Available';
 import InputAddress from './component/InputAddress';
+import LabelHelp from './component/LabelHelp';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -161,7 +162,6 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
     <div className={`-wrapper ${className} ${wrapperClass}`}>
       <Header
         showAdd
-        showCancelButton
         showSearch
         showSettings
         showSubHeader
@@ -381,6 +381,7 @@ function SendFundFromEvm ({ api, apiUrl, className = '', currentAccount, handler
   return (
     <>
       {/* eslint-disable-next-line multiline-ternary */}
+        {/*
       { isInvalidToAddress ? <div>
         <Warning>{
           <div>
@@ -411,6 +412,153 @@ function SendFundFromEvm ({ api, apiUrl, className = '', currentAccount, handler
                     label={t<string>('Transferable')}
                     params={senderId}
                   />
+                  */}
+      {!isShowTxResult ? (
+        <div className={`${className} -main-content`}>
+          <div className='subtitle-transfer'>
+            {t<string>('Transfer')}
+          </div>
+          <div className = {'transferable-container'}>
+            <div>
+              <p className = {'transfer-total'}>Transferable Total</p>
+              <div className='transferable-amount'>
+                <Available
+                  api={api}
+                  apiUrl={apiUrl}
+                  params={senderId}
+                />
+              </div>
+            </div>
+          </div>
+          <div>
+            <a className='address-text'>
+              {t<string>('Send from account')}
+            </a>
+            <LabelHelp
+              className = 'send-help'
+              help= {t<string>('The account you will send funds from.')}
+            />
+            <InputAddress
+              className={'kn-field -field-1'}
+              defaultValue={propSenderId}
+              // help={t<string>('The account you will send funds from.')}
+              isEthereum={isEthereum}
+              // isDisabled={!!propSenderId}
+              // label={t<string>('Send from account')}
+              /*
+            labelExtra={
+              <Available
+                api={api}
+                apiUrl={apiUrl}
+                label={t<string>('Transferable')}
+                params={senderId}
+              />
+            } */
+              onChange={setSenderId}
+              type='account'
+              withEllipsis
+            />
+          </div>
+          <div>
+            <a className='address-text'>
+              {t<string>('Send to address')}
+            </a>
+            <LabelHelp
+              className = 'send-help'
+              help= {t<string>('Select a contact or paste the address you want to send funds to.')}
+            />
+            <InputAddress
+              autoPrefill={false}
+              className={'kn-field -field-2'}
+              // help={t<string>('Select a contact or paste the address you want to send funds to.')}
+              isEthereum={isEthereum}
+              // isDisabled={!!propRecipientId}
+              // label={t<string>('Send to address')}
+              /*
+            labelExtra={
+              <Available
+                api={api}
+                apiUrl={apiUrl}
+                label={t<string>('Transferable')}
+                params={recipientId}
+              />
+            } */
+              networkKey={networkKey}
+              onChange={setRecipientId}
+              type='allPlus'
+              withEllipsis
+            />
+          </div>
+          {recipientPhish && (
+            <Warning
+              className={'kn-l-warning'}
+              isDanger
+            >
+              {t<string>('The recipient is associated with a known phishing site on {{url}}', { replace: { url: recipientPhish } })}
+            </Warning>
+          )}
+          {isSameAddress && (
+            <Warning
+              className={'kn-l-warning'}
+              isDanger
+            >
+              {t<string>('The recipient address is the same as the sender address.')}
+            </Warning>
+          )}
+          {canToggleAll && isAll
+            ? (
+              <InputBalance
+                autoFocus
+                className={'kn-field -field-3'}
+                defaultValue={maxTransfer}
+                help={t<string>('The full account balance to be transferred, minus the transaction fees')}
+                isDisabled
+                key={maxTransfer?.toString()}
+                label={t<string>('transferable minus fees')}
+                registry={api.registry}
+              />
+            )
+            : (
+              <>
+                <InputBalance
+                  autoFocus
+                  className={'kn-field -field-3'}
+                  help={t<string>('Type the amount you want to transfer. Note that you can select the unit on the right e.g sending 1 milli is equivalent to sending 0.001.')}
+                  isError={!hasAvailable}
+                  isZeroable
+                  label={t<string>('amount')}
+                  onChange={setAmount}
+                  // maxValue={maxTransfer}
+                  placeholder={'0'}
+                  registry={api.registry}
+                />
+                {amountGtAvailableBalance && (
+                  <Warning
+                    className={'kn-l-warning'}
+                    isDanger
+                  >
+                    {t<string>('The amount you want to transfer is greater than your available balance.')}
+                  </Warning>
+                )}
+                <InputBalance
+                  className={'kn-field -field-4'}
+                  defaultValue={api.consts.balances.existentialDeposit}
+                  help={t<string>('The minimum amount that an account should have to be deemed active')}
+                  isDisabled
+                  label={t<string>('existential deposit')}
+                  registry={api.registry}
+                />
+              </>
+            )
+          }
+          {isFunction(api.tx.balances.transferKeepAlive) && (
+            <div className={'kn-field -toggle -toggle-1'}>
+              <Toggle
+                className='typeToggle'
+                label={
+                  isProtected
+                    ? t<string>('Transfer with account keep-alive checks')
+                    : t<string>('Normal transfer without keep-alive checks')
                 }
                 onChange={setSenderId}
                 type='account'
@@ -554,6 +702,39 @@ function SendFundFromEvm ({ api, apiUrl, className = '', currentAccount, handler
               txResult={txResult}
             />
           )}
+          {!isProtected && !noReference && (
+            <Warning className={'kn-l-warning'}>
+              {t<string>('There is an existing reference count on the sender account. As such the account cannot be reaped from the state.')}
+            </Warning>
+          )}
+          {!amountGtAvailableBalance && !isSameAddress && noFees && (
+            <Warning className={'kn-l-warning'}>
+              {t<string>('The transaction, after application of the transfer fees, will drop the available balance below the existential deposit. As such the transfer will fail. The account needs more free funds to cover the transaction fees.')}
+            </Warning>
+          )}
+          <div className={'kn-l-submit-wrapper'}>
+            <Button
+              className={'cancel-btn'}
+              to='/'
+            >
+              {t<string>('cancel')}
+            </Button>
+            <Button
+              className={'kn-submit-btn'}
+              isDisabled={isSameAddress || !hasAvailable || !(recipientId) || (!amount && !isAll) || amountGtAvailableBalance || !!recipientPhish}
+              onClick={_onSend}
+            >
+              {t<string>('Make Transfer')}
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <SendEvmFundResultFromEvm
+          networkKey={networkKey}
+          onResend={_onResend}
+          txResult={txResult}
+        />
+      )}
       {extrinsic && isShowTxModal && (
         <EvmAuthTransactionFromEvm
           amount={amount}
@@ -586,10 +767,6 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
       cursor: not-allowed;
       opacity: 0.5;
       pointer-events: none !important;
-    }
-
-    .subheader-container__part-3 .kn-l-cancel-btn {
-      display: none;
     }
   }
 
@@ -652,10 +829,94 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
   .kn-l-submit-wrapper {
     position: sticky;
     bottom: -15px;
-    padding: 15px;
+    padding: 15px 0px;
     margin-left: -15px;
     margin-bottom: -15px;
     margin-right: -15px;
     background-color: ${theme.background};
   }
+  .kn-submit-btn {
+    display: inline-block;
+    height: 48px;
+    width: 256px;
+    border-radius: 6px;
+    background: rgba(40, 78, 169, 1);
+  }
+    .cancel-btn {
+      display: inline-block;
+      margin-right: 28px;
+      margin-left: 15px;
+      height: 48px;
+      width: 144px;
+      background: rgba(48, 59, 87, 1);
+      border-radius: 6px;
+  }
+
+
+  .transfer-total {
+    position: relative;
+    top: 28px;
+
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 100%;
+    
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.05em;
+    
+    color: #F0F0F0;
+  }
+  .transferable-amount {
+    position: relative;
+    bottom: -20px;
+
+
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 100%;
+    /* identical to box height, or 24px */
+
+    text-align : center;
+    letter-spacing: 0.05em;
+    
+    color: #F0F0F0; 
+  }
+  .transferable-container {
+    margin 21px auto 16px;
+    width: 328px;
+    height: 104px;
+    background: rgba(79, 88, 128, 1);
+    border-radius: 8px;
+  }
+  .subtitle-transfer {
+    font-family: 'Roboto';
+    font-style: bold;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 100%;
+    /* identical to box height, or 24px */
+
+    text-align: center;
+    letter-spacing: 0.05em;
+
+    color: #FFFFFF;
+    }
+    .send-help {
+      color: #FDFDFD;
+      opacity: 0.5;
+    }
+    .address-text {
+      font-family: 'Roboto';
+      font-style: normal;
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 100%;
+      letter-spacing: 0.03em;
+      color: #FFFFF;
+    }
 `));

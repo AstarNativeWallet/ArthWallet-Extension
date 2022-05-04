@@ -40,13 +40,13 @@ function Derive ({ className, isLocked }: Props): React.ReactElement<Props> {
   const [account, setAccount] = useState<null | PathState>(null);
   const [parentPassword, setParentPassword] = useState<string | null>(null);
   const accountsWithoutAll = accounts.filter((acc: { address: string; }) => acc.address !== 'ALL');
-  const accountsWithoutEtheriumType = accountsWithoutAll.filter((acc) => acc.type !== EVM_ACCOUNT_TYPE);
+  const accountsWithoutEthereumType = accountsWithoutAll.filter((acc) => acc.type !== EVM_ACCOUNT_TYPE);
   const name = `Account ${accountsWithoutAll.length + 1}`;
   const parentAccount = accounts.find((a) => a.address === address);
   let parentAddress: string;
 
   if (parentAccount && parentAccount.type === EVM_ACCOUNT_TYPE) {
-    parentAddress = accountsWithoutEtheriumType[0].address;
+    parentAddress = accountsWithoutEthereumType[0].address;
   } else {
     parentAddress = address;
   }

@@ -32,6 +32,8 @@ import useShowedNetworks from '@polkadot/extension-koni-ui/hooks/screen/home/use
 import useTranslation from '@polkadot/extension-koni-ui/hooks/useTranslation';
 import { saveCurrentAccountAddress, triggerAccountsSubscription } from '@polkadot/extension-koni-ui/messaging';
 import { Header } from '@polkadot/extension-koni-ui/partials';
+// import AccountsTree from '@polkadot/extension-koni-ui/Popup/Accounts/AccountsTree';
+import AccountMenuLists from '@polkadot/extension-koni-ui/partials/AccountList';
 import AddAccount from '@polkadot/extension-koni-ui/Popup/Accounts/AddAccount';
 import NftContainer from '@polkadot/extension-koni-ui/Popup/Home/Nfts/render/NftContainer';
 import StakingContainer from '@polkadot/extension-koni-ui/Popup/Home/Staking/StakingContainer';
@@ -42,14 +44,14 @@ import { ThemeProps } from '@polkadot/extension-koni-ui/types';
 import { BN_ZERO, isAccountAll, NFT_DEFAULT_GRID_SIZE, NFT_GRID_HEIGHT_THRESHOLD, NFT_HEADER_HEIGHT, NFT_PER_ROW, NFT_PREVIEW_HEIGHT } from '@polkadot/extension-koni-ui/util';
 
 import buyIcon from '../../assets/buy-icon.svg';
-import donateIcon from '../../assets/donate-icon.svg';
+// import donateIcon from '../../assets/donate-icon.svg';
 import sendIcon from '../../assets/send-icon.svg';
 // import swapIcon from '../../assets/swap-icon.svg';
 import ChainBalances from './ChainBalances/ChainBalances';
 import Crowdloans from './Crowdloans/Crowdloans';
 import TransactionHistory from './TransactionHistory/TransactionHistory';
 import ActionButton from './ActionButton';
-import WithdrawButton from './WithdrawButton';
+// import WithdrawButton from './WithdrawButton';
 
 interface WrapperProps extends ThemeProps {
   className?: string;
@@ -146,9 +148,11 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
     networkKey,
     networkPrefix } = network;
   const { t } = useTranslation();
+  const { currentNetwork: { isEthereum } } = useSelector((state: RootState) => state);
+
   const { address } = currentAccount;
   const [isShowBalanceDetail, setShowBalanceDetail] = useState<boolean>(false);
-  const [isEvmDeposit, setIsEvmDeposit] = useState<boolean>(false);
+  // const [isEvmDeposit, setIsEvmDeposit] = useState<boolean>(false);
   const backupTabId = window.localStorage.getItem('homeActiveTab') || '1';
   const [activatedTab, setActivatedTab] = useState<number>(Number(backupTabId));
   const _setActiveTab = useCallback((tabId: number) => {
@@ -270,7 +274,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
 
   chrome.storage.local.get(['isEvmDeposit'], function (result) {
     if (typeof result.isEvmDeposit === 'boolean') {
-      setIsEvmDeposit(result.isEvmDeposit);
+      // setIsEvmDeposit(result.isEvmDeposit);
     }
 
     console.log('isEvmDeposit: ', result.isEvmDeposit);
@@ -290,6 +294,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
         text={t<string>('Accounts')}
         toggleZeroBalances={_toggleZeroBalances}
       />
+      {/*
       <div className={'home-action-block'}>
         <div className='account-total-balance'>
           <div
@@ -353,7 +358,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                 iconSrc={donateIcon}
                 tooltipContent={t<string>('Donate')}
               />
-            </Link> */}
+            </Link>
           </div>
         )}
         {_isAccountAll && (
@@ -382,6 +387,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
           </div>
         )}
       </div>
+        */}
       {isShowBalanceDetail &&
         <div
           className='home__back-btn'
@@ -396,20 +402,101 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
         </div>
       }
       <div className={'home-tab-contents'}>
+
         {activatedTab === 1 && (
-          <ChainBalances
-            address={address}
-            currentNetworkKey={networkKey}
-            isShowBalanceDetail={isShowBalanceDetail}
-            isShowZeroBalances={isShowZeroBalances}
-            networkBalanceMaps={networkBalanceMaps}
-            networkKeys={showedNetworks}
-            networkMetadataMap={networkMetadataMap}
-            setQrModalOpen={setQrModalOpen}
-            setQrModalProps={setQrModalProps}
-            setSelectedNetworkBalance={setSelectedNetworkBalance}
-            setShowBalanceDetail={setShowBalanceDetail}
-          />
+          <div
+            className='Home-contents'
+          >
+            <div className='total-balances'>
+              <a className = 'total-text'>{t<string>('Total')}</a>
+              <div
+                className={'account-total-btn'}
+                data-for={trigger}
+                data-tip={true}
+                onClick={_toggleBalances}
+              >
+                {isShowBalance
+                  ? <BalanceVal
+                    startWithSymbol
+                    symbol={'$'}
+                    value={isShowBalanceDetail ? selectedNetworkBalance : totalBalanceValue}
+                    />
+                  : <span>*********</span>
+                }
+              </div>
+            </div>
+            {console.log('tanaka:', networkKey)}
+            {_isAccountAll && (
+              <div className='IsAccountALL'>
+                <div className='action-button-wrapper'>
+                  <ActionButton
+                    className='action-button-recieve'
+                    iconSrc={buyIcon}
+                    isDisabled
+                    tooltipContent={t<string>('Receive')}
+                  />
+                  <Link
+                    className={'action-button-send'}
+                    isDisabled
+                    to={'/account/send-from-evm-fund'}
+                  >
+                    <ActionButton
+                      iconSrc={sendIcon}
+                      isDisabled
+                      tooltipContent={t<string>('Send')}
+                    />
+                  </Link>
+
+                </div>
+                <AccountMenuLists></AccountMenuLists>
+              </div>
+            )}
+            {!_isAccountAll && (
+              <div className='not-isAccountAll'>
+                <div className='action-button-wrapper'>
+                  <ActionButton
+                    className='action-button-recieve'
+                    iconSrc={buyIcon}
+                    onClick={_showQrModal}
+                    tooltipContent={t<string>('Receive')}
+                  />
+                  {isEthereum
+                    ? <Link
+                      className={'action-button-send'}
+                      to={'/account/send-from-evm-fund'}
+                    >
+                      <ActionButton
+                        iconSrc={sendIcon}
+                        tooltipContent={t<string>('Send')}
+                      />
+                    </Link>
+                    : <Link
+                      className={'action-button-send'}
+                      to={'/account/send-from-native-fund'}
+                    >
+                      <ActionButton
+                        iconSrc={sendIcon}
+                        tooltipContent={t<string>('Send')}
+                      />
+                    </Link>
+                  }
+                </div>
+                <ChainBalances
+                  address={address}
+                  currentNetworkKey={networkKey}
+                  isShowBalanceDetail={isShowBalanceDetail}
+                  isShowZeroBalances={isShowZeroBalances}
+                  networkBalanceMaps={networkBalanceMaps}
+                  networkKeys={showedNetworks}
+                  networkMetadataMap={networkMetadataMap}
+                  setQrModalOpen={setQrModalOpen}
+                  setQrModalProps={setQrModalProps}
+                  setSelectedNetworkBalance={setSelectedNetworkBalance}
+                  setShowBalanceDetail={setShowBalanceDetail}
+                />
+              </div>
+            )}
+          </div>
         )}
         {activatedTab === 2 && (
           <NftContainer
@@ -507,8 +594,24 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
   }
 
   .account-total-btn {
-    width: fit-content;
+    /*width: fit-content;*/
     cursor: pointer;
+    position: absolute;
+    top: 59px;
+    
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 36px;
+    line-height: 100%;
+    /* identical to box height, or 36px */
+    
+    display: flex;
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.05em;
+    
+    color: #FFFFFF;
   }
 
   .home-account-button-container {
@@ -516,12 +619,25 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
   }
 
   .action-button-wrapper {
-    opacity: 1;
-    margin-right: 10px;
+    display: block;
+    padding-left: 54px;
   }
+  .action-button-send {
+    display: inline-block;
+    width: 164px;
+    height: 40px;
+    background: #494B56;
+    border-radius: 4px;
+    margin-left:22px;
 
-  .action-button-wrapper:last-child {
-    margin-right: 0;
+  }
+  .action-button-recieve {
+    display: inline-block;
+    width: 164px;
+    height: 40px;
+    background: #494B56;
+    border-radius: 4px;
+
   }
 
   .home__account-qr-modal .subwallet-modal {
@@ -542,5 +658,47 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
   .home__back-icon {
     padding-right: 7px;
   }
+  .total-text {
+    position: absolute;
+    width: 48px;
+    height: 20px;
+    left: 151px;
+    top: 24px;
+    
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 100%;
+    /* identical to box height, or 20px */
+    
+    display: flex;
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.03em;
+    
+    color: #FFFFFF;
+    
+  }
 
+  .account-menu-lists {
+    position: relative;
+    width: 406px;
+    left: 28px;
+    margin-top: 14px;
+
+  }
+
+  .total-balances {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    width: 350px;
+    height: 150px;
+    margin: 18px auto;
+    
+    background: radial-gradient(98.81% 537.96% at 0% 58.33%, #8380C2 0%, #D4D3FF 100%);
+    border-radius: 6px;
+    }
 `));

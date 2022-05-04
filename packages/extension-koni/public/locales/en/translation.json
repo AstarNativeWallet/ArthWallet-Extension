@@ -317,4 +317,8 @@
   "EVM → EVM/EVMDeposit Send": "",
   "Send fund from EVM": "",
   "Send fund from Native": ""
+  "Total": "",
+  "Transfer": "",
+  "cancel": "",
+  "Confirm": ""
 }
