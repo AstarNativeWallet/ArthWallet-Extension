@@ -319,5 +319,7 @@
   "Confirm": "",
   "Authorize Transaction Withdraw": "",
   "Authorize Transaction Native": "",
-  "EVM Withdraw": ""
+  "EVM Withdraw": "",
+  "Faucet": "",
+  "Withdraw": ""
 }

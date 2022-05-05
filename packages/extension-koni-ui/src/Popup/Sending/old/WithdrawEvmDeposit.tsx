@@ -182,9 +182,10 @@ function WithdrawEvmDeposit ({ api, apiUrl, currentAccount, networkKey, setWrapp
         chrome.storage.local.get(['evmTransferbleAmount'], function (result) {
           if (typeof result.evmTransferbleAmount === 'string') {
             const evmTransferbleAmount: BN = new BN(result.evmTransferbleAmount);
+
             console.log('Arth evmTransferbleAmount is not valid type.', evmTransferbleAmount);
 
-            //setEvmDepositAmount(withdrawEvmDepositAmount);
+            // setEvmDepositAmount(withdrawEvmDepositAmount);
           } else {
             console.log('Arth evmTransferbleAmount is not valid type.', result.evmDepositAmount);
           }
@@ -301,36 +302,40 @@ function WithdrawEvmDeposit ({ api, apiUrl, currentAccount, networkKey, setWrapp
   return (
     <>
 
-    <div className='withdraw-balance-wrapper'>
-      <a>Your withdrawable EVM Deposit Amount is</a>
-      {displayEvmDepositAmount !== null && displayEvmDepositAmount > 0
-        ? <p className='amount'>{displayEvmDepositAmount} ASTR</p>
-        : <p className='amount'>0 ASTR</p>
-      }
+      <div className='withdraw-balance-wrapper'>
+        <a>Your withdrawable EVM Deposit Amount is</a>
+        {displayEvmDepositAmount !== null && displayEvmDepositAmount > 0
+          ? <p className='amount'>{displayEvmDepositAmount} ASTR</p>
+          : <p className='amount'>0 ASTR</p>
+        }
 
       <div className='info'>
-        <h3>Attention</h3>
-        <p>Make sure you are not trying 
+          <h3>Attention</h3>
+          <p>Make sure you are not trying
           to send your assets to an exchange.
-          If you transfer funds from this address 
+          If you transfer funds from this address
           to an exchange, your funds will be lost.</p>
 
           <Button
-              className={'faucet-btn'}
-              to='/'
-            >
-              {t<string>('Faucet')}
+            className={'faucet-btn'}
+            to='/'
+          >
+            {t<string>('Faucet')}
           </Button>
 
           <h4>What is 'EVM Deposit'</h4>
           <p>'EVM Deposit' is an EVM address converted from a Native address,
              which must be passed through once when sending funds from EVM to Native.
-            <p className='see-more'><a href='https://yahoo.co.jp/' target='_blank'>See more</a></p>
+          <p className='see-more'><a
+            href='https://yahoo.co.jp/'
+            rel='noreferrer'
+            target='_blank'
+          >See more</a></p>
           </p>
 
-      </div>
+        </div>
 
-    </div>
+      </div>
 
 
       {!isShowTxResult

@@ -21,10 +21,11 @@ import AccountSigner from '@polkadot/extension-koni-ui/Popup/Sending/old/signers
 import { AddressProxy, TxHandler } from '@polkadot/extension-koni-ui/Popup/Sending/old/types';
 import { cacheUnlock } from '@polkadot/extension-koni-ui/Popup/Sending/old/util';
 import { ThemeProps } from '@polkadot/extension-koni-ui/types';
+import { getLogoByNetworkKey } from '@polkadot/extension-koni-ui/util';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { assert, BN_ZERO } from '@polkadot/util';
 import { addressEq } from '@polkadot/util-crypto';
-import { getLogoByNetworkKey } from '@polkadot/extension-koni-ui/util';
+
 import arrow from '../../../assets/arrow-transfer-down.png';
 
 const bWindow = chrome.extension.getBackgroundPage() as BackgroundWindow;

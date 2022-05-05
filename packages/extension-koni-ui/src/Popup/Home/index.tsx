@@ -53,7 +53,7 @@ import TransactionHistory from './TransactionHistory/TransactionHistory';
 import ActionButton from './ActionButton';
 import WithdrawButton from './WithdrawButton';
 
-//import { getBalances, parseBalancesInfo } from '@polkadot/extension-koni-ui/util';
+// import { getBalances, parseBalancesInfo } from '@polkadot/extension-koni-ui/util';
 
 interface WrapperProps extends ThemeProps {
   className?: string;
@@ -282,7 +282,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
     console.log('Arth isEvmDeposit: ', result.isEvmDeposit);
   });
 
-/*
+  /*
   const balanceInfo = parseBalancesInfo(priceMap, tokenPriceMap, {
     networkKey,
     tokenDecimals: registry.chainDecimals,
@@ -291,9 +291,8 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
   });
 */
 
-
   const [displayEvmDepositAmount, setDisplayEvmDepositAmount] = useState<number | null>(null);
-  
+
   chrome.storage.local.get(['displayEvmDepositAmount'], function (result) {
     if (typeof result.displayEvmDepositAmount === 'number') {
       setDisplayEvmDepositAmount(result.displayEvmDepositAmount);
@@ -301,7 +300,6 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
       setDisplayEvmDepositAmount(0);
     }
   });
-
 
   return (
     <div className={`home-screen home ${className}`}>
