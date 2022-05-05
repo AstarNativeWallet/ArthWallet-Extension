@@ -179,6 +179,18 @@ function WithdrawEvmDeposit ({ api, apiUrl, currentAccount, networkKey, setWrapp
           }
         });
 
+        chrome.storage.local.get(['evmTransferbleAmount'], function (result) {
+          if (typeof result.evmTransferbleAmount === 'string') {
+            const evmTransferbleAmount: BN = new BN(result.evmTransferbleAmount);
+
+            console.log('Arth evmTransferbleAmount is not valid type.', evmTransferbleAmount);
+
+            // setEvmDepositAmount(withdrawEvmDepositAmount);
+          } else {
+            console.log('Arth evmTransferbleAmount is not valid type.', result.evmDepositAmount);
+          }
+        });
+
         return isFunction(api.tx.evm.withdraw) ? [h160address, evmDepositAmount] : null;
       }
 
@@ -289,19 +301,57 @@ function WithdrawEvmDeposit ({ api, apiUrl, currentAccount, networkKey, setWrapp
 
   return (
     <>
+
+      <div className='withdraw-balance-wrapper'>
+        <a>Your withdrawable EVM Deposit Amount is</a>
+        {displayEvmDepositAmount !== null && displayEvmDepositAmount > 0
+          ? <p className='amount'>{displayEvmDepositAmount} ASTR</p>
+          : <p className='amount'>0 ASTR</p>
+        }
+
+      <div className='info'>
+          <h3>Attention</h3>
+          <p>Make sure you are not trying
+          to send your assets to an exchange.
+          If you transfer funds from this address
+          to an exchange, your funds will be lost.</p>
+
+          <Button
+            className={'faucet-btn'}
+            to='/'
+          >
+            {t<string>('Faucet')}
+          </Button>
+
+          <h4>What is 'EVM Deposit'</h4>
+          <p>'EVM Deposit' is an EVM address converted from a Native address,
+             which must be passed through once when sending funds from EVM to Native.
+          <p className='see-more'><a
+            href='https://yahoo.co.jp/'
+            rel='noreferrer'
+            target='_blank'
+          >See more</a></p>
+          </p>
+
+        </div>
+
+      </div>
+
+
       {!isShowTxResult
         ? (
           <div className={'kn-l-submit-wrapper'}>
-            <a>Your withdrawable EVM Deposit Amount is</a>
-            {displayEvmDepositAmount !== null && displayEvmDepositAmount > 0
-              ? <h1>{displayEvmDepositAmount} ASTR</h1>
-              : <h1>0 ASTR</h1>
-            }
+            <Button
+              className={'cancel-btn'}
+              to='/'
+            >
+              {t<string>('cancel')}
+            </Button>
             <Button
               className={'kn-submit-btn'}
               onClick={_onSend}
             >
-              {t<string>('Withdraw EVM Deposit')}
+              {t<string>('Withdraw')}
             </Button>
           </div>
         )
@@ -414,4 +464,67 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
     margin-right: -15px;
     background-color: ${theme.background};
   }
-`));
+
+  .kn-l-submit-wrapper {
+    z-index:10;
+    position: sticky;
+    bottom: -15px;
+    padding: 15px 0px;
+    margin: 0;
+    background-color: ${theme.background};
+  }
+  .kn-submit-btn {
+    display: inline-block;
+    height: 48px;
+    width: 256px;
+    border-radius: 6px;
+    background-color: #b1384e;
+  }
+  .cancel-btn {
+    display: inline-block;
+    margin-right: 28px;
+    margin-left: 15px;
+    height: 48px;
+    width: 144px;
+    background: rgba(48, 59, 87, 1);
+    border-radius: 6px;
+  }
+  .faucet-btn {
+    display: block;
+    margin: 16px auto;
+    height: 48px;
+    width: 144px;
+    background-color: #284EA9;
+    border-radius: 6px;
+  }
+
+  .withdraw-balance-wrapper {
+    text-align: center;
+    width: 398px;
+    margin: 36px auto 16px;
+  }
+  .withdraw-balance-wrapper .amount {
+    margin: 20px auto 24px;
+    font-size: 22px;
+    font-weight: 700;
+  }
+  .withdraw-balance-wrapper .info {
+    padding: 0 10px 0px;
+    background: #050b2e;
+    border-radius: 6px;
+    border: 1px solid #2c3673;
+  }
+  .withdraw-balance-wrapper h4 {
+    margin: 32px auto 6px;
+  }
+  .withdraw-balance-wrapper .see-more {
+    margin: 10px auto 0;
+  }
+  .withdraw-balance-wrapper .see-more a {
+    color: #909090;
+  }
+  .withdraw-balance-wrapper .see-more a:hover {
+    color: #fff;
+  }
+
+  `));

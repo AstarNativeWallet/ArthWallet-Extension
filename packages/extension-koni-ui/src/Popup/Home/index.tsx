@@ -55,8 +55,9 @@ import ChainBalances from './ChainBalances/ChainBalances';
 import Crowdloans from './Crowdloans/Crowdloans';
 import TransactionHistory from './TransactionHistory/TransactionHistory';
 import ActionButton from './ActionButton';
-// import DetailHeader from '@polkadot/extension-koni-ui/partials/Header/DetailHeader';
-// import WithdrawButton from './WithdrawButton';
+import WithdrawButton from './WithdrawButton';
+
+// import { getBalances, parseBalancesInfo } from '@polkadot/extension-koni-ui/util';
 
 interface WrapperProps extends ThemeProps {
   className?: string;
@@ -159,7 +160,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
 
   const { address } = currentAccount;
   const [isShowBalanceDetail, setShowBalanceDetail] = useState<boolean>(false);
-  // const [isEvmDeposit, setIsEvmDeposit] = useState<boolean>(false);
+  const [isEvmDeposit, setIsEvmDeposit] = useState<boolean>(false);
   const backupTabId = window.localStorage.getItem('homeActiveTab') || '1';
   const [activatedTab, setActivatedTab] = useState<number>(Number(backupTabId));
   const _setActiveTab = useCallback((tabId: number) => {
@@ -295,10 +296,29 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
 
   chrome.storage.local.get(['isEvmDeposit'], function (result) {
     if (typeof result.isEvmDeposit === 'boolean') {
-      // setIsEvmDeposit(result.isEvmDeposit);
+      setIsEvmDeposit(result.isEvmDeposit);
     }
 
-    console.log('isEvmDeposit: ', result.isEvmDeposit);
+    console.log('Arth isEvmDeposit: ', result.isEvmDeposit);
+  });
+
+  /*
+  const balanceInfo = parseBalancesInfo(priceMap, tokenPriceMap, {
+    networkKey,
+    tokenDecimals: registry.chainDecimals,
+    tokenSymbols: registry.chainTokens,
+    balanceItem
+  });
+*/
+
+  const [displayEvmDepositAmount, setDisplayEvmDepositAmount] = useState<number | null>(null);
+
+  chrome.storage.local.get(['displayEvmDepositAmount'], function (result) {
+    if (typeof result.displayEvmDepositAmount === 'number') {
+      setDisplayEvmDepositAmount(result.displayEvmDepositAmount);
+    } else {
+      setDisplayEvmDepositAmount(0);
+    }
   });
 
   return (
@@ -520,6 +540,41 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                     </Link>
                   }
                 </div>
+                {isEvmDeposit &&
+                  <div className='withdraw-balance-wrapper'>
+                    <h5>EVM Deposit</h5>
+                    <div className='top'>
+                      <div className='withdraw-token-icon'><img
+                        alt='ICON'
+                        src='static/astar.png'
+                      /></div>
+                      <div className='withdraw-token-balance'>
+                        <p className='symbol'>ASTR</p>
+                        {displayEvmDepositAmount !== null && displayEvmDepositAmount > 0
+                          ? <p className='symbol'>{displayEvmDepositAmount} ASTR</p>
+                          : <p className='symbol'>0 ASTR</p>
+                        }
+                      </div>
+                      <div className='withdraw-fiat-balance'>
+                        <p className='fiat-balance'>$000.00</p>
+                        <p className='info-balance'>+$00.00</p>
+                      </div>
+                    </div>
+                    <div className='bottom'>
+                      <div className=''>
+                        <p className='alert-str'>You need to withdraw from EVM Deposit</p>
+                        <p>
+                          <Link
+                            className='withdraw-button'
+                            to={'/account/withdraw-evm-deposit'}
+                          >
+                            <WithdrawButton tooltipContent={t<string>('Withdraw EVM Deposit')} />
+                          </Link>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                }
                 {isShowBalanceDetail &&
                   <div
                     className='home__back-btn'
@@ -532,7 +587,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                     />
                     <span>{t<string>('Back to home')}</span>
                   </div>
-                }                
+                }
                 <ChainBalances
                   address={address}
                   currentNetworkKey={networkKey}
@@ -546,6 +601,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                   setSelectedNetworkBalance={setSelectedNetworkBalance}
                   setShowBalanceDetail={setShowBalanceDetail}
                 />
+
               </div>
             )}
           </div>
@@ -690,9 +746,92 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
     height: 40px;
     background: #494B56;
     border-radius: 4px;
-
   }
 
+  .withdraw-balance-wrapper {
+    width: 400px;
+    margin : 20px auto;
+    padding: 10px 20px;
+    border-radius: 8px;
+    background-color: #282A37;
+  }
+  .withdraw-balance-wrapper .bottom p {
+    text-align: center;
+    margin: 0 auto;
+  }
+  .withdraw-balance-wrapper .bottom p.alert-str {
+    color: #E83B5A;
+    margin: 0 auto;
+  }
+  .withdraw-balance-wrapper .fYxHvM {
+    width: 148px;
+    height: 40px;
+    margin: 6px auto 0;
+    backgroung: none;
+    background-color: #B1384E;
+    border-radius: 8px;
+  }
+
+  .withdraw-balance-wrapper h5 {
+    margin: 0;
+    font-size: 15px;
+  }
+
+  .withdraw-balance-wrapper .withdraw-token-icon {
+    display: inline-block;
+    width: 32px;
+  }
+  .withdraw-balance-wrapper .withdraw-token-icon img {
+    display: block;
+    width: 32px;
+    height: 32px;
+  }
+  .withdraw-balance-wrapper .withdraw-token-balance {
+    display: inline-block;
+    margin-left: 16px;
+    padding: 2px 0;
+    width: 100px;
+  }
+  .withdraw-balance-wrapper .withdraw-token-balance p {
+    margin: 0;
+  }
+  .withdraw-balance-wrapper .withdraw-token-balance p.symbol {
+    font-weight: 700;
+    font-size: 17px;
+    line-hegit: 16px;
+  }
+  .withdraw-balance-wrapper .withdraw-token-balance p.balance {
+    font-size: 16px;
+    line-hegit: 16px;
+  }
+
+  .withdraw-balance-wrapper .withdraw-fiat-balance {
+    display: none;
+    text-align: right;
+    padding: 2px 0;
+    width: 200px;
+  }
+  .withdraw-balance-wrapper .withdraw-fiat-balance p {
+    margin: 0;
+  }
+  .withdraw-balance-wrapper .withdraw-fiat-balance p.fiat-balance {
+    font-size: 17px;
+    line-hegit: 16px;
+  }
+  .withdraw-balance-wrapper .withdraw-fiat-balance p.info-balance {
+    line-hegit: 14px;
+    font-size: 14px;
+    color: #a0a0a0;
+  }
+
+  .chain-balances-container__body {
+    width: 400px !important;
+    margin : 20px auto;
+    /*margin : 20px 30px;*/
+    border-radius: 8px;
+    background-color: #282A37;
+  }
+ 
   .home__account-qr-modal .subwallet-modal {
     max-width: 460px;
   }
@@ -713,8 +852,10 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
   }
   .total-text {
     position: absolute;
+    width: 48px;
     height: 20px;
-    margin-top:24px;
+    left: 151px;
+    top: 24px;
     
     font-family: 'Roboto';
     font-style: normal;

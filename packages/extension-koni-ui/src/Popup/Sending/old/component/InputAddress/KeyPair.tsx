@@ -30,6 +30,12 @@ function KeyPair ({ address, className = '', name }: Props): React.ReactElement<
   const { icon, isEthereum, networkPrefix } = useSelector((state: RootState) => state.currentNetwork);
   const formattedAddress = reformatAddress(address, networkPrefix, isEthereum);
 
+  console.log('Arth InputAddress KeyPair icon: ', icon);
+  console.log('Arth InputAddress KeyPair networkPrefix: ', networkPrefix);
+  console.log('Arth InputAddress KeyPair isEthereum: ', isEthereum);
+  console.log('Arth InputAddress KeyPair prefix: ', networkPrefix);
+  console.log('Arth InputAddress KeyPair value: ', formattedAddress);
+
   return (
     <div className={`ui--KeyPair ${className}`}>
       <Identicon
