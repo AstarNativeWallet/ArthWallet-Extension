@@ -32,7 +32,8 @@ import { checkAddress } from '@polkadot/phishing';
 import { AccountInfoWithProviders, AccountInfoWithRefCount } from '@polkadot/types/interfaces';
 import { BN, BN_HUNDRED, BN_ZERO, isFunction } from '@polkadot/util';
 
-import Available from './component/Available';
+// import Available from './component/Available';
+import AvailableEVM from './component/AvailableEVM';
 import InputAddress from './component/InputAddress';
 import LabelHelp from './component/LabelHelp';
 
@@ -416,9 +417,10 @@ function SendFundFromEvm ({ api, apiUrl, className = '', currentAccount, handler
             <div>
               <p className = {'transfer-total'}>Transferable Total</p>
               <div className='transferable-amount'>
-                <Available
+                <AvailableEVM
                   api={api}
                   apiUrl={apiUrl}
+                  networkKey={networkKey}
                   params={senderId}
                 />
               </div>
