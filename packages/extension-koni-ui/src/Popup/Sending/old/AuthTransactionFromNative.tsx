@@ -249,6 +249,9 @@ function AuthTransactionFromNative ({ api, apiUrl, className, extrinsic, onCance
               onError={toggleRenderError}
             />
           </div>
+            <a className='address-text'>
+              {t<string>('Send from address')}
+            </a>
           <Address
             onChange={setSenderInfo}
             onEnter={_doStart}
@@ -269,7 +272,7 @@ function AuthTransactionFromNative ({ api, apiUrl, className, extrinsic, onCance
             withCopy
           />
           <div className='kn-l-submit-wrapper'>
-          <Button
+            <Button
               className={'cancel-btn'}
               onClick={_onCancel}
             >

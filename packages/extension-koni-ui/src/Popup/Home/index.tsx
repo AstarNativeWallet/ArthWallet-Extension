@@ -51,6 +51,10 @@ import ChainBalances from './ChainBalances/ChainBalances';
 import Crowdloans from './Crowdloans/Crowdloans';
 import TransactionHistory from './TransactionHistory/TransactionHistory';
 import ActionButton from './ActionButton';
+import CopyToClipboard from 'react-copy-to-clipboard';
+import cloneLogo from '@polkadot/extension-koni-ui/assets/clone.svg';
+import useToast from '../../hooks/useToast';
+// import DetailHeader from '@polkadot/extension-koni-ui/partials/Header/DetailHeader';
 // import WithdrawButton from './WithdrawButton';
 
 interface WrapperProps extends ThemeProps {
@@ -63,6 +67,7 @@ interface Props {
   network: CurrentNetworkInfo;
   chainRegistryMap: Record<string, ChainRegistry>;
   historyMap: Record<string, TransactionHistoryItemType[]>;
+  showCopyBtn: boolean;
 }
 
 function getTabHeaderItems (address: string, t: TFunction): TabHeaderItemType[] {
@@ -137,13 +142,14 @@ function Wrapper ({ className, theme }: WrapperProps): React.ReactElement {
       currentAccount={currentAccount}
       historyMap={historyMap}
       network={currentNetwork}
+      showCopyBtn
     />
   );
 }
 
 let tooltipId = 0;
 
-function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, network }: Props): React.ReactElement {
+function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, network ,showCopyBtn = true }: Props): React.ReactElement {
   const { icon: iconTheme,
     networkKey,
     networkPrefix } = network;
@@ -227,6 +233,19 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
       return !v;
     });
   }, []);
+  const toShortAddress = (_address: string | null, halfLength?: number) => {
+    const address = (_address || '').toString();
+
+    const addressLength = 7;
+
+    return address.length > 20 ? `${address.slice(0,addressLength)}……${address.slice(-addressLength)}` : address;
+  };
+
+  const { show } = useToast();
+  const _onCopy = useCallback(
+    () => show(t('Copied')),
+    [show, t]
+  );
 
   const _showQrModal = useCallback(() => {
     setQrModalProps({
@@ -285,8 +304,8 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
       <Header
         changeAccountCallback={onChangeAccount}
         className={'home-header'}
-        isContainDetailHeader={true}
-        isShowZeroBalances={isShowZeroBalances}
+        // isContainDetailHeader={true}
+        //isShowZeroBalances={isShowZeroBalances}
         setShowBalanceDetail={setShowBalanceDetail}
         showAdd
         showSearch
@@ -408,7 +427,33 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
             className='Home-contents'
           >
             <div className='total-balances'>
-              <a className = 'total-text'>{t<string>('Total')}</a>
+              
+              {_isAccountAll ?
+              <a className ='total-text'>
+              {t<string>('All Accounts')}</a>
+              :
+              <div 
+              className='address-container'
+              >
+                <a
+                className='account-name'>
+                {currentAccount.name}
+                </a>
+                <div className='address-wrap'>
+                  <a className='address-name'>
+                  {toShortAddress(address || t('<unknown>'), 10)}
+                  </a>
+                  <CopyToClipboard text={address || address ||''}>
+                    <img 
+                    alt='copy'
+                    className='account-info-copy-icon'
+                    onClick={_onCopy}
+                    src={cloneLogo}
+                    />
+                  </CopyToClipboard>
+                </div>
+              </div>
+              }
               <div
                 className={'account-total-btn'}
                 data-for={trigger}
@@ -425,7 +470,6 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                 }
               </div>
             </div>
-            {console.log('tanaka:', networkKey)}
             {_isAccountAll && (
               <div className='IsAccountALL'>
                 <div className='action-button-wrapper'>
@@ -597,7 +641,7 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
     /*width: fit-content;*/
     cursor: pointer;
     position: absolute;
-    top: 59px;
+    top: 85px;
     
     font-family: 'Roboto';
     font-style: normal;
@@ -660,10 +704,8 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
   }
   .total-text {
     position: absolute;
-    width: 48px;
     height: 20px;
-    left: 151px;
-    top: 24px;
+    margin-top:24px;
     
     font-family: 'Roboto';
     font-style: normal;
@@ -701,4 +743,37 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
     background: radial-gradient(98.81% 537.96% at 0% 58.33%, #8380C2 0%, #D4D3FF 100%);
     border-radius: 6px;
     }
+
+    .address-container {
+      margin:8px 0px;
+      &: hover {
+        cursor: pointer;
+      }
+    }
+    .account-name{
+      display:block;
+      text-align:center;
+      font-family: 'Roboto';
+      font-style: normal;
+      font-weight: 400;
+      font-size: 20px;
+      align-items: center;
+      letter-spacing: 0.03em;
+      
+      color: rgba(255, 255, 255, 0.8);
+    }
+    .address-wrap {
+      display:flex;
+      margin:5px 0px;
+    }
+    .address-name {
+      color: rgba(255, 255, 255, 0.7);
+      display:inline-block;
+      margin-top:5px;
+    }
+    .account-info-copy-icon {
+      display:inline-block;
+      margin-left:5px;
+    }
+
 `));
