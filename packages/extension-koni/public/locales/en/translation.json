@@ -111,7 +111,6 @@
   "Crowdloans": "",
   "Staking": "",
   "Transfers": "",
-  "Total": "",
   "Receive": "",
   "Send": "",
   "Your NFTs will appear here": "",
@@ -157,7 +156,9 @@
   "Authorize Transaction": "",
   "Call hash": "",
   "Sign and Submit": "",
+  "Authorize Transaction Withdraw": "",
   "cancel": "",
+  "Send from address": "",
   "everything": "",
   "Positive number": "",
   "The action is not supported for the current network. Please switch to another network.": "",
@@ -180,7 +181,6 @@
   "Transfer the full account balance, reap the sender": "",
   "There is an existing reference count on the sender account. As such the account cannot be reaped from the state.": "",
   "The transaction, after application of the transfer fees, will drop the available balance below the existential deposit. As such the transfer will fail. The account needs more free funds to cover the transaction fees.": "",
-  "Sending from my account": "",
   "unlock account with password": "",
   "Unlock for {{expiry}} min": "",
   "The account does not have enough free funds (excluding locked/bonded/reserved) available to cover the transaction fees without dropping the balance below the account existential amount.": "",
@@ -204,6 +204,9 @@
   "Send fund from Native": "",
   "Send fund TEST": "",
   "Withdraw EVM Deposit": "",
+  "Faucet": "",
+  "Withdraw": "",
+  "Sending from my account": "",
   "Send fund": "",
   "Send Fund Successful": "",
   "Send Fund Fail": "",
@@ -241,6 +244,5 @@
   "Remember my password for the next {{expiration}} minutes": "",
   "Extend the period without password by {{expiration}} minutes": "",
   "Password for this account": "",
-  "Get started": "",
-  "Send from address": ""
+  "Get started": ""
 }
