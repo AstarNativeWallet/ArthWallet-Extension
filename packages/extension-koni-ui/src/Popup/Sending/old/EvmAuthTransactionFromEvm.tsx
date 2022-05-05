@@ -279,9 +279,9 @@ function EvmAuthTransactionEvmToEvmDeposit ({ amount, api, apiUrl, className, ex
               onError={toggleRenderError}
             />
           </div>
-            <a className='address-text'>
-              {t<string>('Send from address')}
-            </a>
+          <a className='address-text'>
+            {t<string>('Send from address')}
+          </a>
           <Address
             onChange={setSenderInfo}
             onEnter={_doStart}
