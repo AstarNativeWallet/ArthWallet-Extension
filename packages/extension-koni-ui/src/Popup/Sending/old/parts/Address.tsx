@@ -5,7 +5,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { Warning } from '@polkadot/extension-koni-ui/components';
-import useTranslation from '@polkadot/extension-koni-ui/hooks/useTranslation';
+//import useTranslation from '@polkadot/extension-koni-ui/hooks/useTranslation';
 import { AddressProxy } from '@polkadot/extension-koni-ui/Popup/Sending/old/types';
 import { ThemeProps } from '@polkadot/extension-koni-ui/types';
 
@@ -26,7 +26,7 @@ interface PasswordState {
 }
 
 function Address ({ className, onChange, onEnter, passwordError, requestAddress }: Props): React.ReactElement<Props> {
-  const { t } = useTranslation();
+  //const { t } = useTranslation();
   const [{ isUnlockCached, signPassword }, setSignPassword] = useState<PasswordState>(() => ({
     isUnlockCached: false,
     signPassword: ''
