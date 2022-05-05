@@ -9,7 +9,6 @@ import CopyToClipboard from 'react-copy-to-clipboard';
 import { TFunction } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-
 import { ChainRegistry, CurrentAccountInfo, CurrentNetworkInfo, NftCollection as _NftCollection, NftItem as _NftItem, TransactionHistoryItemType } from '@polkadot/extension-base/background/KoniTypes';
 import { AccountJson } from '@polkadot/extension-base/background/types';
 import cloneLogo from '@polkadot/extension-koni-ui/assets/clone.svg';
