@@ -5,12 +5,14 @@ import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import BigN from 'bignumber.js';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import CopyToClipboard from 'react-copy-to-clipboard';
 import { TFunction } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { ChainRegistry, CurrentAccountInfo, CurrentNetworkInfo, NftCollection as _NftCollection, NftItem as _NftItem, TransactionHistoryItemType } from '@polkadot/extension-base/background/KoniTypes';
 import { AccountJson } from '@polkadot/extension-base/background/types';
+import cloneLogo from '@polkadot/extension-koni-ui/assets/clone.svg';
 import crowdloans from '@polkadot/extension-koni-ui/assets/home-tab-icon/crowdloans.svg';
 import crowdloansActive from '@polkadot/extension-koni-ui/assets/home-tab-icon/crowdloans-active.svg';
 import crypto from '@polkadot/extension-koni-ui/assets/home-tab-icon/crypto.svg';
@@ -46,14 +48,12 @@ import { BN_ZERO, isAccountAll, NFT_DEFAULT_GRID_SIZE, NFT_GRID_HEIGHT_THRESHOLD
 import buyIcon from '../../assets/buy-icon.svg';
 // import donateIcon from '../../assets/donate-icon.svg';
 import sendIcon from '../../assets/send-icon.svg';
+import useToast from '../../hooks/useToast';
 // import swapIcon from '../../assets/swap-icon.svg';
 import ChainBalances from './ChainBalances/ChainBalances';
 import Crowdloans from './Crowdloans/Crowdloans';
 import TransactionHistory from './TransactionHistory/TransactionHistory';
 import ActionButton from './ActionButton';
-import CopyToClipboard from 'react-copy-to-clipboard';
-import cloneLogo from '@polkadot/extension-koni-ui/assets/clone.svg';
-import useToast from '../../hooks/useToast';
 // import DetailHeader from '@polkadot/extension-koni-ui/partials/Header/DetailHeader';
 // import WithdrawButton from './WithdrawButton';
 
@@ -149,7 +149,7 @@ function Wrapper ({ className, theme }: WrapperProps): React.ReactElement {
 
 let tooltipId = 0;
 
-function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, network ,showCopyBtn = true }: Props): React.ReactElement {
+function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, network, showCopyBtn = true }: Props): React.ReactElement {
   const { icon: iconTheme,
     networkKey,
     networkPrefix } = network;
@@ -233,12 +233,13 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
       return !v;
     });
   }, []);
+
   const toShortAddress = (_address: string | null, halfLength?: number) => {
     const address = (_address || '').toString();
 
     const addressLength = 7;
 
-    return address.length > 20 ? `${address.slice(0,addressLength)}……${address.slice(-addressLength)}` : address;
+    return address.length > 20 ? `${address.slice(0, addressLength)}……${address.slice(-addressLength)}` : address;
   };
 
   const { show } = useToast();
@@ -305,7 +306,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
         changeAccountCallback={onChangeAccount}
         className={'home-header'}
         // isContainDetailHeader={true}
-        //isShowZeroBalances={isShowZeroBalances}
+        // isShowZeroBalances={isShowZeroBalances}
         setShowBalanceDetail={setShowBalanceDetail}
         showAdd
         showSearch
@@ -427,32 +428,32 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
             className='Home-contents'
           >
             <div className='total-balances'>
-              
-              {_isAccountAll ?
-              <a className ='total-text'>
-              {t<string>('All Accounts')}</a>
-              :
-              <div 
-              className='address-container'
-              >
-                <a
-                className='account-name'>
-                {currentAccount.name}
-                </a>
-                <div className='address-wrap'>
-                  <a className='address-name'>
-                  {toShortAddress(address || t('<unknown>'), 10)}
+
+              {_isAccountAll
+                ? <a className ='total-text'>
+                  {t<string>('All Accounts')}</a>
+                : <div
+                  className='address-container'
+                >
+                  <a
+                    className='account-name'
+                  >
+                    {currentAccount.name}
                   </a>
-                  <CopyToClipboard text={address || address ||''}>
-                    <img 
-                    alt='copy'
-                    className='account-info-copy-icon'
-                    onClick={_onCopy}
-                    src={cloneLogo}
-                    />
-                  </CopyToClipboard>
+                  <div className='address-wrap'>
+                    <a className='address-name'>
+                      {toShortAddress(address || t('<unknown>'), 10)}
+                    </a>
+                    <CopyToClipboard text={address || address || ''}>
+                      <img
+                        alt='copy'
+                        className='account-info-copy-icon'
+                        onClick={_onCopy}
+                        src={cloneLogo}
+                      />
+                    </CopyToClipboard>
+                  </div>
                 </div>
-              </div>
               }
               <div
                 className={'account-total-btn'}

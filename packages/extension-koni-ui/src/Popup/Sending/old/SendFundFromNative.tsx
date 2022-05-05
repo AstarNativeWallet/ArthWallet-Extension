@@ -370,9 +370,10 @@ function SendFundFromNative ({ api, apiUrl, className = '', currentAccount, isEt
       {/* eslint-disable-next-line multiline-ternary */}
       {!isShowTxResult ? (
         <div className={`${className} -main-content`}>
+          {/**
           <div className='subtitle-transfer'>
             {t<string>('Transfer')}
-          </div>
+          </div> */}
           <div className = {'transferable-container'}>
             <div>
               <p className = {'transfer-total'}>Transferable Total</p>
