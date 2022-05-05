@@ -9,7 +9,7 @@ import CopyToClipboard from 'react-copy-to-clipboard';
 import { TFunction } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { ChainRegistry, CurrentAccountInfo, CurrentNetworkInfo, NftCollection as _NftCollection, NftItem as _NftItem, TransactionHistoryItemType } from '@polkadot/extension-base/background/KoniTypes';
+import { ChainRegistry, CurrentAccountInfo, CurrentNetworkInfo,  NftCollection as _NftCollection, NftItem as _NftItem, TransactionHistoryItemType } from '@polkadot/extension-base/background/KoniTypes';
 import { AccountJson } from '@polkadot/extension-base/background/types';
 import cloneLogo from '@polkadot/extension-koni-ui/assets/clone.svg';
 import crowdloans from '@polkadot/extension-koni-ui/assets/home-tab-icon/crowdloans.svg';
@@ -55,6 +55,9 @@ import Crowdloans from './Crowdloans/Crowdloans';
 import TransactionHistory from './TransactionHistory/TransactionHistory';
 import ActionButton from './ActionButton';
 import WithdrawButton from './WithdrawButton';
+import TokenListing from './ChainBalances/TokenListing';
+import { reformatAddress } from '@polkadot/extension-koni-base/utils/utils';
+import CurrentNetwork from '@polkadot/extension-koni-ui/stores/CurrentNetwork';
 
 // import { getBalances, parseBalancesInfo } from '@polkadot/extension-koni-ui/util';
 
@@ -288,6 +291,9 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
   const _backToHome = useCallback(() => {
     setShowBalanceDetail(false);
   }, [setShowBalanceDetail]);
+  
+  const formattedAddress = reformatAddress(currentAccount.address, networkPrefix, isEthereum);
+
 
   const onChangeAccount = useCallback((address: string) => {
     setShowBalanceDetail(false);
@@ -448,16 +454,20 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                     {currentAccount.name}
                   </a>
                   <div className='address-wrap'>
-                    <a className='address-name'>
-                      {toShortAddress(address || t('<unknown>'), 10)}
-                    </a>
-                    <CopyToClipboard text={address || address || ''}>
-                      <img
-                        alt='copy'
-                        className='account-info-copy-icon'
-                        onClick={_onCopy}
-                        src={cloneLogo}
-                      />
+                    <CopyToClipboard text={formattedAddress}>
+                      <div
+                      className='address-icon'
+                      onClick={_onCopy}
+                      >
+                        <span className='address-name'>{toShortAddress(formattedAddress || t('<unknown>'), 10)}</span>
+                          <img
+                            alt='copy'
+                            className='account-info-copy-icon'
+                            onClick={_onCopy}
+                            src={cloneLogo}
+                          />
+                      </div>
+
                     </CopyToClipboard>
                     <img
                       alt='receive'
@@ -574,6 +584,20 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                     </div>
                   </div>
                 }
+                <div>
+                  <TokenListing
+                  address={address}
+                  currentNetworkKey={networkKey}
+                  isShowBalanceDetail={isShowBalanceDetail}
+                  isShowZeroBalances={isShowZeroBalances}
+                  networkBalanceMaps={networkBalanceMaps}
+                  networkKeys={showedNetworks}
+                  networkMetadataMap={networkMetadataMap}
+                  setQrModalOpen={setQrModalOpen}
+                  setQrModalProps={setQrModalProps}
+                  setSelectedNetworkBalance={setSelectedNetworkBalance}
+                  setShowBalanceDetail={setShowBalanceDetail}
+                />
                 {isShowBalanceDetail &&
                   <div
                     className='home__back-btn'
@@ -587,6 +611,8 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                     <span>{t<string>('Back to home')}</span>
                   </div>
                 }
+                {console.log('network:',networkKey,CurrentNetwork.length)}
+                {networkKey !== 'all' &&(
                 <ChainBalances
                   address={address}
                   currentNetworkKey={networkKey}
@@ -600,7 +626,8 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                   setSelectedNetworkBalance={setSelectedNetworkBalance}
                   setShowBalanceDetail={setShowBalanceDetail}
                 />
-
+                )}
+                </div>
               </div>
             )}
           </div>
@@ -828,7 +855,6 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
     margin : 20px auto;
     /*margin : 20px 30px;*/
     border-radius: 8px;
-    background-color: #282A37;
   }
  
   .home__account-qr-modal .subwallet-modal {
@@ -914,14 +940,17 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
       margin:5px 0px;
     }
     .address-name {
+      flex:1;
       color: rgba(255, 255, 255, 0.7);
-      display:inline-block;
-      margin-top:5px;
+      margin-right: 8px;
     }
     .account-info-copy-icon {
-      display:inline-block;
-      margin-left:8px;
+      min-width: 20px;
+      height: 20px;
       margin-right:8px
+    }
+    .address-icon {
+      display:flex;
     }
 
 `));

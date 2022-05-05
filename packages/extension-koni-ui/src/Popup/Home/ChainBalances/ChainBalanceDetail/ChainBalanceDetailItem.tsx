@@ -178,22 +178,25 @@ export default React.memo(styled(ChainBalanceDetailItem)(({ theme }: Props) => `
 
   .chain-balance-item__main-area {
     display: flex;
-    align-items: center;
-    font-size: 15px;
-  }
-
-  .chain-balance-item__main-area {
-    display: flex;
     font-size: 15px;
     padding-top: 12px;
     padding-bottom: 12px;
+    margin-top:12px ;
+    background: rgba(196, 196, 196, 0.2);
+    border-radius: 8px;
+    width: 400px ;
+    margin-right: auto;
+    margin-left: auto;
   }
 
-  .chain-balance-item__detail-area,
   .chain-balance-item__detail-area {
+    border-radius: 8px;
     font-size: 14px;
-    padding-top: 8px;
     padding-bottom: 10px;
+    width: 400px ;
+    margin-right: auto;
+    margin-left: auto;
+    background: rgba(196, 196, 196, 0.2);
   }
 
   .chain-balance-item__main-area-part-1 {
@@ -296,13 +299,6 @@ export default React.memo(styled(ChainBalanceDetailItem)(({ theme }: Props) => `
   .chain-balance-item__separator {
     padding-left: 69px;
     padding-right: 25px;
-
-    &:before {
-      content: '';
-      height: 1px;
-      display: block;
-      background: ${theme.boxBorderColor};
-    }
   }
 
   &.-show-detail .chain-balance-item__toggle {

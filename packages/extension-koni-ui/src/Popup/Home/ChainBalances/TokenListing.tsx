@@ -3,20 +3,17 @@
 
 import BigN from 'bignumber.js';
 import CN from 'classnames';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { NetWorkMetadataDef } from '@polkadot/extension-base/background/KoniTypes';
 import useTranslation from '@polkadot/extension-koni-ui/hooks/useTranslation';
 import ChainBalanceDetailItem from '@polkadot/extension-koni-ui/Popup/Home/ChainBalances/ChainBalanceDetail/ChainBalanceDetailItem';
-import ChainBalanceItem from '@polkadot/extension-koni-ui/Popup/Home/ChainBalances/ChainBalanceItem';
-// import { hasAnyChildTokenBalance } from '@polkadot/extension-koni-ui/Popup/Home/ChainBalances/utils';
+import { hasAnyChildTokenBalance } from '@polkadot/extension-koni-ui/Popup/Home/ChainBalances/utils';
 import { ThemeProps } from '@polkadot/extension-koni-ui/types';
-import { getLogoByNetworkKey } from '@polkadot/extension-koni-ui/util';
+import { BN_ZERO, getLogoByNetworkKey } from '@polkadot/extension-koni-ui/util';
 import reformatAddress from '@polkadot/extension-koni-ui/util/reformatAddress';
 import { AccountInfoByNetwork, BalanceInfo } from '@polkadot/extension-koni-ui/util/types';
-
-import ChainBalanceDetail from '../ChainBalances/ChainBalanceDetail/ChainBalanceDetail';
 
 interface Props extends ThemeProps {
   address: string;
@@ -38,7 +35,20 @@ interface Props extends ThemeProps {
   setSelectedNetworkBalance?: (networkBalance: BigN) => void;
 }
 
+function isAllowToShow (
+  isShowZeroBalances: boolean,
+  currentNetworkKey: string,
+  networkKey: string,
+  balanceInfo?: BalanceInfo): boolean {
+  if (currentNetworkKey !== 'all' || ['polkadot', 'kusama'].includes(networkKey)) {
+    return true;
+  }
 
+  return isShowZeroBalances ||
+    !!(balanceInfo &&
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      (balanceInfo.balanceValue.gt(BN_ZERO) || hasAnyChildTokenBalance(balanceInfo)));
+}
 
 function getAccountInfoByNetwork (
   address: string,
@@ -110,7 +120,14 @@ function ChainBalances ({ address,
     const info = accountInfoByNetworkMap[networkKey];
     const balanceInfo = networkBalanceMaps[networkKey];
 
-    if (balanceInfo && balanceInfo.childrenBalances.length === 0) {
+    if (!isAllowToShow(
+      isShowZeroBalances,
+      currentNetworkKey,
+      networkKey,
+      balanceInfo
+    )) {
+      return (<Fragment key={info.key} />);
+    }
       return (
         <ChainBalanceDetailItem
           accountInfo={info}
@@ -123,20 +140,6 @@ function ChainBalances ({ address,
           toggleBalanceDetail={toggleBalanceDetail}
         />
       );
-    }
-
-    return (
-      <ChainBalanceItem
-        accountInfo={info}
-        balanceInfo={balanceInfo}
-        isLoading={!balanceInfo}
-        key={info.key}
-        setQrModalOpen={setQrModalOpen}
-        setQrModalProps={setQrModalProps}
-        setSelectedNetworkBalance={setSelectedNetworkBalance}
-        showBalanceDetail={_openBalanceDetail}
-      />
-    );
   };
 
   const getScrollbarWidth = () => {
@@ -206,12 +209,6 @@ function ChainBalances ({ address,
         )
         : (
           <>
-            <ChainBalanceDetail
-              accountInfo={selectedInfo}
-              balanceInfo={selectedBalanceInfo}
-              setQrModalOpen={setQrModalOpen}
-              setQrModalProps={setQrModalProps}
-            />
           </>
         )
       }
@@ -230,9 +227,12 @@ export default React.memo(styled(ChainBalances)(({ theme }: Props) => `
 
   .chain-balances-container__body {
     overflow-y: auto;
-    background: rgba(196, 196, 196, 0.2);
+	&.-isShowBalanceDetail{
+	background: rgba(196, 196, 196, 0.2);
+	width: 400px !important;
+    margin : 20px auto;
+	}
   }
-
   .chain-balances-container__footer {
     height: 90px;
     display: flex;
