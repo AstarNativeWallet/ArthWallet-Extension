@@ -10,6 +10,7 @@ import { TFunction } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
+import receivedIcon from '@polkadot/extension-koni-ui/assets/receive-icon.svg';
 import { ChainRegistry, CurrentAccountInfo, CurrentNetworkInfo, NftCollection as _NftCollection, NftItem as _NftItem, TransactionHistoryItemType } from '@polkadot/extension-base/background/KoniTypes';
 import { AccountJson } from '@polkadot/extension-base/background/types';
 import cloneLogo from '@polkadot/extension-koni-ui/assets/clone.svg';
@@ -408,19 +409,6 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
         )}
       </div>
         */}
-      {isShowBalanceDetail &&
-        <div
-          className='home__back-btn'
-          onClick={_backToHome}
-        >
-          <FontAwesomeIcon
-            className='home__back-icon'
-            // @ts-ignore
-            icon={faArrowLeft}
-          />
-          <span>{t<string>('Back to home')}</span>
-        </div>
-      }
       <div className={'home-tab-contents'}>
 
         {activatedTab === 1 && (
@@ -452,6 +440,12 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                         src={cloneLogo}
                       />
                     </CopyToClipboard>
+                    <img
+                    alt='receive'
+                    className='chain-balance-item__receive'
+                    onClick={_showQrModal}
+                    src={receivedIcon}
+                  />
                   </div>
                 </div>
               }
@@ -526,6 +520,19 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                     </Link>
                   }
                 </div>
+                {isShowBalanceDetail &&
+                  <div
+                    className='home__back-btn'
+                    onClick={_backToHome}
+                  >
+                    <FontAwesomeIcon
+                      className='home__back-icon'
+                      // @ts-ignore
+                      icon={faArrowLeft}
+                    />
+                    <span>{t<string>('Back to home')}</span>
+                  </div>
+                }                
                 <ChainBalances
                   address={address}
                   currentNetworkKey={networkKey}
@@ -775,7 +782,8 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
     }
     .account-info-copy-icon {
       display:inline-block;
-      margin-left:5px;
+      margin-left:8px;
+      margin-right:8px
     }
 
 `));
