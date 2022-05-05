@@ -410,9 +410,10 @@ function SendFundFromEvm ({ api, apiUrl, className = '', currentAccount, handler
       { !isShowTxResult
         // eslint-disable-next-line multiline-ternary
         ? (<div className={`${className} -main-content`}>
+          {/**
           <div className='subtitle-transfer'>
             {t<string>('Transfer')}
-          </div>
+          </div> */}
           <div className = {'transferable-container'}>
             <div>
               <p className = {'transfer-total'}>Transferable Total</p>
