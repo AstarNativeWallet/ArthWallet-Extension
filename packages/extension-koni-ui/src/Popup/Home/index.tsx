@@ -57,6 +57,12 @@ import TransactionHistory from './TransactionHistory/TransactionHistory';
 import ActionButton from './ActionButton';
 import WithdrawButton from './WithdrawButton';
 
+//import { ApiPromise, SubmittableResult } from '@polkadot/api';
+import useApi from '@polkadot/extension-koni-ui/Popup/Sending/old/hook/useApi';
+
+//import Available from '../Sending/old/component/Available';
+//import AvailableEVM from '../Sending/old/component/AvailableEVM';
+//import AvailableNativeNum from '../Sending/old/component/AvailableNativeNum';
 // import { getBalances, parseBalancesInfo } from '@polkadot/extension-koni-ui/util';
 
 interface WrapperProps extends ThemeProps {
@@ -71,6 +77,16 @@ interface Props {
   historyMap: Record<string, TransactionHistoryItemType[]>;
   showCopyBtn: boolean;
 }
+
+/*
+interface ContentProps extends ThemeProps {
+  className?: string;
+  setWrapperClass: (classname: string) => void;
+  currentAccount?: AccountJson | null;
+  isEthereum: boolean;
+  networkKey: string;
+}
+*/
 
 function getTabHeaderItems (address: string, t: TFunction): TabHeaderItemType[] {
   const result = [
@@ -157,6 +173,14 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
     networkPrefix } = network;
   const { t } = useTranslation();
   const { currentNetwork: { isEthereum } } = useSelector((state: RootState) => state);
+
+  const { api, apiUrl, isApiReady, isNotSupport } = useApi('astarEvm');  //networkKey);
+
+console.log(api);
+console.log(apiUrl);
+console.log(isApiReady);
+console.log(isNotSupport);
+
 
   const { address } = currentAccount;
   const [isShowBalanceDetail, setShowBalanceDetail] = useState<boolean>(false);
@@ -299,7 +323,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
       setIsEvmDeposit(result.isEvmDeposit);
     }
 
-    console.log('Arth isEvmDeposit: ', result.isEvmDeposit);
+    //console.log('Arth isEvmDeposit: ', result.isEvmDeposit);
   });
 
   /*
@@ -430,6 +454,25 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
       </div>
         */}
       <div className={'home-tab-contents'}>
+
+
+
+{/*
+      <Available
+                  api={api}
+                  apiUrl={apiUrl}
+                  params={senderId}
+                />
+      */}
+{/*
+
+<AvailableEVM
+                  api={api}
+                  apiUrl={apiUrl}
+                  networkKey={networkKey}
+                  params={senderId}
+                />
+    */}
 
         {activatedTab === 1 && (
           <div

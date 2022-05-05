@@ -231,7 +231,22 @@ function subscribeWithAccountMulti(addresses, networkKey, networkAPI, callback) 
     miscFrozen: balanceJson.details[networkKey].miscFrozen || '0',
     feeFrozen: balanceJson.details[networkKey].feeFrozen || '0',
     children: balanceJson.details[networkKey].children || undefined
-  };
+  }; //console.log('Arth subscribeWithAccountMulti addresses: ', addresses[0]);
+
+  if (networkKey === 'astar') {
+    console.log('Arth subscribeWithAccountMulti networkKey: ', networkKey);
+    console.log('Arth subscribeWithAccountMulti addresses: ', addresses[0]);
+
+    const astarBalance = _web.default.utils.fromWei(balanceJson.details[networkKey].free, 'ether').substring(0, 5);
+
+    console.log('Arth subscribeWithAccountMulti free: ', astarBalance);
+
+    if (astarBalance !== '0') {
+      chrome.storage.local.set({
+        'availableNativeBalance': addresses[0] + '_' + astarBalance
+      }, function () {});
+    }
+  }
 
   async function getBalanceAstarEvm(networkKey) {
     let wssURL = '';

@@ -22,7 +22,6 @@ import { RootState } from '@polkadot/extension-koni-ui/stores';
 import { ThemeProps } from '@polkadot/extension-koni-ui/types';
 import { isAccountAll } from '@polkadot/extension-koni-ui/util';
 import { BN, isFunction } from '@polkadot/util';
-
 import { buildEvmAddress } from './convert';
 
 interface Props extends ThemeProps {
@@ -299,6 +298,24 @@ function WithdrawEvmDeposit ({ api, apiUrl, currentAccount, networkKey, setWrapp
     setWrapperClass('');
   }, [setWrapperClass]);
 
+  const [availableNativeBalance, setAvailableNativeBalance] = useState<string | null>(null);
+  chrome.storage.local.get(['availableNativeBalance'], function (result) {
+    if (typeof result.availableNativeBalance === 'string') {
+      setAvailableNativeBalance(result.availableNativeBalance);
+//      console.log('Arth value_data: ', availableNativeBalance);
+    } else {
+      setAvailableNativeBalance('0');
+    }
+  });
+
+  let isAvailableFaucet = false;
+  if (availableNativeBalance === '0' || (availableNativeBalance?.split('_')[0] === senderId && availableNativeBalance?.split('_')[1] === '0')) {
+    isAvailableFaucet = true;
+  }
+  console.log('Arth Withdraw availableNativeBalance[0]: ', availableNativeBalance?.split('_')[0]);
+  console.log('Arth Withdraw availableNativeBalance[1]: ', availableNativeBalance?.split('_')[1]);
+  console.log('Arth Withdraw isAvailableFaucet: ', isAvailableFaucet);
+  
   return (
     <>
 
@@ -311,23 +328,27 @@ function WithdrawEvmDeposit ({ api, apiUrl, currentAccount, networkKey, setWrapp
 
       <div className='info'>
           <h3>Attention</h3>
-          <p>Make sure you are not trying
-          to send your assets to an exchange.
-          If you transfer funds from this address
-          to an exchange, your funds will be lost.</p>
 
-          <Button
-            className={'faucet-btn'}
-            to='/'
-          >
-            {t<string>('Faucet')}
-          </Button>
+          {isAvailableFaucet
+            ? (
+              <><p>Make sure you are not trying
+                to send your assets to an exchange.
+                If you transfer funds from this address
+                to an exchange, your funds will be lost.</p><Button
+                  className={'faucet-btn'}
+                  to='/'
+                >
+                  {t<string>('Faucet')}
+                </Button></>
+            ) : (
+              <p></p>
+            )}
 
           <h4>What is 'EVM Deposit'</h4>
           <p>'EVM Deposit' is an EVM address converted from a Native address,
              which must be passed through once when sending funds from EVM to Native.
           <p className='see-more'><a
-            href='https://yahoo.co.jp/'
+            href='https://medium.com/astar-network/using-astar-network-account-between-substrate-and-evm-656643df22a0'
             rel='noreferrer'
             target='_blank'
           >See more</a></p>
