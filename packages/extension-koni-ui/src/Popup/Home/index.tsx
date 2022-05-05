@@ -540,7 +540,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                     </Link>
                   }
                 </div>
-                {isEvmDeposit &&
+                { (networkKey === 'astar' && isEvmDeposit) &&
                   <div className='withdraw-balance-wrapper'>
                     <h5>EVM Deposit</h5>
                     <div className='top'>
