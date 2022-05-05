@@ -664,11 +664,10 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
   }
 
   .action-button-wrapper {
-    display: block;
+    display: flex;
     padding-left: 54px;
   }
   .action-button-send {
-    display: inline-block;
     width: 164px;
     height: 40px;
     background: #494B56;
@@ -677,7 +676,6 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
 
   }
   .action-button-recieve {
-    display: inline-block;
     width: 164px;
     height: 40px;
     background: #494B56;
