@@ -10,7 +10,6 @@ import { TFunction } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import receivedIcon from '@polkadot/extension-koni-ui/assets/receive-icon.svg';
 import { ChainRegistry, CurrentAccountInfo, CurrentNetworkInfo, NftCollection as _NftCollection, NftItem as _NftItem, TransactionHistoryItemType } from '@polkadot/extension-base/background/KoniTypes';
 import { AccountJson } from '@polkadot/extension-base/background/types';
 import cloneLogo from '@polkadot/extension-koni-ui/assets/clone.svg';
@@ -24,6 +23,7 @@ import staking from '@polkadot/extension-koni-ui/assets/home-tab-icon/staking.sv
 import stakingActive from '@polkadot/extension-koni-ui/assets/home-tab-icon/staking-active.svg';
 import transfers from '@polkadot/extension-koni-ui/assets/home-tab-icon/transfers.svg';
 import transfersActive from '@polkadot/extension-koni-ui/assets/home-tab-icon/transfers-active.svg';
+import receivedIcon from '@polkadot/extension-koni-ui/assets/receive-icon.svg';
 import { AccountContext, AccountQrModal, Link } from '@polkadot/extension-koni-ui/components';
 import { BalanceVal } from '@polkadot/extension-koni-ui/components/balance';
 import Tooltip from '@polkadot/extension-koni-ui/components/Tooltip';
@@ -461,11 +461,11 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                       />
                     </CopyToClipboard>
                     <img
-                    alt='receive'
-                    className='chain-balance-item__receive'
-                    onClick={_showQrModal}
-                    src={receivedIcon}
-                  />
+                      alt='receive'
+                      className='chain-balance-item__receive'
+                      onClick={_showQrModal}
+                      src={receivedIcon}
+                    />
                   </div>
                 </div>
               }
@@ -852,9 +852,7 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
   }
   .total-text {
     position: absolute;
-    width: 48px;
     height: 20px;
-    left: 151px;
     top: 24px;
     
     font-family: 'Roboto';

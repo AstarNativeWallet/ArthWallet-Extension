@@ -308,21 +308,18 @@ function WithdrawEvmDeposit ({ api, apiUrl, currentAccount, networkKey, setWrapp
           ? <p className='amount'>{displayEvmDepositAmount} ASTR</p>
           : <p className='amount'>0 ASTR</p>
         }
-
-      <div className='info'>
+        <div className='info'>
           <h3>Attention</h3>
           <p>Make sure you are not trying
           to send your assets to an exchange.
           If you transfer funds from this address
           to an exchange, your funds will be lost.</p>
-
           <Button
             className={'faucet-btn'}
             to='/'
           >
             {t<string>('Faucet')}
           </Button>
-
           <h4>What is 'EVM Deposit'</h4>
           <p>'EVM Deposit' is an EVM address converted from a Native address,
              which must be passed through once when sending funds from EVM to Native.
@@ -336,8 +333,6 @@ function WithdrawEvmDeposit ({ api, apiUrl, currentAccount, networkKey, setWrapp
         </div>
 
       </div>
-
-
       {!isShowTxResult
         ? (
           <div className={'kn-l-submit-wrapper'}>
