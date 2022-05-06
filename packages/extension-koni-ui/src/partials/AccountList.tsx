@@ -238,7 +238,7 @@ export default React.memo(styled(AccountMenuLists)(({ theme }: Props) => `
     height: 40px;
   }
   .account-menu-settings {
-	z-index: 1;
-	test-align: center;
+	  z-index: 1;
+	  test-align: center;
   }
 `));

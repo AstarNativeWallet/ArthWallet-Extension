@@ -231,9 +231,9 @@ export default React.memo(styled(ChainBalances)(({ theme }: Props) => `
   .chain-balances-container__body {
     overflow-y: auto;
 	  &.-isShowBalanceDetail{
-	  width: 400px !important;
-    margin : 20px auto;
-	}
+	    width: 400px !important;
+      margin : 20px auto;
+	  }
   }
   .chain-balances-container__footer {
     height: 90px;

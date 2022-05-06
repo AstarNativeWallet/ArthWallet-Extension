@@ -1,6 +1,6 @@
 // Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
-// created-original-file
+
 import type { AccountJson } from '@polkadot/extension-base/background/types';
 
 import React, { useCallback, useContext, useEffect, /* useRef , */ useState } from 'react';
