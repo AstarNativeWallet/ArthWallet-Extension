@@ -319,6 +319,9 @@ function WithdrawEvmDeposit ({ api, apiUrl, currentAccount, networkKey, setWrapp
   return (
     <>
 
+      {!isShowTxResult
+      ? (
+  
       <div className='withdraw-balance-wrapper'>
         <a>Your withdrawable EVM Deposit Amount is</a>
         {displayEvmDepositAmount !== null && displayEvmDepositAmount > 0
@@ -357,6 +360,7 @@ function WithdrawEvmDeposit ({ api, apiUrl, currentAccount, networkKey, setWrapp
         </div>
 
       </div>
+      )  : (<div></div>)}
 
 
       {!isShowTxResult

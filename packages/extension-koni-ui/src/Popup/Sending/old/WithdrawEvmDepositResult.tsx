@@ -148,6 +148,7 @@ export default React.memo(styled(SendFundResult)(({ theme }: ThemeProps) => `
 
   .kn-send-fund-stt-btn {
     margin-bottom: 10px;
+    background-color: #284EA9;
   }
 
   .kn-l-text-danger {

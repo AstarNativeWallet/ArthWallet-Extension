@@ -323,7 +323,7 @@ export default React.memo(styled(AuthTransaction)(({ theme }: ThemeProps) => `
   }
 
   .kn-l-header {
-    display: block;
+    display: flex;
     align-items: center;
     height: 72px;
     box-shadow: ${theme.headerBoxShadow};
@@ -336,6 +336,10 @@ export default React.memo(styled(AuthTransaction)(({ theme }: ThemeProps) => `
     padding-bottom: 15px;
     padding-top: 25px;
     overflow-y: auto;
+  }
+
+  .kn-l-header__part-1 {
+    flex: 1;
   }
 
   .kn-l-header__part-2 {
