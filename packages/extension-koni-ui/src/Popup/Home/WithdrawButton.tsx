@@ -38,7 +38,7 @@ function HomeActionButton ({ className, isDisabled = false, onClick, tooltipCont
         data-tip={true}
         onClick={onClick}
       >
-        <a>EVM Withdraw</a>
+        <a>Withdraw</a>
         {/* <img
           alt='Icon'
           src={iconSrc}
