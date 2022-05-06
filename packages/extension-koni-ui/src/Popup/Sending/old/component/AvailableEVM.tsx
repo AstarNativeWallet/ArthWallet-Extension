@@ -42,14 +42,13 @@ function AvailableDisplay ({ api, children, className = '', label, networkKey }:
     setEVMBalance(resolve);
   }).catch(console.error);
 
-  // console.log('result is: ', EVMBalance);
+  console.log('EVMBalance is: ', EVMBalance);
 
   return (
     <FormatBalance
       className={className}
       label={label}
       registry={api.registry}
-      // eslint-disable-next-line react/jsx-no-bind
       value={EVMBalance}
     >
       {children}

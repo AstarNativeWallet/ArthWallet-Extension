@@ -603,7 +603,7 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
     padding-right: 15px;
     padding-bottom: 15px;
     flex: 1;
-    padding-top: 25px;
+    padding-top: 15px;
     overflow-y: auto;
 
     // &::-webkit-scrollbar {
@@ -620,11 +620,11 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
     margin-bottom: 10px;
 
     &.-field-1 {
-      z-index: 5;
+      z-index: 9;
     }
 
     &.-field-2 {
-      z-index: 4;
+      z-index: 8;
       margin-bottom: 10px;
     }
 
@@ -655,6 +655,7 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
   }
 
   .kn-l-submit-wrapper {
+    z-index:6;
     position: sticky;
     bottom: -15px;
     padding: 15px 0px;
@@ -697,7 +698,7 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
     color: #F0F0F0; 
   }
   .transferable-container {
-    margin 21px auto 16px;
+    margin:0px auto 16px;
     width: 328px;
     height: 104px;
     background: rgba(79, 88, 128, 1);

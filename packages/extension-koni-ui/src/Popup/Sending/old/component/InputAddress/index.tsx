@@ -344,11 +344,22 @@ class InputAddress extends React.PureComponent<Props, State> {
     !filter && setLastValue(type, address);
     // }
 
+    // console.log('WatchTest address is: ', address);
+    // console.log('WatchTest transformToAccountId(address) is: ', transformToAccountId(address));
+
+    // if (networkKey === 'astarEvm' || networkKey === 'shidenEvm' || networkKey === 'shibuyaEvm') {
+    //   onChange && onChange(
+    //     this.hasValue(address)
+    //       ? address
+    //       : null
+    //   );
+    // } else {
     onChange && onChange(
       this.hasValue(address)
         ? transformToAccountId(address)
         : null
     );
+    // }
   };
 
   private onSearch = (filteredOptions: KeyringSectionOptions, _query: string): KeyringSectionOptions => {
@@ -551,7 +562,7 @@ const ExportedComponent = withMulti(
   }
 
   .ui--AddressSearch.visible {
-    z-index: 3;
+    z-index: 7;
 
     > .text {
       opacity: 0.5;

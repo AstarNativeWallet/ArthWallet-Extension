@@ -12,6 +12,7 @@ import styled from 'styled-components';
 
 import { ChainRegistry, CurrentAccountInfo, CurrentNetworkInfo, NftCollection as _NftCollection, NftItem as _NftItem, TransactionHistoryItemType } from '@polkadot/extension-base/background/KoniTypes';
 import { AccountJson } from '@polkadot/extension-base/background/types';
+import { reformatAddress } from '@polkadot/extension-koni-base/utils/utils';
 import cloneLogo from '@polkadot/extension-koni-ui/assets/clone.svg';
 import crowdloans from '@polkadot/extension-koni-ui/assets/home-tab-icon/crowdloans.svg';
 import crowdloansActive from '@polkadot/extension-koni-ui/assets/home-tab-icon/crowdloans-active.svg';
@@ -54,6 +55,7 @@ import sendIcon from '../../assets/send-icon.svg';
 import useToast from '../../hooks/useToast';
 // import swapIcon from '../../assets/swap-icon.svg';
 import ChainBalances from './ChainBalances/ChainBalances';
+import TokenListing from './ChainBalances/TokenListing';
 import Crowdloans from './Crowdloans/Crowdloans';
 import TransactionHistory from './TransactionHistory/TransactionHistory';
 import ActionButton from './ActionButton';
@@ -312,6 +314,8 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
     setShowBalanceDetail(false);
   }, [setShowBalanceDetail]);
 
+  const formattedAddress = reformatAddress(currentAccount.address, networkPrefix, isEthereum);
+
   const onChangeAccount = useCallback((address: string) => {
     setShowBalanceDetail(false);
   }, []);
@@ -487,16 +491,20 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                     {currentAccount.name}
                   </a>
                   <div className='address-wrap'>
-                    <a className='address-name'>
-                      {toShortAddress(address || t('<unknown>'), 10)}
-                    </a>
-                    <CopyToClipboard text={address || address || ''}>
-                      <img
-                        alt='copy'
-                        className='account-info-copy-icon'
+                    <CopyToClipboard text={formattedAddress}>
+                      <div
+                        className='address-icon'
                         onClick={_onCopy}
-                        src={cloneLogo}
-                      />
+                      >
+                        <span className='address-name'>{toShortAddress(formattedAddress || t('<unknown>'), 10)}</span>
+                        <img
+                          alt='copy'
+                          className='account-info-copy-icon'
+                          onClick={_onCopy}
+                          src={cloneLogo}
+                        />
+                      </div>
+
                     </CopyToClipboard>
                     <img
                       alt='receive'
@@ -611,7 +619,21 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                     </div>
                   </div>
                 }
-                {isShowBalanceDetail &&
+                <div>
+                  <TokenListing
+                    address={address}
+                    currentNetworkKey={networkKey}
+                    isShowBalanceDetail={isShowBalanceDetail}
+                    isShowZeroBalances={isShowZeroBalances}
+                    networkBalanceMaps={networkBalanceMaps}
+                    networkKeys={showedNetworks}
+                    networkMetadataMap={networkMetadataMap}
+                    setQrModalOpen={setQrModalOpen}
+                    setQrModalProps={setQrModalProps}
+                    setSelectedNetworkBalance={setSelectedNetworkBalance}
+                    setShowBalanceDetail={setShowBalanceDetail}
+                  />
+                  {isShowBalanceDetail &&
                   <div
                     className='home__back-btn'
                     onClick={_backToHome}
@@ -623,21 +645,23 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                     />
                     <span>{t<string>('Back to home')}</span>
                   </div>
-                }
-                <ChainBalances
-                  address={address}
-                  currentNetworkKey={networkKey}
-                  isShowBalanceDetail={isShowBalanceDetail}
-                  isShowZeroBalances={isShowZeroBalances}
-                  networkBalanceMaps={networkBalanceMaps}
-                  networkKeys={showedNetworks}
-                  networkMetadataMap={networkMetadataMap}
-                  setQrModalOpen={setQrModalOpen}
-                  setQrModalProps={setQrModalProps}
-                  setSelectedNetworkBalance={setSelectedNetworkBalance}
-                  setShowBalanceDetail={setShowBalanceDetail}
-                />
-
+                  }
+                  {networkKey !== 'all' && (
+                    <ChainBalances
+                      address={address}
+                      currentNetworkKey={networkKey}
+                      isShowBalanceDetail={isShowBalanceDetail}
+                      isShowZeroBalances={isShowZeroBalances}
+                      networkBalanceMaps={networkBalanceMaps}
+                      networkKeys={showedNetworks}
+                      networkMetadataMap={networkMetadataMap}
+                      setQrModalOpen={setQrModalOpen}
+                      setQrModalProps={setQrModalProps}
+                      setSelectedNetworkBalance={setSelectedNetworkBalance}
+                      setShowBalanceDetail={setShowBalanceDetail}
+                    />
+                  )}
+                </div>
               </div>
             )}
           </div>
@@ -862,7 +886,6 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
     margin : 20px auto;
     /*margin : 20px 30px;*/
     border-radius: 8px;
-    background-color: #282A37;
   }
  
   .home__account-qr-modal .subwallet-modal {
@@ -885,9 +908,7 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
   }
   .total-text {
     position: absolute;
-    width: 48px;
     height: 20px;
-    left: 151px;
     top: 24px;
     
     font-family: 'Roboto';
@@ -950,14 +971,17 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
       margin:5px 0px;
     }
     .address-name {
+      flex:1;
       color: rgba(255, 255, 255, 0.7);
-      display:inline-block;
-      margin-top:5px;
+      margin-right: 8px;
     }
     .account-info-copy-icon {
-      display:inline-block;
-      margin-left:8px;
+      min-width: 20px;
+      height: 20px;
       margin-right:8px
+    }
+    .address-icon {
+      display:flex;
     }
 
 `));

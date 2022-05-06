@@ -322,7 +322,6 @@ function WithdrawEvmDeposit ({ api, apiUrl, currentAccount, networkKey, setWrapp
 
   return (
     <>
-
       {!isShowTxResult
         ? (
 
