@@ -324,8 +324,6 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
     if (typeof result.isEvmDeposit === 'boolean') {
       setIsEvmDeposit(result.isEvmDeposit);
     }
-
-    // console.log('Arth isEvmDeposit: ', result.isEvmDeposit);
   });
 
   /*
@@ -361,118 +359,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
         text={t<string>('Accounts')}
         toggleZeroBalances={_toggleZeroBalances}
       />
-      {/*
-      <div className={'home-action-block'}>
-        <div className='account-total-balance'>
-          <div
-            className={'account-total-btn'}
-            data-for={trigger}
-            data-tip={true}
-            onClick={_toggleBalances}
-          >
-            {isShowBalance
-              ? <BalanceVal
-                startWithSymbol
-                symbol={'$'}
-                value={isShowBalanceDetail ? selectedNetworkBalance : totalBalanceValue}
-              />
-              : <span>*********</span>
-            }
-          </div>
-        </div>
-        {!_isAccountAll && (
-          <div className='home-account-button-container'>
-            {isEvmDeposit &&
-            <Link
-              className='action-button-wrapper'
-              to={'/account/withdraw-evm-deposit'}
-            >
-              <WithdrawButton
-                tooltipContent={t<string>('Withdraw EVM Deposit')}
-              />
-            </Link>
-            }
-            <div className='action-button-wrapper'>
-              <ActionButton
-                iconSrc={buyIcon}
-                onClick={_showQrModal}
-                tooltipContent={t<string>('Receive')}
-              />
-            </div>
-            <Link
-              className={'action-button-wrapper'}
-              to={'/account/send-from-native-fund'}
-            >
-              <ActionButton
-                iconSrc={sendIcon}
-                tooltipContent={(networkKey === 'astar' || networkKey === 'astarEvm' || networkKey === 'shiden' || networkKey === 'shidenEvm') ? t<string>('Native → Native/EVM Send') : t<string>('Native → Native Send') }
-              />
-            </Link>
-            <Link
-              className={'action-button-wrapper'}
-              to={'/account/send-from-evm-fund'}
-            >
-              <ActionButton
-                iconSrc={sendIcon}
-                tooltipContent={(networkKey === 'astar' || networkKey === 'astarEvm' || networkKey === 'shiden' || networkKey === 'shidenEvm') ? t<string>('EVM → EVM/EVMDeposit Send') : t<string>('EVM → EVM Send') }
-              />
-            </Link>
-            {/* <Link
-              className={'action-button-wrapper'}
-              to={'/account/donate'}
-            >
-              <ActionButton
-                iconSrc={donateIcon}
-                tooltipContent={t<string>('Donate')}
-              />
-            </Link>
-          </div>
-        )}
-        {_isAccountAll && (
-          <div className='home-account-button-container'>
-            <div className='action-button-wrapper'>
-              <ActionButton
-                iconSrc={buyIcon}
-                isDisabled
-                tooltipContent={t<string>('Receive')}
-              />
-            </div>
-            <div className='action-button-wrapper'>
-              <ActionButton
-                iconSrc={sendIcon}
-                isDisabled
-                tooltipContent={t<string>('Send')}
-              />
-            </div>
-            <div className='action-button-wrapper'>
-              <ActionButton
-                iconSrc={donateIcon}
-                isDisabled
-                tooltipContent={t<string>('Donate')}
-              />
-            </div>
-          </div>
-        )}
-      </div>
-        */}
       <div className={'home-tab-contents'}>
-
-        {/*
-      <Available
-                  api={api}
-                  apiUrl={apiUrl}
-                  params={senderId}
-                />
-      */}
-        {/*
-
-<AvailableEVM
-                  api={api}
-                  apiUrl={apiUrl}
-                  networkKey={networkKey}
-                  params={senderId}
-                />
-    */}
         {activatedTab === 1 && (
           <div
             className='Home-contents'
