@@ -12,11 +12,14 @@ import React, { useCallback, useContext, useEffect, useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
+// import AvailableNativeNum from '../Popup/Sending/old/component/AvailableNativeNum';
+// import { getWeb3Api } from '@polkadot/extension-koni-base/api/web3/web3';
+import Web3 from 'web3';
 
 import { reformatAddress } from '@polkadot/extension-koni-base/utils/utils';
 import allAccountLogoDefault from '@polkadot/extension-koni-ui/assets/all-account-icon.svg';
 import cloneLogo from '@polkadot/extension-koni-ui/assets/clone.svg';
-import { BalanceVal } from '@polkadot/extension-koni-ui/components/balance';
+// import { BalanceVal } from '@polkadot/extension-koni-ui/components/balance';
 import Identicon from '@polkadot/extension-koni-ui/components/Identicon';
 import { RootState } from '@polkadot/extension-koni-ui/stores';
 import { accountAllRecoded, defaultRecoded, isAccountAll, recodeAddress } from '@polkadot/extension-koni-ui/util';
@@ -26,6 +29,9 @@ import useToast from '../hooks/useToast';
 import useTranslation from '../hooks/useTranslation';
 import getParentNameSuri from '../util/getParentNameSuri';
 import { AccountContext } from './contexts';
+// import { BN, u8aToHex } from '@polkadot/util';
+// import { addressToEvm } from '@polkadot/util-crypto';
+// import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 export interface Props {
   address: string ;
@@ -126,6 +132,66 @@ function HomeAccountInfo ({ address, className, genesisHash, iconSize = 32, isEx
 
   const parentNameSuri = getParentNameSuri(parentName, suri);
 
+  const [availableNativeBalance, setAvailableNativeBalance] = useState<string | null>(null);
+  const [availableEVMBalance, setAvailableEVMBalance] = useState<string | null>(null);
+
+  async function getBalanceAstarEvm (networkKey: string, address: string) {
+    let wssURL = '';
+
+    if (networkKey === 'astarEvm' || networkKey === 'astar') {
+      wssURL = 'wss://rpc.astar.network';
+    } else if (networkKey === 'shidenEvm') {
+      wssURL = 'wss://rpc.shiden.astar.network';
+    } else if (networkKey === 'shibuyaEvm') {
+      wssURL = 'wss://rpc.shibuya.astar.network';
+    }
+
+    let astarBalance = '0';
+
+    if (networkKey === 'astar') {
+      const web3 = new Web3(new Web3.providers.WebsocketProvider(wssURL));
+      const balance = await web3.eth.getBalance(address);
+
+      astarBalance = web3.utils.fromWei(balance, 'ether').substring(0, 5);
+    } else if (networkKey === 'astarEvm') {
+      const web3 = new Web3(new Web3.providers.WebsocketProvider(wssURL));
+      const balance = await web3.eth.getBalance(address);
+
+      astarBalance = web3.utils.fromWei(balance, 'ether').substring(0, 5);
+    }
+
+    console.log('Arth await balance: ' + networkKey + ', SS58:' + address + ' -> H160:' + address + ', ' + astarBalance);
+
+    chrome.storage.local.set({
+      availableEVMBalance: (address + '_' + astarBalance)
+    }, function () {});
+  }
+
+  console.log('Arth networkInfo: ', networkInfo?.chain);
+
+  if (networkInfo?.chain === 'Astar') {
+    getBalanceAstarEvm('astar', (address || '').toString());
+  } else if (networkInfo?.chain === 'Astar - EVM') {
+    getBalanceAstarEvm('astarEvm', (address || '').toString());
+  }
+
+  chrome.storage.local.get(['availableNativeBalance'], function (result) {
+    if (typeof result.availableNativeBalance === 'string') {
+      setAvailableNativeBalance(result.availableNativeBalance);
+      console.log('Arth value_data: ', availableNativeBalance);
+    } else {
+      setAvailableNativeBalance('0');
+    }
+  });
+  chrome.storage.local.get(['availableEVMBalance'], function (result) {
+    if (typeof result.availableEVMBalance === 'string') {
+      setAvailableEVMBalance(result.availableEVMBalance);
+      console.log('Arth value_data: ', availableEVMBalance);
+    } else {
+      setAvailableEVMBalance('0');
+    }
+  });
+
   return (
     <div className={className}>
       <div className='account-info-row'>
@@ -193,11 +259,19 @@ function HomeAccountInfo ({ address, className, genesisHash, iconSize = 32, isEx
           <div
             className='account-info-banner account-info-chain'
           >
-            <BalanceVal
+
+            {(availableNativeBalance !== null && (address || '').toString() === (availableNativeBalance.split('_')[0]))
+              ? <p className='symbol'>{availableNativeBalance.split('_')[1]} ASTR</p>
+              : (availableEVMBalance !== null && (address || '').toString() === (availableEVMBalance.split('_')[0]))
+                ? <p className='symbol'>{availableEVMBalance.split('_')[1]} ASTR</p>
+                : <p className='symbol'>0 ASTR</p>
+            }
+            { /* <BalanceVal
               startWithSymbol
               symbol={'$'}
               value ={'x'}
-            />
+                      /> */}
+
           </div>
           <div className='account-info-address-display'>
             {isShowAddress && <div

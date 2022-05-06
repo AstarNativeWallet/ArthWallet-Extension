@@ -253,6 +253,7 @@ export default React.memo(styled(SendEvmFundResultEvmToEvmDeposit)(({ theme }: T
 
   .kn-send-fund-stt-btn {
     margin-bottom: 10px;
+    background-color: #284EA9;
   }
 
   .kn-l-text-danger {

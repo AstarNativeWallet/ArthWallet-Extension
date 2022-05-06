@@ -43,6 +43,8 @@ import NftContainer from '@polkadot/extension-koni-ui/Popup/Home/Nfts/render/Nft
 import StakingContainer from '@polkadot/extension-koni-ui/Popup/Home/Staking/StakingContainer';
 import TabHeaders from '@polkadot/extension-koni-ui/Popup/Home/Tabs/TabHeaders';
 import { TabHeaderItemType } from '@polkadot/extension-koni-ui/Popup/Home/types';
+// import { ApiPromise, SubmittableResult } from '@polkadot/api';
+import useApi from '@polkadot/extension-koni-ui/Popup/Sending/old/hook/useApi';
 import { RootState } from '@polkadot/extension-koni-ui/stores';
 import { ThemeProps } from '@polkadot/extension-koni-ui/types';
 import { BN_ZERO, isAccountAll, NFT_DEFAULT_GRID_SIZE, NFT_GRID_HEIGHT_THRESHOLD, NFT_HEADER_HEIGHT, NFT_PER_ROW, NFT_PREVIEW_HEIGHT } from '@polkadot/extension-koni-ui/util';
@@ -59,6 +61,9 @@ import TransactionHistory from './TransactionHistory/TransactionHistory';
 import ActionButton from './ActionButton';
 import WithdrawButton from './WithdrawButton';
 
+// import Available from '../Sending/old/component/Available';
+// import AvailableEVM from '../Sending/old/component/AvailableEVM';
+// import AvailableNativeNum from '../Sending/old/component/AvailableNativeNum';
 // import { getBalances, parseBalancesInfo } from '@polkadot/extension-koni-ui/util';
 
 interface WrapperProps extends ThemeProps {
@@ -73,6 +78,16 @@ interface Props {
   historyMap: Record<string, TransactionHistoryItemType[]>;
   showCopyBtn: boolean;
 }
+
+/*
+interface ContentProps extends ThemeProps {
+  className?: string;
+  setWrapperClass: (classname: string) => void;
+  currentAccount?: AccountJson | null;
+  isEthereum: boolean;
+  networkKey: string;
+}
+*/
 
 function getTabHeaderItems (address: string, t: TFunction): TabHeaderItemType[] {
   const result = [
@@ -159,6 +174,13 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
     networkPrefix } = network;
   const { t } = useTranslation();
   const { currentNetwork: { isEthereum } } = useSelector((state: RootState) => state);
+
+  const { api, apiUrl, isApiReady, isNotSupport } = useApi('astarEvm'); // networkKey);
+
+  console.log(api);
+  console.log(apiUrl);
+  console.log(isApiReady);
+  console.log(isNotSupport);
 
   const { address } = currentAccount;
   const [isShowBalanceDetail, setShowBalanceDetail] = useState<boolean>(false);
@@ -303,7 +325,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
       setIsEvmDeposit(result.isEvmDeposit);
     }
 
-    console.log('Arth isEvmDeposit: ', result.isEvmDeposit);
+    // console.log('Arth isEvmDeposit: ', result.isEvmDeposit);
   });
 
   /*
@@ -435,6 +457,22 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
         */}
       <div className={'home-tab-contents'}>
 
+        {/*
+      <Available
+                  api={api}
+                  apiUrl={apiUrl}
+                  params={senderId}
+                />
+      */}
+        {/*
+
+<AvailableEVM
+                  api={api}
+                  apiUrl={apiUrl}
+                  networkKey={networkKey}
+                  params={senderId}
+                />
+    */}
         {activatedTab === 1 && (
           <div
             className='Home-contents'
@@ -556,16 +594,14 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                         alt='ICON'
                         src='static/astar.png'
                       /></div>
-                      <div className='withdraw-token-balance'>
+                      <div className='withdraw-token-symbol'>
                         <p className='symbol'>ASTR</p>
-                        {displayEvmDepositAmount !== null && displayEvmDepositAmount > 0
-                          ? <p className='symbol'>{displayEvmDepositAmount} ASTR</p>
-                          : <p className='symbol'>0 ASTR</p>
-                        }
                       </div>
-                      <div className='withdraw-fiat-balance'>
-                        <p className='fiat-balance'>$000.00</p>
-                        <p className='info-balance'>+$00.00</p>
+                      <div className='withdraw-token-balance'>
+                        {displayEvmDepositAmount !== null && displayEvmDepositAmount > 0
+                          ? <p className='balance'>{displayEvmDepositAmount} ASTR</p>
+                          : <p className='balance'>0 ASTR</p>
+                        }
                       </div>
                     </div>
                     <div className='bottom'>
@@ -779,6 +815,11 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
     border-radius: 8px;
     background-color: #282A37;
   }
+  .withdraw-balance-wrapper .top {
+    margin: 6px 0;
+    height: 32px;
+  }
+
   .withdraw-balance-wrapper .bottom p {
     text-align: center;
     margin: 0 auto;
@@ -810,42 +851,34 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
     width: 32px;
     height: 32px;
   }
-  .withdraw-balance-wrapper .withdraw-token-balance {
+  .withdraw-balance-wrapper .withdraw-token-symbol {
     display: inline-block;
+    vertical-align: top;
     margin-left: 16px;
     padding: 2px 0;
     width: 100px;
+    height: 32px;
   }
-  .withdraw-balance-wrapper .withdraw-token-balance p {
+  .withdraw-balance-wrapper .withdraw-token-symbol p.symbol {
     margin: 0;
-  }
-  .withdraw-balance-wrapper .withdraw-token-balance p.symbol {
     font-weight: 700;
     font-size: 17px;
     line-hegit: 16px;
   }
-  .withdraw-balance-wrapper .withdraw-token-balance p.balance {
-    font-size: 16px;
-    line-hegit: 16px;
-  }
 
-  .withdraw-balance-wrapper .withdraw-fiat-balance {
-    display: none;
+  .withdraw-balance-wrapper .withdraw-token-balance {
+    display: inline-block;
     text-align: right;
+    vertical-align: top;
     padding: 2px 0;
     width: 200px;
   }
-  .withdraw-balance-wrapper .withdraw-fiat-balance p {
+  .withdraw-balance-wrapper .withdraw-token-balance p.balance {
     margin: 0;
-  }
-  .withdraw-balance-wrapper .withdraw-fiat-balance p.fiat-balance {
-    font-size: 17px;
+    font-size: 16px;
+    font-weight: 450;
     line-hegit: 16px;
-  }
-  .withdraw-balance-wrapper .withdraw-fiat-balance p.info-balance {
-    line-hegit: 14px;
-    font-size: 14px;
-    color: #a0a0a0;
+    height: 32px;
   }
 
   .chain-balances-container__body {
