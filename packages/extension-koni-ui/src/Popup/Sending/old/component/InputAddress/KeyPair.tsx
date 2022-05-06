@@ -27,14 +27,15 @@ function getName (address: string, name?: string): string {
 }
 
 function KeyPair ({ address, className = '', name }: Props): React.ReactElement<Props> {
-  const { icon, isEthereum, networkPrefix } = useSelector((state: RootState) => state.currentNetwork);
-  const formattedAddress = reformatAddress(address, networkPrefix, isEthereum);
+  const { icon, isEthereum, networkKey, networkPrefix } = useSelector((state: RootState) => state.currentNetwork);
 
-  console.log('Arth InputAddress KeyPair icon: ', icon);
-  console.log('Arth InputAddress KeyPair networkPrefix: ', networkPrefix);
-  console.log('Arth InputAddress KeyPair isEthereum: ', isEthereum);
-  console.log('Arth InputAddress KeyPair prefix: ', networkPrefix);
-  console.log('Arth InputAddress KeyPair value: ', formattedAddress);
+  let formattedAddress: string;
+
+  if (networkKey === 'astarEvm' || networkKey === 'shidenEvm' || networkKey === 'shibuyaEvm') {
+    formattedAddress = reformatAddress(address, networkPrefix, false);
+  } else {
+    formattedAddress = reformatAddress(address, networkPrefix, isEthereum);
+  }
 
   return (
     <div className={`ui--KeyPair ${className}`}>
