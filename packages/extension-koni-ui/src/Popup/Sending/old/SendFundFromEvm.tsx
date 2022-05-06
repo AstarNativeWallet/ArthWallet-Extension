@@ -653,7 +653,7 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
     padding-right: 15px;
     padding-bottom: 15px;
     flex: 1;
-    padding-top: 25px;
+    padding-top: 15px;
     overflow-y: auto;
 
     // &::-webkit-scrollbar {
@@ -766,7 +766,7 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
     color: #F0F0F0; 
   }
   .transferable-container {
-    margin 21px auto 16px;
+    margin:0px auto 16px;
     width: 328px;
     height: 104px;
     background: rgba(79, 88, 128, 1);
