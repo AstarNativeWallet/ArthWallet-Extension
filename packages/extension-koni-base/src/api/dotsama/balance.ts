@@ -201,7 +201,7 @@ function subscribeWithAccountMulti (addresses: string[], networkKey: string, net
     children: balanceJson.details[networkKey].children || undefined
   };
 
-  //console.log('Arth subscribeWithAccountMulti addresses: ', addresses[0]);
+  // console.log('Arth subscribeWithAccountMulti addresses: ', addresses[0]);
   if (networkKey === 'astar') {
     console.log('Arth subscribeWithAccountMulti networkKey: ', networkKey);
     console.log('Arth subscribeWithAccountMulti addresses: ', addresses[0]);
@@ -211,7 +211,7 @@ function subscribeWithAccountMulti (addresses: string[], networkKey: string, net
 
     if (astarBalance !== '0') {
       chrome.storage.local.set({
-        'availableNativeBalance': (addresses[0] + '_' + astarBalance)
+        availableNativeBalance: (addresses[0] + '_' + astarBalance)
       }, function () {});
     }
   }

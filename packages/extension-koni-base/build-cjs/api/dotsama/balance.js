@@ -231,7 +231,7 @@ function subscribeWithAccountMulti(addresses, networkKey, networkAPI, callback) 
     miscFrozen: balanceJson.details[networkKey].miscFrozen || '0',
     feeFrozen: balanceJson.details[networkKey].feeFrozen || '0',
     children: balanceJson.details[networkKey].children || undefined
-  }; //console.log('Arth subscribeWithAccountMulti addresses: ', addresses[0]);
+  }; // console.log('Arth subscribeWithAccountMulti addresses: ', addresses[0]);
 
   if (networkKey === 'astar') {
     console.log('Arth subscribeWithAccountMulti networkKey: ', networkKey);
@@ -243,7 +243,7 @@ function subscribeWithAccountMulti(addresses, networkKey, networkAPI, callback) 
 
     if (astarBalance !== '0') {
       chrome.storage.local.set({
-        'availableNativeBalance': addresses[0] + '_' + astarBalance
+        availableNativeBalance: addresses[0] + '_' + astarBalance
       }, function () {});
     }
   }

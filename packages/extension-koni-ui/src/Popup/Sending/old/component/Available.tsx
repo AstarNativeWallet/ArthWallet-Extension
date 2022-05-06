@@ -23,9 +23,9 @@ interface Props {
 function AvailableDisplay ({ api, apiUrl, children, className = '', label, params }: Props): React.ReactElement<Props> {
   const allBalances = useCall<DeriveBalancesAll>(api.derive.balances?.all, [params], undefined, apiUrl);
 
-  //console.log('Atrh 2 AvailableDisplay params: ', params);
-  //console.log('Atrh 2 AvailableDisplay allBalances: ', allBalances);
-  //console.log('Atrh 2 AvailableDisplay allBalances.availableBalance: ', allBalances?.availableBalance);
+  // console.log('Atrh 2 AvailableDisplay params: ', params);
+  // console.log('Atrh 2 AvailableDisplay allBalances: ', allBalances);
+  // console.log('Atrh 2 AvailableDisplay allBalances.availableBalance: ', allBalances?.availableBalance);
 
   return (
     <FormatBalance

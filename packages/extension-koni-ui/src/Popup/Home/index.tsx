@@ -10,7 +10,6 @@ import { TFunction } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import receivedIcon from '@polkadot/extension-koni-ui/assets/receive-icon.svg';
 import { ChainRegistry, CurrentAccountInfo, CurrentNetworkInfo, NftCollection as _NftCollection, NftItem as _NftItem, TransactionHistoryItemType } from '@polkadot/extension-base/background/KoniTypes';
 import { AccountJson } from '@polkadot/extension-base/background/types';
 import cloneLogo from '@polkadot/extension-koni-ui/assets/clone.svg';
@@ -24,6 +23,7 @@ import staking from '@polkadot/extension-koni-ui/assets/home-tab-icon/staking.sv
 import stakingActive from '@polkadot/extension-koni-ui/assets/home-tab-icon/staking-active.svg';
 import transfers from '@polkadot/extension-koni-ui/assets/home-tab-icon/transfers.svg';
 import transfersActive from '@polkadot/extension-koni-ui/assets/home-tab-icon/transfers-active.svg';
+import receivedIcon from '@polkadot/extension-koni-ui/assets/receive-icon.svg';
 import { AccountContext, AccountQrModal, Link } from '@polkadot/extension-koni-ui/components';
 import { BalanceVal } from '@polkadot/extension-koni-ui/components/balance';
 import Tooltip from '@polkadot/extension-koni-ui/components/Tooltip';
@@ -42,6 +42,8 @@ import NftContainer from '@polkadot/extension-koni-ui/Popup/Home/Nfts/render/Nft
 import StakingContainer from '@polkadot/extension-koni-ui/Popup/Home/Staking/StakingContainer';
 import TabHeaders from '@polkadot/extension-koni-ui/Popup/Home/Tabs/TabHeaders';
 import { TabHeaderItemType } from '@polkadot/extension-koni-ui/Popup/Home/types';
+// import { ApiPromise, SubmittableResult } from '@polkadot/api';
+import useApi from '@polkadot/extension-koni-ui/Popup/Sending/old/hook/useApi';
 import { RootState } from '@polkadot/extension-koni-ui/stores';
 import { ThemeProps } from '@polkadot/extension-koni-ui/types';
 import { BN_ZERO, isAccountAll, NFT_DEFAULT_GRID_SIZE, NFT_GRID_HEIGHT_THRESHOLD, NFT_HEADER_HEIGHT, NFT_PER_ROW, NFT_PREVIEW_HEIGHT } from '@polkadot/extension-koni-ui/util';
@@ -57,12 +59,9 @@ import TransactionHistory from './TransactionHistory/TransactionHistory';
 import ActionButton from './ActionButton';
 import WithdrawButton from './WithdrawButton';
 
-//import { ApiPromise, SubmittableResult } from '@polkadot/api';
-import useApi from '@polkadot/extension-koni-ui/Popup/Sending/old/hook/useApi';
-
-//import Available from '../Sending/old/component/Available';
-//import AvailableEVM from '../Sending/old/component/AvailableEVM';
-//import AvailableNativeNum from '../Sending/old/component/AvailableNativeNum';
+// import Available from '../Sending/old/component/Available';
+// import AvailableEVM from '../Sending/old/component/AvailableEVM';
+// import AvailableNativeNum from '../Sending/old/component/AvailableNativeNum';
 // import { getBalances, parseBalancesInfo } from '@polkadot/extension-koni-ui/util';
 
 interface WrapperProps extends ThemeProps {
@@ -174,13 +173,12 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
   const { t } = useTranslation();
   const { currentNetwork: { isEthereum } } = useSelector((state: RootState) => state);
 
-  const { api, apiUrl, isApiReady, isNotSupport } = useApi('astarEvm');  //networkKey);
+  const { api, apiUrl, isApiReady, isNotSupport } = useApi('astarEvm'); // networkKey);
 
-console.log(api);
-console.log(apiUrl);
-console.log(isApiReady);
-console.log(isNotSupport);
-
+  console.log(api);
+  console.log(apiUrl);
+  console.log(isApiReady);
+  console.log(isNotSupport);
 
   const { address } = currentAccount;
   const [isShowBalanceDetail, setShowBalanceDetail] = useState<boolean>(false);
@@ -323,7 +321,7 @@ console.log(isNotSupport);
       setIsEvmDeposit(result.isEvmDeposit);
     }
 
-    //console.log('Arth isEvmDeposit: ', result.isEvmDeposit);
+    // console.log('Arth isEvmDeposit: ', result.isEvmDeposit);
   });
 
   /*
@@ -455,16 +453,14 @@ console.log(isNotSupport);
         */}
       <div className={'home-tab-contents'}>
 
-
-
-{/*
+        {/*
       <Available
                   api={api}
                   apiUrl={apiUrl}
                   params={senderId}
                 />
       */}
-{/*
+        {/*
 
 <AvailableEVM
                   api={api}
@@ -473,7 +469,6 @@ console.log(isNotSupport);
                   params={senderId}
                 />
     */}
-
         {activatedTab === 1 && (
           <div
             className='Home-contents'
@@ -504,11 +499,11 @@ console.log(isNotSupport);
                       />
                     </CopyToClipboard>
                     <img
-                    alt='receive'
-                    className='chain-balance-item__receive'
-                    onClick={_showQrModal}
-                    src={receivedIcon}
-                  />
+                      alt='receive'
+                      className='chain-balance-item__receive'
+                      onClick={_showQrModal}
+                      src={receivedIcon}
+                    />
                   </div>
                 </div>
               }
