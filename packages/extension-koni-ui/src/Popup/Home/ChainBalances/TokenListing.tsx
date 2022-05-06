@@ -103,12 +103,14 @@ function ChainBalances ({ address,
   const selectedInfo = accountInfoByNetworkMap[selectedNetworkKey];
   const selectedBalanceInfo = networkBalanceMaps[selectedNetworkKey];
 
-  { /**
+  /**
   const _openBalanceDetail = useCallback((networkKey: string) => {
     setSelectedNetworkKey(networkKey);
     setShowBalanceDetail(true);
   }, [setShowBalanceDetail]);
- */ }
+ */
+
+  // console.log('WatchTest selectedBalanceInfo: ', selectedBalanceInfo);
 
   const toggleBalanceDetail = useCallback((networkKey: string) => {
     if (networkKey === selectedNetworkKey) {
@@ -230,10 +232,10 @@ export default React.memo(styled(ChainBalances)(({ theme }: Props) => `
 
   .chain-balances-container__body {
     overflow-y: auto;
-	  &.-isShowBalanceDetail{
-	  width: 400px !important;
+    &.-isShowBalanceDetail{
+    width: 400px !important;
     margin : 20px auto;
-	}
+  }
   }
   .chain-balances-container__footer {
     height: 90px;

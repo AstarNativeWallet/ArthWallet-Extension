@@ -189,8 +189,7 @@ function subscribeWithAccountMulti (addresses: string[], networkKey: string, net
 
   const balanceJson = state.getBalance();
 
-  console.log('balanceJson networkKey: ', networkKey);
-  console.log('balanceJson.details[networkKey]: ', balanceJson.details[networkKey]);
+  // console.log(`balanceJson.details[${networkKey}]: `, balanceJson.details[networkKey]);
 
   const balanceItem: BalanceItem = {
     state: balanceJson.details[networkKey].state || APIItemState.PENDING,
@@ -229,7 +228,6 @@ function subscribeWithAccountMulti (addresses: string[], networkKey: string, net
     const displayEvmDepositAmount = Number(ethers.utils.formatEther(deposit.toString()));
 
     const evmDepositAmount = deposit;
-    // const evmDepositAmount = '100000000000000000';
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     chrome.storage.local.set({ displayEvmDepositAmount: displayEvmDepositAmount });
@@ -257,8 +255,6 @@ function subscribeWithAccountMulti (addresses: string[], networkKey: string, net
         miscFrozen = miscFrozen.add(balance.data?.miscFrozen?.toBn() || new BN(0));
         feeFrozen = feeFrozen.add(balance.data?.feeFrozen?.toBn() || new BN(0));
       });
-
-      // console.log('networkKey: ', networkKey);
 
       switch (networkKey) {
         // case 'astarEVM':
@@ -314,11 +310,10 @@ function subscribeWithAccountMulti (addresses: string[], networkKey: string, net
 export function subscribeEVMBalance (networkKey: string, api: ApiPromise, addresses: string[], callback: (networkKey: string, rs: BalanceItem) => void) {
   const balanceJson = state.getBalance();
 
-  console.log('balanceJsonEVM networkKey: ', networkKey);
-  console.log('balanceJsonEVM.details[networkKey]: ', balanceJson.details[networkKey]);
+  // console.log(`balanceJsonEVM.details[${networkKey}]: `, balanceJson.details[networkKey]);
 
   const balanceItemEVM: BalanceItem = {
-    state: APIItemState.PENDING,
+    state: APIItemState.READY || APIItemState.PENDING,
     free: balanceJson.details[networkKey].free || '0',
     reserved: balanceJson.details[networkKey].reserved || '0',
     miscFrozen: balanceJson.details[networkKey].miscFrozen || '0',
@@ -338,8 +333,6 @@ export function subscribeEVMBalance (networkKey: string, api: ApiPromise, addres
   getBalance();
   const interval = setInterval(getBalance, ASTAR_REFRESH_BALANCE_INTERVAL);
   const unsub2 = subscribeERC20Interval(addresses, networkKey, api, balanceItemEVM, callback);
-
-  // console.log(balanceItemEVM);
 
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
 
