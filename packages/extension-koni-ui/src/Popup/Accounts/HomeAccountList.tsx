@@ -3,22 +3,21 @@
 // created-original-file
 import type { AccountJson } from '@polkadot/extension-base/background/types';
 
-import React, { /* useCallback, useContext, */ useEffect, /* useRef, */ useState } from 'react';
+import React, { useCallback, useContext, useEffect, /* useRef , */ useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-/*
-import useIsPopup from '@polkadot/extension-koni-ui/hooks/useIsPopup';
-import useToast from '@polkadot/extension-koni-ui/hooks/useToast';
-import useTranslation from '@polkadot/extension-koni-ui/hooks/useTranslation'; */
-// import { saveCurrentAccountAddress, triggerAccountsSubscription } from '@polkadot/extension-koni-ui/messaging';
+import { CurrentAccountInfo } from '@polkadot/extension-base/background/KoniTypes';
+import { AccountContext, ActionContext } from '@polkadot/extension-koni-ui/components';
+// import useIsPopup from '@polkadot/extension-koni-ui/hooks/useIsPopup';
+// import useToast from '@polkadot/extension-koni-ui/hooks/useToast';
+// import useTranslation from '@polkadot/extension-koni-ui/hooks/useTranslation';
+import { saveCurrentAccountAddress, triggerAccountsSubscription } from '@polkadot/extension-koni-ui/messaging';
 import { RootState } from '@polkadot/extension-koni-ui/stores';
 import { ThemeProps } from '@polkadot/extension-koni-ui/types';
+import { findAccountByAddress /*, isAccountAll */ } from '@polkadot/extension-koni-ui/util';
 
-// import { CurrentAccountInfo} from '@polkadot/extension-base/background/KoniTypes';
-// import { AccountContext,  ActionContext} from '@polkadot/extension-koni-ui/components';
 import HomeAccountInfo from '../../components/HomeAccountInfo';
-// import { findAccountByAddress /*, isAccountAll*/ } from '@polkadot/extension-koni-ui/util';
 
 interface Props extends AccountJson {
   className?: string;
@@ -29,8 +28,8 @@ interface Props extends AccountJson {
 
 function HomeAccountList ({ address, changeAccountCallback, className, closeSetting, genesisHash, name, parentName, suri, type }: Props): React.ReactElement<Props> {
   const [isSelected, setSelected] = useState(false);
-  // const { accounts } = useContext(AccountContext);
-  // const onAction = useContext(ActionContext);
+  const { accounts } = useContext(AccountContext);
+  const onAction = useContext(ActionContext);
   const currentAccount = useSelector((state: RootState) => state.currentAccount.account);
   // const _isAllAccount = isAccountAll(address);
   // const { t } = useTranslation();
@@ -42,7 +41,7 @@ function HomeAccountList ({ address, changeAccountCallback, className, closeSett
       setSelected(false);
     }
   }, [address, currentAccount?.address]);
-  /*
+
   const _changeAccount = useCallback(
     () => {
       setSelected(true);
@@ -73,12 +72,11 @@ function HomeAccountList ({ address, changeAccountCallback, className, closeSett
       closeSetting && closeSetting();
       onAction('/');
     }, [accounts, address, changeAccountCallback, closeSetting, onAction]);
-    */
 
   return (
     <div
       className={className}
-      // onClick={_changeAccount}
+      onClick={_changeAccount}
     >
 
       {isSelected
