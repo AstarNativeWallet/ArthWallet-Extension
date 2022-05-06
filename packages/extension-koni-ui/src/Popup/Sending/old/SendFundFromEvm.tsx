@@ -103,7 +103,7 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
 
   const isProviderSupportSendFund = !!api && !!api.tx && !!api.tx.balances;
 
-  console.log('isInvalidToAddress in Wrapper is: ', isInvalidToAddress);
+  // console.log('isInvalidToAddress in Wrapper is: ', isInvalidToAddress);
 
   const notSupportSendFund = (supportType: SupportType = 'NETWORK') => {
     return (
@@ -193,6 +193,10 @@ function SendFundFromEvm ({ api, apiUrl, className = '', currentAccount, handler
   const [addresses, setAddresses] = useState<string[]>();
 
   const { hierarchy } = useContext(AccountContext);
+
+  // const allState = useSelector((state: RootState) => state);
+
+  // console.log('allState is: ', allState);
 
   useEffect((): void => {
     const newAddresses: string[] = [];
