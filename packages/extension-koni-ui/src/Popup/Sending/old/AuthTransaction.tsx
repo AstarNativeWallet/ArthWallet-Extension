@@ -223,7 +223,7 @@ function AuthTransaction ({ api, apiUrl, className, extrinsic, onCancel, request
     <div className={className}>
       <Modal className={'kn-signer-modal'}>
         <div className='kn-l-header'>
-          <div className='kn-l-header__part-1' />
+          {/*<div className='kn-l-header__part-1' />*/}
           <div className='kn-l-header__part-2'>
             {t<string>('Authorize Transaction Withdraw')}
           </div>
@@ -348,7 +348,7 @@ export default React.memo(styled(AuthTransaction)(({ theme }: ThemeProps) => `
     font-weight: 500;
     text-align:center;
     align-items:center;
-    margin: 20px 0;
+    margin: 20px auto;
   }
 
   .kn-l-header__part-3 {
