@@ -38,8 +38,6 @@ interface Props extends ThemeProps {
   setSelectedNetworkBalance?: (networkBalance: BigN) => void;
 }
 
-
-
 function getAccountInfoByNetwork (
   address: string,
   networkKey: string,
@@ -105,13 +103,13 @@ function ChainBalances ({ address,
           setSelectedNetworkKey(networkKey);
         }
       }, [selectedNetworkKey]);
-   
-   */
 
+   */
 
   const renderChainBalanceItem = (networkKey: string) => {
     const info = accountInfoByNetworkMap[networkKey];
     const balanceInfo = networkBalanceMaps[networkKey];
+
     /*
     if (balanceInfo && balanceInfo.childrenBalances.length === 0) {
       return (
@@ -126,7 +124,7 @@ function ChainBalances ({ address,
           toggleBalanceDetail={toggleBalanceDetail}
         />
       );
-    }*/
+    } */
     return (
       <ChainBalanceItem
         accountInfo={info}

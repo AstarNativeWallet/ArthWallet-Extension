@@ -23,7 +23,6 @@ interface Props extends ThemeProps {
 }
 
 function ChainBalanceDetail ({ accountInfo, balanceInfo, className, setQrModalOpen, setQrModalProps }: Props): React.ReactElement<Props> {
-
   return (
     <div className={className}>
       {/**

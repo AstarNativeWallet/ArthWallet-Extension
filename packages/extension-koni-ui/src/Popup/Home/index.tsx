@@ -1,7 +1,7 @@
 // Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { faArrowLeft} from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import BigN from 'bignumber.js';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
@@ -9,8 +9,10 @@ import CopyToClipboard from 'react-copy-to-clipboard';
 import { TFunction } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { ChainRegistry, CurrentAccountInfo, CurrentNetworkInfo,  NftCollection as _NftCollection, NftItem as _NftItem, TransactionHistoryItemType } from '@polkadot/extension-base/background/KoniTypes';
+
+import { ChainRegistry, CurrentAccountInfo, CurrentNetworkInfo, NftCollection as _NftCollection, NftItem as _NftItem, TransactionHistoryItemType } from '@polkadot/extension-base/background/KoniTypes';
 import { AccountJson } from '@polkadot/extension-base/background/types';
+import { reformatAddress } from '@polkadot/extension-koni-base/utils/utils';
 import cloneLogo from '@polkadot/extension-koni-ui/assets/clone.svg';
 import crowdloans from '@polkadot/extension-koni-ui/assets/home-tab-icon/crowdloans.svg';
 import crowdloansActive from '@polkadot/extension-koni-ui/assets/home-tab-icon/crowdloans-active.svg';
@@ -51,12 +53,11 @@ import sendIcon from '../../assets/send-icon.svg';
 import useToast from '../../hooks/useToast';
 // import swapIcon from '../../assets/swap-icon.svg';
 import ChainBalances from './ChainBalances/ChainBalances';
+import TokenListing from './ChainBalances/TokenListing';
 import Crowdloans from './Crowdloans/Crowdloans';
 import TransactionHistory from './TransactionHistory/TransactionHistory';
 import ActionButton from './ActionButton';
 import WithdrawButton from './WithdrawButton';
-import TokenListing from './ChainBalances/TokenListing';
-import { reformatAddress } from '@polkadot/extension-koni-base/utils/utils';
 
 // import { getBalances, parseBalancesInfo } from '@polkadot/extension-koni-ui/util';
 
@@ -290,9 +291,8 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
   const _backToHome = useCallback(() => {
     setShowBalanceDetail(false);
   }, [setShowBalanceDetail]);
-  
-  const formattedAddress = reformatAddress(currentAccount.address, networkPrefix, isEthereum);
 
+  const formattedAddress = reformatAddress(currentAccount.address, networkPrefix, isEthereum);
 
   const onChangeAccount = useCallback((address: string) => {
     setShowBalanceDetail(false);
@@ -455,16 +455,16 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                   <div className='address-wrap'>
                     <CopyToClipboard text={formattedAddress}>
                       <div
-                      className='address-icon'
-                      onClick={_onCopy}
+                        className='address-icon'
+                        onClick={_onCopy}
                       >
                         <span className='address-name'>{toShortAddress(formattedAddress || t('<unknown>'), 10)}</span>
-                          <img
-                            alt='copy'
-                            className='account-info-copy-icon'
-                            onClick={_onCopy}
-                            src={cloneLogo}
-                          />
+                        <img
+                          alt='copy'
+                          className='account-info-copy-icon'
+                          onClick={_onCopy}
+                          src={cloneLogo}
+                        />
                       </div>
 
                     </CopyToClipboard>
@@ -585,19 +585,19 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                 }
                 <div>
                   <TokenListing
-                  address={address}
-                  currentNetworkKey={networkKey}
-                  isShowBalanceDetail={isShowBalanceDetail}
-                  isShowZeroBalances={isShowZeroBalances}
-                  networkBalanceMaps={networkBalanceMaps}
-                  networkKeys={showedNetworks}
-                  networkMetadataMap={networkMetadataMap}
-                  setQrModalOpen={setQrModalOpen}
-                  setQrModalProps={setQrModalProps}
-                  setSelectedNetworkBalance={setSelectedNetworkBalance}
-                  setShowBalanceDetail={setShowBalanceDetail}
-                />
-                {isShowBalanceDetail &&
+                    address={address}
+                    currentNetworkKey={networkKey}
+                    isShowBalanceDetail={isShowBalanceDetail}
+                    isShowZeroBalances={isShowZeroBalances}
+                    networkBalanceMaps={networkBalanceMaps}
+                    networkKeys={showedNetworks}
+                    networkMetadataMap={networkMetadataMap}
+                    setQrModalOpen={setQrModalOpen}
+                    setQrModalProps={setQrModalProps}
+                    setSelectedNetworkBalance={setSelectedNetworkBalance}
+                    setShowBalanceDetail={setShowBalanceDetail}
+                  />
+                  {isShowBalanceDetail &&
                   <div
                     className='home__back-btn'
                     onClick={_backToHome}
@@ -609,22 +609,22 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                     />
                     <span>{t<string>('Back to home')}</span>
                   </div>
-                }
-                {networkKey !== 'all' &&(
-                <ChainBalances
-                  address={address}
-                  currentNetworkKey={networkKey}
-                  isShowBalanceDetail={isShowBalanceDetail}
-                  isShowZeroBalances={isShowZeroBalances}
-                  networkBalanceMaps={networkBalanceMaps}
-                  networkKeys={showedNetworks}
-                  networkMetadataMap={networkMetadataMap}
-                  setQrModalOpen={setQrModalOpen}
-                  setQrModalProps={setQrModalProps}
-                  setSelectedNetworkBalance={setSelectedNetworkBalance}
-                  setShowBalanceDetail={setShowBalanceDetail}
-                />
-                )}
+                  }
+                  {networkKey !== 'all' && (
+                    <ChainBalances
+                      address={address}
+                      currentNetworkKey={networkKey}
+                      isShowBalanceDetail={isShowBalanceDetail}
+                      isShowZeroBalances={isShowZeroBalances}
+                      networkBalanceMaps={networkBalanceMaps}
+                      networkKeys={showedNetworks}
+                      networkMetadataMap={networkMetadataMap}
+                      setQrModalOpen={setQrModalOpen}
+                      setQrModalProps={setQrModalProps}
+                      setSelectedNetworkBalance={setSelectedNetworkBalance}
+                      setShowBalanceDetail={setShowBalanceDetail}
+                    />
+                  )}
                 </div>
               </div>
             )}

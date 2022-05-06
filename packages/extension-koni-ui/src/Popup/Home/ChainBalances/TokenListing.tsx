@@ -102,12 +102,14 @@ function ChainBalances ({ address,
   const [listWidth, setListWidth] = useState<number>(452);
   const selectedInfo = accountInfoByNetworkMap[selectedNetworkKey];
   const selectedBalanceInfo = networkBalanceMaps[selectedNetworkKey];
-  {/**
+
+  { /**
   const _openBalanceDetail = useCallback((networkKey: string) => {
     setSelectedNetworkKey(networkKey);
     setShowBalanceDetail(true);
   }, [setShowBalanceDetail]);
- */}
+ */ }
+
   const toggleBalanceDetail = useCallback((networkKey: string) => {
     if (networkKey === selectedNetworkKey) {
       setSelectedNetworkKey('');
@@ -128,18 +130,19 @@ function ChainBalances ({ address,
     )) {
       return (<Fragment key={info.key} />);
     }
-      return (
-        <ChainBalanceDetailItem
-          accountInfo={info}
-          balanceInfo={balanceInfo}
-          isLoading={!balanceInfo}
-          isShowDetail={info.networkKey === selectedNetworkKey}
-          key={info.key}
-          setQrModalOpen={setQrModalOpen}
-          setQrModalProps={setQrModalProps}
-          toggleBalanceDetail={toggleBalanceDetail}
-        />
-      );
+
+    return (
+      <ChainBalanceDetailItem
+        accountInfo={info}
+        balanceInfo={balanceInfo}
+        isLoading={!balanceInfo}
+        isShowDetail={info.networkKey === selectedNetworkKey}
+        key={info.key}
+        setQrModalOpen={setQrModalOpen}
+        setQrModalProps={setQrModalProps}
+        toggleBalanceDetail={toggleBalanceDetail}
+      />
+    );
   };
 
   const getScrollbarWidth = () => {
@@ -216,7 +219,6 @@ function ChainBalances ({ address,
     </div>
   );
 }
-
 
 export default React.memo(styled(ChainBalances)(({ theme }: Props) => `
   .chain-balances-container {

@@ -12,7 +12,7 @@ import { BalanceVal } from '@polkadot/extension-koni-ui/components/balance';
 import useTranslation from '@polkadot/extension-koni-ui/hooks/useTranslation';
 import { getTotalConvertedBalanceValue, hasAnyChildTokenBalance } from '@polkadot/extension-koni-ui/Popup/Home/ChainBalances/utils';
 import { ThemeProps } from '@polkadot/extension-koni-ui/types';
-import { BN_ZERO, isAccountAll/*, toShort*/ } from '@polkadot/extension-koni-ui/util';
+import { BN_ZERO, isAccountAll/*, toShort */ } from '@polkadot/extension-koni-ui/util';
 import { AccountInfoByNetwork, BalanceInfo } from '@polkadot/extension-koni-ui/util/types';
 
 import { Loading } from '../../../components';
@@ -44,7 +44,7 @@ function ChainBalanceItem ({ accountInfo,
   const { address /* ,  formattedAddress,networkIconTheme, networkKey, networkPrefix */ } = accountInfo;
   // const { show } = useToast();
   const { t } = useTranslation();
-  
+
   /**
   const _onCopy = useCallback((e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
