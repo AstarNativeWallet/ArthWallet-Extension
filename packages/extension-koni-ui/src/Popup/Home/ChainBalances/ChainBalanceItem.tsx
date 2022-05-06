@@ -3,17 +3,16 @@
 
 import BigN from 'bignumber.js';
 import React, { useCallback } from 'react';
-import CopyToClipboard from 'react-copy-to-clipboard';
+// import CopyToClipboard from 'react-copy-to-clipboard';
 import styled from 'styled-components';
 
-import cloneIcon from '@polkadot/extension-koni-ui/assets/clone.svg';
-import receivedIcon from '@polkadot/extension-koni-ui/assets/receive-icon.svg';
+// import cloneIcon from '@polkadot/extension-koni-ui/assets/clone.svg';
 import { BalanceVal } from '@polkadot/extension-koni-ui/components/balance';
-import useToast from '@polkadot/extension-koni-ui/hooks/useToast';
+// import useToast from '@polkadot/extension-koni-ui/hooks/useToast';
 import useTranslation from '@polkadot/extension-koni-ui/hooks/useTranslation';
 import { getTotalConvertedBalanceValue, hasAnyChildTokenBalance } from '@polkadot/extension-koni-ui/Popup/Home/ChainBalances/utils';
 import { ThemeProps } from '@polkadot/extension-koni-ui/types';
-import { BN_ZERO, isAccountAll, toShort } from '@polkadot/extension-koni-ui/util';
+import { BN_ZERO, isAccountAll/*, toShort */ } from '@polkadot/extension-koni-ui/util';
 import { AccountInfoByNetwork, BalanceInfo } from '@polkadot/extension-koni-ui/util/types';
 
 import { Loading } from '../../../components';
@@ -42,14 +41,16 @@ function ChainBalanceItem ({ accountInfo,
   setQrModalProps,
   setSelectedNetworkBalance,
   showBalanceDetail }: Props): React.ReactElement<Props> {
-  const { address, formattedAddress, networkIconTheme, networkKey, networkPrefix } = accountInfo;
-  const { show } = useToast();
+  const { address /* ,  formattedAddress,networkIconTheme, networkKey, networkPrefix */ } = accountInfo;
+  // const { show } = useToast();
   const { t } = useTranslation();
 
+  /**
   const _onCopy = useCallback((e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
     show(t('Copied'));
   }, [show, t]);
+   */
 
   const _onOpenDetail = useCallback(() => {
     if (!isLoading) {
@@ -59,7 +60,7 @@ function ChainBalanceItem ({ accountInfo,
       setSelectedNetworkBalance && setSelectedNetworkBalance(networkBalance);
     }
   }, [accountInfo.key, balanceInfo, isLoading, setSelectedNetworkBalance, showBalanceDetail]);
-
+  /**
   const _openQr = useCallback((e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
     setQrModalProps({
@@ -70,7 +71,7 @@ function ChainBalanceItem ({ accountInfo,
     });
     setQrModalOpen(true);
   }, [networkIconTheme, networkKey, networkPrefix, setQrModalOpen, setQrModalProps]);
-
+ */
   const _isAccountAll = isAccountAll(address);
 
   const renderTokenValue = (balanceInfo: BalanceInfo) => {
@@ -117,8 +118,9 @@ function ChainBalanceItem ({ accountInfo,
             src={accountInfo.networkLogo}
           />
           <div className='chain-balance-item__meta-wrapper'>
-            <div className='chain-balance-item__chain-name'>{accountInfo.networkDisplayName}</div>
+            <div className='chain-balance-item__chain-name'>{t<string>('See More Token')}</div>
             <div className='chain-balance-item__bottom-area'>
+              {/**
               {!_isAccountAll && (
                 <>
                   <CopyToClipboard text={formattedAddress}>
@@ -141,7 +143,7 @@ function ChainBalanceItem ({ accountInfo,
                     src={receivedIcon}
                   />
                 </>
-              )}
+              )} */}
               {_isAccountAll && (
                 <div className='chain-balance-item__address'>
                   <span className='chain-balance-item__address-text'>
@@ -175,7 +177,6 @@ function ChainBalanceItem ({ accountInfo,
           </div>
         )}
       </div>
-      <div className='chain-balance-item__separator' />
     </div>
   );
 }
@@ -199,7 +200,6 @@ export default React.memo(styled(ChainBalanceItem)(({ theme }: Props) => `
     padding-bottom: 12px;
   }
 
-  .chain-balance-item__detail-area,
   .chain-balance-item__detail-area {
     font-size: 14px;
     padding-top: 8px;
@@ -238,7 +238,6 @@ export default React.memo(styled(ChainBalanceItem)(({ theme }: Props) => `
     margin-right: 12px;
     background-color: #fff;
     border: 1px solid #fff;
-    margin-top:10px;
   }
 
   .chain-balance-item__meta-wrapper {

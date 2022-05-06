@@ -82,13 +82,19 @@ export default React.memo(styled(ChainBalanceChildrenItem)(({ theme }: Props) =>
     display: flex;
     align-items: center;
     font-size: 15px;
+    width: 400px ;
+    margin : 20px auto;
   }
 
   .chain-balance--children-item__main-area {
     display: flex;
     font-size: 15px;
-    padding-top: 12px;
-    padding-bottom: 12px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background: rgba(196, 196, 196, 0.2);
+    width: 400px ;
+    margin : 20px auto;
+    border-radius:8px;
   }
 
   .chain-balance--children-item__detail-area,
@@ -197,12 +203,6 @@ export default React.memo(styled(ChainBalanceChildrenItem)(({ theme }: Props) =>
   .chain-balance--children-item__separator {
     padding-left: 69px;
     padding-right: 25px;
-
-    &:before {
-      content: '';
-      height: 1px;
-      display: block;
-      background: ${theme.boxBorderColor};
     }
   }
 
