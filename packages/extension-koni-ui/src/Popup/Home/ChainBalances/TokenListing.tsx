@@ -102,12 +102,12 @@ function ChainBalances ({ address,
   const [listWidth, setListWidth] = useState<number>(452);
   const selectedInfo = accountInfoByNetworkMap[selectedNetworkKey];
   const selectedBalanceInfo = networkBalanceMaps[selectedNetworkKey];
-
+  {/**
   const _openBalanceDetail = useCallback((networkKey: string) => {
     setSelectedNetworkKey(networkKey);
     setShowBalanceDetail(true);
   }, [setShowBalanceDetail]);
-
+ */}
   const toggleBalanceDetail = useCallback((networkKey: string) => {
     if (networkKey === selectedNetworkKey) {
       setSelectedNetworkKey('');
@@ -217,6 +217,7 @@ function ChainBalances ({ address,
   );
 }
 
+
 export default React.memo(styled(ChainBalances)(({ theme }: Props) => `
   .chain-balances-container {
     display: flex;
@@ -227,9 +228,8 @@ export default React.memo(styled(ChainBalances)(({ theme }: Props) => `
 
   .chain-balances-container__body {
     overflow-y: auto;
-	&.-isShowBalanceDetail{
-	background: rgba(196, 196, 196, 0.2);
-	width: 400px !important;
+	  &.-isShowBalanceDetail{
+	  width: 400px !important;
     margin : 20px auto;
 	}
   }

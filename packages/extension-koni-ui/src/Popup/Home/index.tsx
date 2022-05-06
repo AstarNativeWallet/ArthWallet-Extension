@@ -1,7 +1,7 @@
 // Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import BigN from 'bignumber.js';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
@@ -57,7 +57,6 @@ import ActionButton from './ActionButton';
 import WithdrawButton from './WithdrawButton';
 import TokenListing from './ChainBalances/TokenListing';
 import { reformatAddress } from '@polkadot/extension-koni-base/utils/utils';
-import CurrentNetwork from '@polkadot/extension-koni-ui/stores/CurrentNetwork';
 
 // import { getBalances, parseBalancesInfo } from '@polkadot/extension-koni-ui/util';
 
@@ -611,7 +610,6 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                     <span>{t<string>('Back to home')}</span>
                   </div>
                 }
-                {console.log('network:',networkKey,CurrentNetwork.length)}
                 {networkKey !== 'all' &&(
                 <ChainBalances
                   address={address}

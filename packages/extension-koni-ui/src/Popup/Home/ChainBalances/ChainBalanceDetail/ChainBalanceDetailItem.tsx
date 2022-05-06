@@ -181,12 +181,12 @@ export default React.memo(styled(ChainBalanceDetailItem)(({ theme }: Props) => `
     font-size: 15px;
     padding-top: 12px;
     padding-bottom: 12px;
-    margin-top:12px ;
     background: rgba(196, 196, 196, 0.2);
     border-radius: 8px;
     width: 400px ;
     margin-right: auto;
     margin-left: auto;
+    margin-top:12px;
   }
 
   .chain-balance-item__detail-area {
@@ -216,6 +216,7 @@ export default React.memo(styled(ChainBalanceDetailItem)(({ theme }: Props) => `
     .loading-img.loading-img {
       width: 32px;
       height: 32px;
+      margin-top:10px;
       border-width: 4px;
       border-color: transparent;
       border-left-color: ${theme.textColor2};

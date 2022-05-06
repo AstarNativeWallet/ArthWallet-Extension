@@ -8,7 +8,7 @@ import styled from 'styled-components';
 
 import { NetWorkMetadataDef } from '@polkadot/extension-base/background/KoniTypes';
 import useTranslation from '@polkadot/extension-koni-ui/hooks/useTranslation';
-import ChainBalanceDetailItem from '@polkadot/extension-koni-ui/Popup/Home/ChainBalances/ChainBalanceDetail/ChainBalanceDetailItem';
+// import ChainBalanceDetailItem from '@polkadot/extension-koni-ui/Popup/Home/ChainBalances/ChainBalanceDetail/ChainBalanceDetailItem';
 import ChainBalanceItem from '@polkadot/extension-koni-ui/Popup/Home/ChainBalances/ChainBalanceItem';
 // import { hasAnyChildTokenBalance } from '@polkadot/extension-koni-ui/Popup/Home/ChainBalances/utils';
 import { ThemeProps } from '@polkadot/extension-koni-ui/types';
@@ -97,19 +97,22 @@ function ChainBalances ({ address,
     setSelectedNetworkKey(networkKey);
     setShowBalanceDetail(true);
   }, [setShowBalanceDetail]);
+  /**
+     const toggleBalanceDetail = useCallback((networkKey: string) => {
+        if (networkKey === selectedNetworkKey) {
+          setSelectedNetworkKey('');
+        } else {
+          setSelectedNetworkKey(networkKey);
+        }
+      }, [selectedNetworkKey]);
+   
+   */
 
-  const toggleBalanceDetail = useCallback((networkKey: string) => {
-    if (networkKey === selectedNetworkKey) {
-      setSelectedNetworkKey('');
-    } else {
-      setSelectedNetworkKey(networkKey);
-    }
-  }, [selectedNetworkKey]);
 
   const renderChainBalanceItem = (networkKey: string) => {
     const info = accountInfoByNetworkMap[networkKey];
     const balanceInfo = networkBalanceMaps[networkKey];
-
+    /*
     if (balanceInfo && balanceInfo.childrenBalances.length === 0) {
       return (
         <ChainBalanceDetailItem
@@ -123,8 +126,7 @@ function ChainBalances ({ address,
           toggleBalanceDetail={toggleBalanceDetail}
         />
       );
-    }
-
+    }*/
     return (
       <ChainBalanceItem
         accountInfo={info}
