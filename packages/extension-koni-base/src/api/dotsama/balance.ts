@@ -197,7 +197,6 @@ async function subscribeWithAccountMulti (addresses: string[], networkKey: strin
     children: state.getBalance().details[networkKey].children || undefined
   };
 
-
   // console.log('WatchTest balanceItem is: ', balanceItem);
 
   // @ts-ignore
@@ -211,7 +210,7 @@ async function subscribeWithAccountMulti (addresses: string[], networkKey: strin
   // }
 
   async function getBalanceAstar (networkKey: string) {
-  {/*
+    { /*
   // console.log('Arth subscribeWithAccountMulti addresses: ', addresses[0]);
   if (networkKey === 'astar') {
     console.log('Arth subscribeWithAccountMulti networkKey: ', networkKey);
@@ -228,7 +227,8 @@ async function subscribeWithAccountMulti (addresses: string[], networkKey: strin
   }
 
   async function getBalanceAstarEvm (networkKey: string) {
-  */}
+  */ }
+
     let wssURL = '';
 
     switch (networkKey) {

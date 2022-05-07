@@ -1,6 +1,7 @@
 // Copyright 2019-2022 @polkadot/extension-koni authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { t } from 'i18next';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -19,7 +20,6 @@ import { AddressProxy } from '@polkadot/extension-koni-ui/Popup/Sending/old/type
 import { cacheUnlock } from '@polkadot/extension-koni-ui/Popup/Sending/old/util';
 import { RootState } from '@polkadot/extension-koni-ui/stores';
 import { ThemeProps } from '@polkadot/extension-koni-ui/types';
-import { t } from 'i18next';
 
 const bWindow = chrome.extension.getBackgroundPage() as BackgroundWindow;
 const { keyring } = bWindow.pdotApi;
@@ -289,24 +289,24 @@ function AuthTransfer ({ chain, className, collectionId, nftItem, recipientAddre
               </div>
             }
             <div className={'kn-l-submit-wrapper'}>
-            <Button
-              className={'cancel-btn'}
-              onClick={hideConfirm}
-            >
-              {t<string>('cancel')}
-            </Button>
-            <div
-              className={'submit-btn'}
-              // eslint-disable-next-line @typescript-eslint/no-misused-promises
-              onClick={handleSignAndSubmit}
-              style={{ background: loading ? 'rgba(40, 78, 169, 0.5)' : 'rgba(40, 78, 169, 1)', cursor: loading ? 'default' : 'pointer' }}
-            >
-              {
-                !loading
-                  ? <span className='_sign'>{t<string>('Sign and Submit')}</span>
-                  : <Spinner className={'spinner-loading'} />
-              }
-            </div>
+              <Button
+                className={'cancel-btn'}
+                onClick={hideConfirm}
+              >
+                {t<string>('cancel')}
+              </Button>
+              <div
+                className={'submit-btn'}
+                // eslint-disable-next-line @typescript-eslint/no-misused-promises
+                onClick={handleSignAndSubmit}
+                style={{ background: loading ? 'rgba(40, 78, 169, 0.5)' : 'rgba(40, 78, 169, 1)', cursor: loading ? 'default' : 'pointer' }}
+              >
+                {
+                  !loading
+                    ? <span className='_sign'>{t<string>('Sign and Submit')}</span>
+                    : <Spinner className={'spinner-loading'} />
+                }
+              </div>
             </div>
           </div>
         </div>

@@ -1,6 +1,7 @@
 // Copyright 2019-2022 @polkadot/extension-koni authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { t } from 'i18next';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -18,12 +19,11 @@ import AuthTransfer from '@polkadot/extension-koni-ui/Popup/Home/Nfts/transfer/A
 import TransferResult from '@polkadot/extension-koni-ui/Popup/Home/Nfts/transfer/TransferResult';
 import { _NftItem, SubstrateTransferParams, SUPPORTED_TRANSFER_EVM_CHAIN, SUPPORTED_TRANSFER_SUBSTRATE_CHAIN, Web3TransferParams } from '@polkadot/extension-koni-ui/Popup/Home/Nfts/types';
 import InputAddress from '@polkadot/extension-koni-ui/Popup/Sending/old/component/InputAddress';
+import LabelHelp from '@polkadot/extension-koni-ui/Popup/Sending/old/component/LabelHelp';
 import useApi from '@polkadot/extension-koni-ui/Popup/Sending/old/hook/useApi';
 import { RootState } from '@polkadot/extension-koni-ui/stores';
 import { CurrentAccountType } from '@polkadot/extension-koni-ui/stores/types';
 import { ThemeProps } from '@polkadot/extension-koni-ui/types';
-import LabelHelp from '@polkadot/extension-koni-ui/Popup/Sending/old/component/LabelHelp';
-import { t } from 'i18next';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -224,17 +224,17 @@ function TransferNftContainer ({ api, className, collectionId, collectionImage, 
               className = 'send-help'
               help= {t<string>('Select a contact or paste the address you want to send NFTs to.')}
             />
-          <InputAddress
-            autoPrefill={false}
-            className={'kn-field -field-2'}
-            // help={'Select a contact or paste the address you want to send nft to.'}
-            isEthereum={isEthereumAddress()}
-            // isDisabled={!!propRecipientId}
-            // label={'Send to address'}
-            onChange={setRecipientAddress}
-            type='allPlus'
-            withEllipsis
-          />
+            <InputAddress
+              autoPrefill={false}
+              className={'kn-field -field-2'}
+              // help={'Select a contact or paste the address you want to send nft to.'}
+              isEthereum={isEthereumAddress()}
+              // isDisabled={!!propRecipientId}
+              // label={'Send to address'}
+              onChange={setRecipientAddress}
+              type='allPlus'
+              withEllipsis
+            />
           </div>
           <div className={'transfer-meta'}>
             <div className={'meta-title'}>
@@ -254,17 +254,17 @@ function TransferNftContainer ({ api, className, collectionId, collectionImage, 
             >
               {t<string>('cancel')}
             </Button>
-          <div
-            className={'send-button-default ' + (addressError ? 'inactive-button' : 'active-button')}
-            // eslint-disable-next-line @typescript-eslint/no-misused-promises
-            onClick={handleSend}
-          >
-            {
-              !loading
-                ? <span className='_send'>{t<string>('Send')}</span>
-                : <Spinner className={'spinner-loading'} />
-            }
-          </div>
+            <div
+              className={'send-button-default ' + (addressError ? 'inactive-button' : 'active-button')}
+              // eslint-disable-next-line @typescript-eslint/no-misused-promises
+              onClick={handleSend}
+            >
+              {
+                !loading
+                  ? <span className='_send'>{t<string>('Send')}</span>
+                  : <Spinner className={'spinner-loading'} />
+              }
+            </div>
           </div>
         </div>
       }

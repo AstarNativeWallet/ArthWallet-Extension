@@ -245,5 +245,6 @@
   "Extend the period without password by {{expiration}} minutes": "",
   "Password for this account": "",
   "Get started": "",
-  "See More Token": ""
+  "See More Token": "",
+  "Select a contact or paste the address you want to send NFTs to.": ""
 }
