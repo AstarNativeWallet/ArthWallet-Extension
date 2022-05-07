@@ -488,6 +488,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                     startWithSymbol
                     symbol={'$'}
                     value={isShowBalanceDetail ? selectedNetworkBalance : totalBalanceValue}
+                    // eslint-disable-next-line @typescript-eslint/indent
                     />
                   : <span>*********</span>
                 }
