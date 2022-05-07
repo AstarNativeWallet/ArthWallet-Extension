@@ -34,7 +34,6 @@ function Label ({ children, className, label, showWarningIcon = false, tooltipCo
           data-tip={true}
           src={warning}
         />}
-
         {tooltipContent && (
           <Tooltip
             offset={{ bottom: 8 }}
@@ -44,7 +43,6 @@ function Label ({ children, className, label, showWarningIcon = false, tooltipCo
           />
         )}
       </div>
-
       {children}
     </div>
   );

@@ -33,11 +33,8 @@ function TransferResult ({ backToHome, className, extrinsicHash, handleResend, i
               className={'result-img'}
               src={successStatus}
             />
-
             <div className={'result-title'}>Transfer NFT Successfully</div>
-
             <div className={'result-subtext'}>Your transfer request has been confirmed. It might take a minute to see changes in your wallet.</div>
-
             <div className={'action-container'}>
               <div
                 className={'resend-button'}
@@ -61,13 +58,9 @@ function TransferResult ({ backToHome, className, extrinsicHash, handleResend, i
               className={'result-img'}
               src={failStatus}
             />
-
             <div className={'result-title'}>Transfer NFT Failed</div>
-
             <div className={'result-subtext'}>There was a problem with your request. You can try again.</div>
-
             <div className={'error-text'}>{txError}</div>
-
             <div className={'action-container'}>
               <div
                 className={'resend-button'}

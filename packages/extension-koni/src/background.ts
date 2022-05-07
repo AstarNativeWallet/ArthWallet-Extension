@@ -12,7 +12,7 @@ import { PORT_CONTENT, PORT_EXTENSION } from '@polkadot/extension-base/defaults'
 import { AccountsStore } from '@polkadot/extension-base/stores';
 import { KoniCron } from '@polkadot/extension-koni-base/background/cron';
 import handlers, { initBackgroundWindow } from '@polkadot/extension-koni-base/background/handlers';
-import { KoniSubcription } from '@polkadot/extension-koni-base/background/subscription';
+import { KoniSubscription } from '@polkadot/extension-koni-base/background/subscription';
 import keyring from '@polkadot/ui-keyring';
 import { assert } from '@polkadot/util';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
@@ -39,12 +39,42 @@ cryptoWaitReady()
     keyring.loadAll({ store: new AccountsStore(), type: 'sr25519' });
 
     // Init subcription
-    const subscriptions = new KoniSubcription();
+    const subscriptions = new KoniSubscription();
 
     subscriptions.init();
 
     // Init cron
-    (new KoniCron(subscriptions)).init();
+    const koniCron = new KoniCron(subscriptions);
+
+    koniCron.init();
+
+    chrome.runtime.onMessage.addListener(
+      function (request) {
+        console.log('WatchTest chrome.runtime request: ', request);
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        if (request.withdrawEvmDeposit === 'success' || request.sendFromEvmToEvmDeposit === 'success' || request.sendFromNativeToEvm === 'success' || request.sendFromNativeToNative === 'success' || request.sendFromEvmToEvm === 'success') {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+          console.log('WatchTest chrome.runtime in success');
+          koniCron.init();
+          // koniCron.stopSubscribe();
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+          // subscriptions.unsubscribe();
+        }
+      }
+    );
+
+    // chrome.alarms.create('hoge', { delayInMinutes: 0.5, periodInMinutes: 2 });
+    // chrome.alarms.onAlarm.addListener((alarm) => {
+    //   if (alarm.name === 'hoge') {
+    //     console.log('WatchTest chrome.runtime by time.');
+    //     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    //     koniCron.refresh();
+    //     // koniCron.stopSubscribe();
+    //     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    //     subscriptions.unsubscribe();
+    //   }
+    // });
 
     initBackgroundWindow(keyring);
 

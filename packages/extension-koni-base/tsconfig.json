@@ -1,5 +1,6 @@
 {
   "extends": "../../tsconfig.base.json",
+  // "extends": "@polkadot/dev/config/tsconfig.json",
   "compilerOptions": {
     "baseUrl": "..",
     "outDir": "./build",

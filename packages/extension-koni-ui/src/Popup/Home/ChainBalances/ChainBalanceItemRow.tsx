@@ -51,7 +51,7 @@ export default React.memo(styled(ChainBalanceItemRow)(({ theme }: Props) => `
   .chain-balance-item-row__col-1 {
     flex-grow: 4.3;
     max-width: 43%;
-    padding-left: 69px;
+    padding-left: 50px;
     padding-right: 4px;
   }
 

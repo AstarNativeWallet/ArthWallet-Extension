@@ -155,7 +155,6 @@ function Account ({ address, changeAccountCallback, className, closeSetting, gen
         suri={suri}
         type={type}
       />
-
       {_isAllAccount && (
         <div
           className={`account__change-avatar ${(isPopup && (isFirefox || isLinux)) ? 'account__change-avatar-is-disabled' : ''}`}
@@ -175,7 +174,6 @@ function Account ({ address, changeAccountCallback, className, closeSetting, gen
               className='account__change-avatar-icon'
               src={changeAvatar}
             />
-
             <img
               alt='change'
               className='account__change-avatar-icon-hover'

@@ -1,14 +1,13 @@
 // Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { useCallback, useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 import { ThemeProps } from '@polkadot/extension-koni-ui/types';
 import { AccountInfoByNetwork, BalanceInfo } from '@polkadot/extension-koni-ui/util/types';
 
 import ChainBalanceChildrenItem from '../ChainBalanceDetail/ChainBalanceChildrenItem';
-import ChainBalanceDetailItem from '../ChainBalanceDetail/ChainBalanceDetailItem';
 
 interface Props extends ThemeProps {
   accountInfo: AccountInfoByNetwork;
@@ -24,17 +23,9 @@ interface Props extends ThemeProps {
 }
 
 function ChainBalanceDetail ({ accountInfo, balanceInfo, className, setQrModalOpen, setQrModalProps }: Props): React.ReactElement<Props> {
-  const [selectedNetworkKey, setSelectedNetworkKey] = useState<string>('');
-  const toggleBalanceDetail = useCallback((networkKey: string) => {
-    if (networkKey === selectedNetworkKey) {
-      setSelectedNetworkKey('');
-    } else {
-      setSelectedNetworkKey(networkKey);
-    }
-  }, [selectedNetworkKey]);
-
   return (
     <div className={className}>
+      {/**
       <ChainBalanceDetailItem
         accountInfo={accountInfo}
         balanceInfo={balanceInfo}
@@ -43,8 +34,7 @@ function ChainBalanceDetail ({ accountInfo, balanceInfo, className, setQrModalOp
         setQrModalOpen={setQrModalOpen}
         setQrModalProps={setQrModalProps}
         toggleBalanceDetail={toggleBalanceDetail}
-      />
-
+      /> */}
       {balanceInfo && balanceInfo.childrenBalances.length
         ? balanceInfo.childrenBalances.map((child) => (
           <ChainBalanceChildrenItem

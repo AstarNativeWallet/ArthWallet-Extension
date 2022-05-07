@@ -56,7 +56,6 @@ function Settings ({ className }: Props): React.ReactElement {
           {/* @ts-ignore */}
           <div className='menu-setting-item__toggle' />
         </a>
-
         <Link
           className='menu-setting-item'
           to='/account/general-setting'
@@ -67,7 +66,6 @@ function Settings ({ className }: Props): React.ReactElement {
           {/* @ts-ignore */}
           <div className='menu-setting-item__toggle' />
         </Link>
-
         {/* <Link */}
         {/*  className='menu-setting-item' */}
         {/*  isDisabled */}
@@ -78,7 +76,6 @@ function Settings ({ className }: Props): React.ReactElement {
         {/*  <div className='menu-setting-item__text'>{t<string>('Networks')}</div> */}
         {/*  <div className='menu-setting-item__toggle' /> */}
         {/* </Link> */}
-
         <Link
           className='menu-setting-item'
           to='/auth-list'
@@ -89,7 +86,6 @@ function Settings ({ className }: Props): React.ReactElement {
           {/* @ts-ignore */}
           <div className='menu-setting-item__toggle' />
         </Link>
-
         {isPopup && <div
           className='menu-setting-item'
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -102,7 +98,6 @@ function Settings ({ className }: Props): React.ReactElement {
           <div className='menu-setting-item__toggle' />
         </div>
         }
-
         <div
           className='menu-setting-item'
           onClick={onChangeCameraAccess}
@@ -123,7 +118,6 @@ function Settings ({ className }: Props): React.ReactElement {
             )
           }
         </div>
-
         {/* <Link */}
         {/*  className='menu-setting-item' */}
         {/*  isDisabled */}
@@ -134,7 +128,6 @@ function Settings ({ className }: Props): React.ReactElement {
         {/*  <div className='menu-setting-item__text'>{t<string>('Advanced')}</div> */}
         {/*  <div className='menu-setting-item__toggle' /> */}
         {/* </Link> */}
-
         {/* <Link */}
         {/*  className='menu-setting-item' */}
         {/*  isDisabled */}
@@ -145,7 +138,6 @@ function Settings ({ className }: Props): React.ReactElement {
         {/*  <div className='menu-setting-item__text'>{t<string>('Contacts')}</div> */}
         {/*  <div className='menu-setting-item__toggle' /> */}
         {/* </Link> */}
-
         <a
           className='menu-setting-item'
           href='https://docs.subwallet.app/privacy-and-security/privacy-policy'
@@ -157,7 +149,6 @@ function Settings ({ className }: Props): React.ReactElement {
           <div className='menu-setting-item__text'>{t<string>('Security & Privacy')}</div>
           <div className='menu-setting-item__toggle' />
         </a>
-
         {/* <Link */}
         {/*  className='menu-setting-item' */}
         {/*  isDisabled */}

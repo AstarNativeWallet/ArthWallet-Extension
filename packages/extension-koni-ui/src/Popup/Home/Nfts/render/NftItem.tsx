@@ -157,7 +157,6 @@ function NftItem ({ className, collectionId, collectionImage, data, onClickBack 
           </div>
           <div></div>
         </div>
-
         <div className={'detail-container'}>
           <div className={'img-container'}>
             {
@@ -189,7 +188,6 @@ function NftItem ({ className, collectionId, collectionImage, data, onClickBack 
                 </video>
             }
           </div>
-
           {
             // @ts-ignore
             account.account.address !== 'ALL' &&
@@ -203,7 +201,6 @@ function NftItem ({ className, collectionId, collectionImage, data, onClickBack 
               </div>
             </div>
           }
-
           {
             data.description &&
             <div>
@@ -266,6 +263,7 @@ export default React.memo(styled(NftItem)(({ theme }: ThemeProps) => `
     display: flex;
     justify-content: space-between;
     margin-bottom: 12px;
+    margin-top: 20px;
   }
 
   .header-title {
@@ -294,7 +292,7 @@ export default React.memo(styled(NftItem)(({ theme }: ThemeProps) => `
 
   .send-button {
     margin-top: 5px;
-    background: #004BFF;
+    background: rgba(40, 78, 169, 1);
     border-radius: 8px;
     display: flex;
     justify-content: center;

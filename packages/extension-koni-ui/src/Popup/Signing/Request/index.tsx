@@ -149,11 +149,9 @@ function Request ({ account: { isExternal, isHardware }, buttonText, className, 
       <span className='signing-request__title'>
         {t<string>('Approve Request')}
       </span>
-
       <span className='signing-request__text'>
         {t<string>('You are approving a request with account')}
       </span>
-
       <div className='signing-request__text-wrapper'>
         {account &&
         <AccountInfoEl
@@ -168,9 +166,7 @@ function Request ({ account: { isExternal, isHardware }, buttonText, className, 
         />}
         <div className='signing-request__text'>{t<string>(`on ${hostname}`)}</div>
       </div>
-
       {isShowDetails && renderDataRequest()}
-
       <div
         className='signing-request__view-detail-btn'
         onClick={_viewDetails}
@@ -179,7 +175,6 @@ function Request ({ account: { isExternal, isHardware }, buttonText, className, 
           className='signing-request__view-detail-btn-text'
         >{isShowDetails ? t<string>('Hide Details') : t<string>('View Details')}</div>
       </div>
-
       <SignArea
         buttonText={buttonText}
         error={error}

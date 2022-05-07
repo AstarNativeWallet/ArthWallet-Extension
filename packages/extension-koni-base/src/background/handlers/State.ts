@@ -14,6 +14,7 @@ import { DEFAULT_STAKING_NETWORKS } from '@polkadot/extension-koni-base/api/stak
 // eslint-disable-next-line camelcase
 import { DotSamaCrowdloan_crowdloans_nodes } from '@polkadot/extension-koni-base/api/subquery/__generated__/DotSamaCrowdloan';
 import { fetchDotSamaCrowdloan } from '@polkadot/extension-koni-base/api/subquery/crowdloan';
+// import { CRON_AUTO_RECOVER_DOTSAMA_INTERVAL } from '@polkadot/extension-koni-base/constants';
 import { CurrentAccountStore, PriceStore } from '@polkadot/extension-koni-base/stores';
 import AccountRefStore from '@polkadot/extension-koni-base/stores/AccountRef';
 import AuthorizeStore from '@polkadot/extension-koni-base/stores/Authorize';
@@ -565,6 +566,26 @@ export default class KoniState extends State {
 
   public subscribeBalance () {
     return this.balanceSubject;
+  }
+
+  public unSubscribeBalance () {
+    // const source = interval(500);
+    const unsubscription = this.balanceSubject.unsubscribe();
+    // let subscriptionConnect;
+
+    // subscription1 = multicasted.subscribe({
+    //   next: (v) => console.log(`observerA: ${v}`)
+    // });
+    // We should call `connect()` here, because the first
+    // subscriber to `multicasted` is interested in consuming values
+    // subscriptionConnect = subcription1.connect();
+    console.log('WatchTest unSubscribeBalance()');
+
+    // setTimeout(() => {
+    //   subscription1.unsubscribe();
+    // }, CRON_AUTO_RECOVER_DOTSAMA_INTERVAL);
+
+    return unsubscription;
   }
 
   public async fetchCrowdloanFundMap () {

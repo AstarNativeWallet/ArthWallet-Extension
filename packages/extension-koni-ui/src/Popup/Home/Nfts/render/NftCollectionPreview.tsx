@@ -50,7 +50,6 @@ function NftCollectionPreview ({ className, data, onClick }: Props): React.React
             />
           </LazyLoad>
         </div>
-
         <div className={'collection-title'}>
           <div
             className={'collection-name'}

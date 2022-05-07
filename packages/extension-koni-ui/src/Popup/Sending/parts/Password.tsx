@@ -42,7 +42,6 @@ function Unlock ({ className, error, onChange, onEnter, tabIndex }: Props): Reac
         value={password}
       >
       </Password>
-
       <div className={'sending-password-toggle-wrapper'}>
         <Toggle
           isOverlay

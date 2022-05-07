@@ -1,6 +1,9 @@
 // Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+// import { PromiEvent, TransactionConfig, TransactionReceipt } from 'web3-core';
+import { TransactionReceipt } from 'web3-core';
+
 import { SubmittableResult } from '@polkadot/api';
 import { SignerResult } from '@polkadot/api/types';
 
@@ -25,8 +28,8 @@ export interface AddressProxy {
 
 export interface TxHandler {
   onTxStart?: () => void;
-  onTxUpdate?: (result: SubmittableResult) => void;
-  onTxSuccess?: (result: SubmittableResult, extrinsicHash?: string) => void;
+  onTxUpdate?: (result: SubmittableResult | TransactionReceipt) => void;
+  onTxSuccess?: (result: SubmittableResult | TransactionReceipt, extrinsicHash?: string) => void;
   onTxFail?: (result: SubmittableResult | null, error: Error | null, extrinsicHash?: string) => void;
 }
 

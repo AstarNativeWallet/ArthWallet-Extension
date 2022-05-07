@@ -61,7 +61,6 @@ function Request ({ className, metaId, request, url }: Props): React.ReactElemen
           </tr>
         </Table>
       </div>
-
       <div className='metadata-request__request-info'>
         <Button
           className='metadata-request__btn'

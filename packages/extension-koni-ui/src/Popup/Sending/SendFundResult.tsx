@@ -83,7 +83,6 @@ function SendFundResult ({ className = '', networkKey, onResend, txResult: { ext
           >
             {t<string>('Back To Home')}
           </Button>
-
           {extrinsicHash && viewTransactionBtn(networkKey, extrinsicHash)}
         </div>
         : <div className='send-fund-result'>
@@ -98,19 +97,16 @@ function SendFundResult ({ className = '', networkKey, onResend, txResult: { ext
               ? (t<string>('There was a problem with your request. You can track its progress on the Transaction History page.'))
               : (t<string>('There was a problem with your request.'))
             }
-
             {errorMessage && (
               <div className={'send-fund-result__text-danger'}>{errorMessage}</div>
             )}
           </div>
-
           <Button
             className='send-fund-result__stt-btn'
             onClick={onResend}
           >
             {t<string>('Resend')}
           </Button>
-
           {extrinsicHash && viewTransactionBtn(networkKey, extrinsicHash)}
         </div>
       }

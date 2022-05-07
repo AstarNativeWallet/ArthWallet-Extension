@@ -66,14 +66,27 @@ function applyFormat (value: Compact<any> | BN | string, [decimals, token]: [num
     const minor = rest.substr(0, 4);
     const unit = rest.substr(4);
 
+    console.log('Atrh 4 applyFormat major: ', major);
+    console.log('Atrh 4 applyFormat rest: ', rest);
+    console.log('Atrh 4 applyFormat minor: ', minor);
+    console.log('Atrh 4 applyFormat unit: ', unit);
+
     return <>{major}.<span className='ui--FormatBalance-postfix'>{minor}</span><span className='ui--FormatBalance-unit'>{unit}{unit ? unitPost : ` ${unitPost}`}</span>{labelPost || ''}</>;
   }
+
+  console.log('Atrh 4 applyFormat prefix: ', prefix);
+  console.log('Atrh 4 applyFormat postfix: ', postfix);
+  console.log('Atrh 4 applyFormat unitPost: ', unitPost);
+  console.log('Atrh 4 applyFormat labelPost: ', labelPost);
+  console.log('Atrh 4 applyFormat isShort: ', isShort);
 
   return createElement(prefix, postfix, unitPost, labelPost, isShort);
 }
 
 function FormatBalance ({ children, className = '', format, formatIndex, isShort, label, labelPost, registry, value, valueFormatted, withCurrency, withSi }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
+
+  console.log('Atrh 3 FormatBalance: ', value);
 
   const formatInfo = useMemo(
     () => format || getFormat(registry, formatIndex),

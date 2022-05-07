@@ -70,11 +70,9 @@ function CrowdloanItem ({ className, item }: Props): React.ReactElement<Props> {
           className='crowdloan-item__logo'
           src={item.logo}
         />
-
         <div className='crowdloan-item__meta-wrapper'>
           <div className='crowdloan-item__chain-top-area'>
             <div className='crowdloan-item__chain-name'>{item.networkDisplayName}</div>
-
             {!!item.paraState && (
               <div className={'crowdloan-item__status'}>{getParaStateLabel(item.paraState, t)}</div>
             )}
@@ -82,7 +80,6 @@ function CrowdloanItem ({ className, item }: Props): React.ReactElement<Props> {
           <div className='crowdloan-item__chain-group'>{item.groupDisplayName}</div>
         </div>
       </div>
-
       <div className='crowdloan-item__part-2'>
         <div className='crowdloan-item__contributed'>
           <BalanceVal

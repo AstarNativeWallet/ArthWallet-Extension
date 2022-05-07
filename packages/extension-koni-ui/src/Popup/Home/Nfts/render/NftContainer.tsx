@@ -119,12 +119,10 @@ function NftContainer (
       {loading && <div className={'loading-container'}>
         <Spinner size={'large'} />
       </div>}
-
       {/* @ts-ignore */}
       {totalItems === 0 && !loading && !showCollectionDetail &&
         <EmptyList />
       }
-
       {/* @ts-ignore */}
       {!loading && !showCollectionDetail && totalItems > 0 &&
       <div className={'total-title'}>
@@ -132,7 +130,6 @@ function NftContainer (
         {totalItems} NFT{totalItems > 1 && 's'} from {totalCollection} collection{totalCollection > 1 && 's'}
       </div>
       }
-
       {
         !showCollectionDetail &&
         <div className={'grid-container'}>
@@ -151,7 +148,6 @@ function NftContainer (
           }
         </div>
       }
-
       {
         showCollectionDetail &&
           <NftCollection
@@ -164,7 +160,6 @@ function NftContainer (
             showItemDetail={showItemDetail}
           />
       }
-
       {
         // @ts-ignore
         !loading && !showCollectionDetail && totalCollection > nftGridSize &&
@@ -194,7 +189,6 @@ function NftContainer (
           </div>
         </div>
       }
-
       {/* {!loading && */}
       {/*  <div className={'footer'}> */}
       {/*    <div>Don't see your tokens?</div> */}
@@ -245,6 +239,7 @@ export default React.memo(styled(NftContainer)(({ theme }: Props) => `
 
   .total-title {
     margin-bottom: 20px;
+    margin-top:20px;
   }
 
   .grid-container {

@@ -63,7 +63,6 @@ function Output ({ children, className = '', help, isDisabled, isError, isFull, 
         }
         {children}
       </div>
-
       <CopyToClipboard text={(value && value) || ''}>
         <div
           className={'kn-copy-btn'}

@@ -21,9 +21,12 @@ import AccountSigner from '@polkadot/extension-koni-ui/Popup/Sending/old/signers
 import { AddressProxy, TxHandler } from '@polkadot/extension-koni-ui/Popup/Sending/old/types';
 import { cacheUnlock } from '@polkadot/extension-koni-ui/Popup/Sending/old/util';
 import { ThemeProps } from '@polkadot/extension-koni-ui/types';
+import { getLogoByNetworkKey } from '@polkadot/extension-koni-ui/util';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { assert, BN_ZERO } from '@polkadot/util';
 import { addressEq } from '@polkadot/util-crypto';
+
+import arrow from '../../../assets/arrow-transfer-down.png';
 
 const bWindow = chrome.extension.getBackgroundPage() as BackgroundWindow;
 const { keyring } = bWindow.pdotApi;
@@ -220,10 +223,11 @@ function AuthTransaction ({ api, apiUrl, className, extrinsic, onCancel, request
     <div className={className}>
       <Modal className={'kn-signer-modal'}>
         <div className='kn-l-header'>
-          <div className='kn-l-header__part-1' />
+          {/* <div className='kn-l-header__part-1' /> */}
           <div className='kn-l-header__part-2'>
-            {t<string>('Authorize Transaction')}
+            {t<string>('Authorize Transaction Withdraw')}
           </div>
+          {/**
           <div className='kn-l-header__part-3'>
             {isBusy
               ? (
@@ -236,9 +240,10 @@ function AuthTransaction ({ api, apiUrl, className, extrinsic, onCancel, request
                 >{t('Cancel')}</span>
               )
             }
-          </div>
+          </div> */}
         </div>
         <div className='kn-l-body'>
+
           <div className={'kn-l-transaction-info-block'}>
             <Transaction
               accountId={senderInfo.signAddress}
@@ -249,20 +254,29 @@ function AuthTransaction ({ api, apiUrl, className, extrinsic, onCancel, request
               onError={toggleRenderError}
             />
           </div>
+          <div className='transaction-info-wrapper'>
 
+            <div className='info-EVM-deposit'>
+              <p className='icon'><img
+                alt='ICON'
+                src={getLogoByNetworkKey('ethereum')}
+              /></p>
+              <p className='account'>EVM Deposit</p>
+            </div>
+            <div className='arrow-wrapper'><img src={arrow} /></div>
+
+          </div>
           <Address
             onChange={setSenderInfo}
             onEnter={_doStart}
             passwordError={passwordError}
             requestAddress={requestAddress}
           />
-
           <Tip
             className={'kn-l-tip-block'}
             onChange={setTip}
             registry={api.registry}
           />
-
           <Output
             className={'kn-l-call-hash'}
             isDisabled
@@ -271,8 +285,13 @@ function AuthTransaction ({ api, apiUrl, className, extrinsic, onCancel, request
             value={callHash}
             withCopy
           />
-
           <div className='kn-l-submit-wrapper'>
+            <Button
+              className={'cancel-btn'}
+              onClick={_onCancel}
+            >
+              {t<string>('cancel')}
+            </Button>
             <Button
               className={'kn-l-submit-btn'}
               isBusy={isBusy}
@@ -327,6 +346,9 @@ export default React.memo(styled(AuthTransaction)(({ theme }: ThemeProps) => `
     color: ${theme.textColor};
     font-size: 20px;
     font-weight: 500;
+    text-align:center;
+    align-items:center;
+    margin: 20px auto;
   }
 
   .kn-l-header__part-3 {
@@ -364,12 +386,94 @@ export default React.memo(styled(AuthTransaction)(({ theme }: ThemeProps) => `
   }
 
   .kn-l-submit-wrapper {
+    z-index:10;
     position: sticky;
     bottom: -15px;
-    padding: 15px;
+    padding: 15px 0px;
     margin-left: -15px;
     margin-bottom: -15px;
     margin-right: -15px;
     background-color: ${theme.background};
   }
-`));
+  .cancel-btn {
+    display: inline-block;
+    margin-right: 28px;
+    margin-left: 0px !important;
+    height: 48px;
+    width: 144px;
+    background: rgba(48, 59, 87, 1);
+    border-radius: 6px;
+  }
+  .kn-l-submit-btn {
+    display: inline-block;
+    height: 48px;
+    width: 256px;
+    border-radius: 6px;
+    background: #b1384e;
+  }
+
+  .sui-input input {
+    border: 2px solid #262c4a;
+    background-color: #010414;
+  }
+
+/*
+  .transaction-info-wrapper {
+    border-radius: 6px;
+    border: 2px dashed #262c4a;
+
+  }
+*/
+  .ui--InputAddress {
+    border: none;
+  }
+
+  .ui--Toggle label,
+  .ui--labelled label {
+    color: #f0f0f0;
+  }
+
+  .info-EVM-deposit {
+    margin: 0 auto;
+    text-align: center;
+    height: 38px;
+  }
+  .info-EVM-deposit p {
+    margin: 0;
+    display: inline-block;
+  }
+  .info-EVM-deposit p.icon,
+  .info-EVM-deposit p.icon img {
+      width: 38px;
+      height: 38px;
+  }
+  .info-EVM-deposit p.account {
+    vertical-align: top;
+    margin-left: 6px;
+    width: 120px;
+    height: 38px;
+    line-height: 38px;
+    font-weight: 700;
+  }
+  .arrow-wrapper {
+    text-align:center;
+    margin: 16px auto 4px;
+  }
+  .arrow-wrapper img {
+    width: 32px;
+  }
+
+  .ui--AddressSearch {
+    background-color: #010414;
+  }
+  .divider {
+    margin-left: 75px;
+  }
+/*
+  .ui--KeyPair {
+    margin-left: 50px;
+  }
+*/
+
+
+  `));

@@ -144,6 +144,7 @@ export const subscanByNetworkKey: Record<string, string> = {
   acala: 'https://acala.subscan.io',
   // 'altair': 'https://altair.subscan.io',
   astar: 'https://astar.subscan.io',
+  astarEvm: 'https://astar.subscan.io',
   // 'basilisk': 'https://basilisk.subscan.io',
   bifrost: 'https://bifrost.subscan.io',
   calamari: 'https://calamari.subscan.io',
@@ -214,6 +215,10 @@ export function getScanExplorerTransactionHistoryUrl (networkKey: string, hash: 
     return `${moonriverScanUrl}/tx/${hash}`;
   }
 
+  if (networkKey === 'astarEvm') {
+    return `${subscanByNetworkKey[networkKey]}/tx/${hash}`;
+  }
+
   return `${subscanByNetworkKey[networkKey]}/extrinsic/${hash}`;
 }
 
@@ -224,6 +229,10 @@ export function getScanExplorerAddressInfoUrl (networkKey: string, address: stri
 
   if (networkKey === 'moonriver') {
     return `${moonriverScanUrl}/address/${address}`;
+  }
+
+  if (networkKey === 'astarEvm') {
+    return `${subscanByNetworkKey[networkKey]}/tx/${address}`;
   }
 
   return `${subscanByNetworkKey[networkKey]}/account/${address}`;

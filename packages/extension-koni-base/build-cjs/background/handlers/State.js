@@ -41,6 +41,7 @@ var _util = require("@polkadot/util");
 
 // Copyright 2019-2022 @polkadot/extension-koni authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+// import { CRON_AUTO_RECOVER_DOTSAMA_INTERVAL } from '@polkadot/extension-koni-base/constants';
 function generateDefaultBalanceMap() {
   const balanceMap = {};
   Object.keys(_endpoints.default).forEach(networkKey => {
@@ -568,6 +569,23 @@ class KoniState extends _State.default {
 
   subscribeBalance() {
     return this.balanceSubject;
+  }
+
+  unSubscribeBalance() {
+    // const source = interval(500);
+    const unsubscription = this.balanceSubject.unsubscribe(); // let subscriptionConnect;
+    // subscription1 = multicasted.subscribe({
+    //   next: (v) => console.log(`observerA: ${v}`)
+    // });
+    // We should call `connect()` here, because the first
+    // subscriber to `multicasted` is interested in consuming values
+    // subscriptionConnect = subcription1.connect();
+
+    console.log('WatchTest unSubscribeBalance()'); // setTimeout(() => {
+    //   subscription1.unsubscribe();
+    // }, CRON_AUTO_RECOVER_DOTSAMA_INTERVAL);
+
+    return unsubscription;
   }
 
   async fetchCrowdloanFundMap() {

@@ -13,7 +13,7 @@ import { ALL_ACCOUNT_KEY } from '@polkadot/extension-koni-base/constants';
 import { accounts as accountsObservable } from '@polkadot/ui-keyring/observable/accounts';
 import { SubjectInfo } from '@polkadot/ui-keyring/observable/types';
 
-export class KoniSubcription {
+export class KoniSubscription {
   private subscriptionMap: Record<string, any> = {};
   // @ts-ignore
   unsubBalances: () => void | undefined;
@@ -70,7 +70,7 @@ export class KoniSubcription {
   }
 
   detectAddresses (currentAccountAddress: string) {
-    return new Promise<Array<string>>((resolve, reject) => {
+    return new Promise<Array<string>>((resolve) => {
       if (currentAccountAddress === ALL_ACCOUNT_KEY) {
         accountsObservable.subject.pipe(take(1))
           .subscribe((accounts: SubjectInfo): void => {
@@ -107,6 +107,13 @@ export class KoniSubcription {
         }).catch(console.error);
       });
     };
+  }
+
+  balanceSubscriptionUnSubscribe () {
+    // this.subscriptionMap((subscription) => {
+    //   subscription.unsubscribe();
+    // })
+    return state.unSubscribeBalance;
   }
 
   initCrowdloanSubscription (addresses: string[]) {

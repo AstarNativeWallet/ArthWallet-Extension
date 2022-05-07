@@ -1,6 +1,7 @@
 // Copyright 2019-2022 @polkadot/extension-koni authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { t } from 'i18next';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -8,7 +9,7 @@ import styled from 'styled-components';
 import { ApiPromise } from '@polkadot/api';
 import { isValidAddress } from '@polkadot/extension-koni-base/utils/utils';
 import logo from '@polkadot/extension-koni-ui/assets/sub-wallet-logo.svg';
-import { ActionContext, Spinner } from '@polkadot/extension-koni-ui/components';
+import { ActionContext, Button, Spinner } from '@polkadot/extension-koni-ui/components';
 import LoadingContainer from '@polkadot/extension-koni-ui/components/LoadingContainer';
 import useToast from '@polkadot/extension-koni-ui/hooks/useToast';
 import { Header } from '@polkadot/extension-koni-ui/partials';
@@ -18,6 +19,7 @@ import AuthTransfer from '@polkadot/extension-koni-ui/Popup/Home/Nfts/transfer/A
 import TransferResult from '@polkadot/extension-koni-ui/Popup/Home/Nfts/transfer/TransferResult';
 import { _NftItem, SubstrateTransferParams, SUPPORTED_TRANSFER_EVM_CHAIN, SUPPORTED_TRANSFER_SUBSTRATE_CHAIN, Web3TransferParams } from '@polkadot/extension-koni-ui/Popup/Home/Nfts/types';
 import InputAddress from '@polkadot/extension-koni-ui/Popup/Sending/old/component/InputAddress';
+import LabelHelp from '@polkadot/extension-koni-ui/Popup/Sending/old/component/LabelHelp';
 import useApi from '@polkadot/extension-koni-ui/Popup/Sending/old/hook/useApi';
 import { RootState } from '@polkadot/extension-koni-ui/stores';
 import { CurrentAccountType } from '@polkadot/extension-koni-ui/stores/types';
@@ -44,13 +46,12 @@ function Wrapper ({ className = '' }: Props): React.ReactElement<Props> {
     <div className={className}>
       <Header
         showAdd
-        showCancelButton
+        // showCancelButton
         showSearch
         showSettings
         showSubHeader
         subHeaderName={'Send NFT'}
       />
-
       {
         isApiReady || currentNetwork.isEthereum
           ? (
@@ -215,46 +216,58 @@ function TransferNftContainer ({ api, className, collectionId, collectionImage, 
                 </video>
             }
           </div>
-
-          <InputAddress
-            autoPrefill={false}
-            className={'kn-field -field-2'}
-            help={'Select a contact or paste the address you want to send nft to.'}
-            isEtherium={isEthereumAddress()}
-            // isDisabled={!!propRecipientId}
-            label={'Send to address'}
-            onChange={setRecipientAddress}
-            type='allPlus'
-            withEllipsis
-          />
-
+          <div>
+            <a className='address-text'>
+              {t<string>('Send to address')}
+            </a>
+            <LabelHelp
+              className = 'send-help'
+              help= {t<string>('Select a contact or paste the address you want to send NFTs to.')}
+            />
+            <InputAddress
+              autoPrefill={false}
+              className={'kn-field -field-2'}
+              // help={'Select a contact or paste the address you want to send nft to.'}
+              isEthereum={isEthereumAddress()}
+              // isDisabled={!!propRecipientId}
+              // label={'Send to address'}
+              onChange={setRecipientAddress}
+              type='allPlus'
+              withEllipsis
+            />
+          </div>
           <div className={'transfer-meta'}>
             <div className={'meta-title'}>
               <div>NFT</div>
               <div>Chain</div>
             </div>
-
             <div className={'meta-value'}>
               {/* eslint-disable-next-line @typescript-eslint/restrict-plus-operands */}
               <div>{nftItem.name ? nftItem.name : '#' + nftItem.id}</div>
               <div style={{ textTransform: 'uppercase' }}>{nftItem?.chain}</div>
             </div>
           </div>
-
-          <div
-            className={'send-button-default ' + (addressError ? 'inactive-button' : 'active-button')}
-            // eslint-disable-next-line @typescript-eslint/no-misused-promises
-            onClick={handleSend}
-          >
-            {
-              !loading
-                ? 'Send'
-                : <Spinner className={'spinner-loading'} />
-            }
+          <div className={'kn-l-submit-wrapper'}>
+            <Button
+              className={'cancel-btn'}
+              to='/'
+            >
+              {t<string>('cancel')}
+            </Button>
+            <div
+              className={'send-button-default ' + (addressError ? 'inactive-button' : 'active-button')}
+              // eslint-disable-next-line @typescript-eslint/no-misused-promises
+              onClick={handleSend}
+            >
+              {
+                !loading
+                  ? <span className='_send'>{t<string>('Send')}</span>
+                  : <Spinner className={'spinner-loading'} />
+              }
+            </div>
           </div>
         </div>
       }
-
       {
         showConfirm && isApiReady && (substrateTransferParams || web3TransferParams) &&
           <AuthTransfer
@@ -273,7 +286,6 @@ function TransferNftContainer ({ api, className, collectionId, collectionImage, 
             web3TransferParams={web3TransferParams}
           />
       }
-
       {
         showTransferResult && extrinsicHash !== '' &&
         <TransferResult
@@ -323,6 +335,8 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
     position: relative;
     height: 26px;
     width: 26px;
+    margin-left:120px;
+    margin-top:14px;
   }
 
   .inactive-button {
@@ -332,18 +346,13 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
   .active-button {
     cursor: pointer;
   }
-
   .send-button-default {
-    margin-top: 40px;
-    background: #004BFF;
-    border-radius: 8px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-    color: #FFFFFF;
+    display: inline-block;
+    height: 48px;
+    width: 256px;
+    border-radius: 6px;
+    background: rgba(40, 78, 169, 1);
   }
-
   .address-warning {
     color: red;
     font-size: 12px;
@@ -408,5 +417,50 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
   .close-button {
     font-size: 20px;
     cursor: pointer;
+  }
+  .send-help {
+    color: #FDFDFD;
+    opacity: 0.5;
+  }
+  .address-text {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 100%;
+    letter-spacing: 0.03em;
+    color: #FFFFF;
+  }
+  .kn-l-submit-wrapper {
+    display:flex;
+    z-index:6;
+    position: sticky;
+    bottom: -15px;
+    padding: 15px 0px;
+    margin-left: -15px;
+    margin-bottom: -15px;
+    margin-right: -15px;
+    background-color: ${theme.background};
+  }
+  .cancel-btn {
+    display: inline-block;
+    margin-right: 28px;
+    margin-left: 15px;
+    height: 48px;
+    width: 144px;
+    background: rgba(48, 59, 87, 1);
+    border-radius: 6px;
+  }
+  ._send {
+    font-family: Lexend;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 100%;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.03em;
+    padding:15px 100px;
+    color: #FFFFFF;
   }
 `));

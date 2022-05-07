@@ -140,7 +140,6 @@ function DetailHeader ({ className = '',
         </div>
       </div>
       }
-
       <div className='detail-header__part-2'>
         {!isEditing && (
           <div className='detail-header-account-info'>
@@ -179,7 +178,6 @@ function DetailHeader ({ className = '',
           />
         )}
       </div>
-
       <div className='detail-header__part-3'>
         {!(isAllAccount && currentNetwork.networkKey !== 'all') &&
         <div
@@ -193,7 +191,6 @@ function DetailHeader ({ className = '',
           />
         </div>}
       </div>
-
       {isActionOpen && (
         <AccountAction
           isShowZeroBalances={isShowZeroBalances}
