@@ -103,12 +103,14 @@ function ChainBalances ({ address,
   const selectedInfo = accountInfoByNetworkMap[selectedNetworkKey];
   const selectedBalanceInfo = networkBalanceMaps[selectedNetworkKey];
 
-  { /**
+  /**
   const _openBalanceDetail = useCallback((networkKey: string) => {
     setSelectedNetworkKey(networkKey);
     setShowBalanceDetail(true);
   }, [setShowBalanceDetail]);
- */ }
+ */
+
+  // console.log('WatchTest selectedBalanceInfo: ', selectedBalanceInfo);
 
   const toggleBalanceDetail = useCallback((networkKey: string) => {
     if (networkKey === selectedNetworkKey) {

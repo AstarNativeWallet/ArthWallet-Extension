@@ -42,7 +42,7 @@ function AvailableDisplay ({ api, children, className = '', label, networkKey }:
     setEVMBalance(resolve);
   }).catch(console.error);
 
-  console.log('EVMBalance is: ', EVMBalance);
+  console.log('WatchTest EVMBalance is: ', EVMBalance);
 
   return (
     <FormatBalance

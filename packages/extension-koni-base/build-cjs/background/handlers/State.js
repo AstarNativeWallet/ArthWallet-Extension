@@ -570,6 +570,10 @@ class KoniState extends _State.default {
     return this.balanceSubject;
   }
 
+  unSubscribeBalance() {
+    return this.balanceSubject.unsubscribe();
+  }
+
   async fetchCrowdloanFundMap() {
     this.crowdloanFundmap = await (0, _crowdloan.fetchDotSamaCrowdloan)();
   }

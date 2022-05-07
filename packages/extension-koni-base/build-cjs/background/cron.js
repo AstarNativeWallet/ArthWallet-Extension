@@ -57,18 +57,58 @@ class KoniCron {
       clearInterval(interval);
       delete this.cronMap[name];
     }
-  }
+  } // refresh () {
+  //   this.addCron('refreshPrice', this.refreshPrice, CRON_REFRESH_PRICE_INTERVAL);
+  //   this.addCron('recoverAPI', this.recoverAPI, CRON_AUTO_RECOVER_DOTSAMA_INTERVAL, false);
+  //   state.getCurrentAccount((currentAccountInfo) => {
+  //     if (currentAccountInfo) {
+  //       // this.refreshBalance(currentAccountInfo.address);
+  //       this.addCron('refreshBalance', this.refreshBalance(currentAccountInfo.address),
+  //         CRON_AUTO_RECOVER_DOTSAMA_INTERVAL);
+  //       console.log('WatchTest KoniCron.init().getCurrentAcccount()');
+  //       // this.refreshBalance(currentAccountInfo.address);
+  //       this.addCron('refreshNft', this.refreshNft(currentAccountInfo.address), CRON_REFRESH_NFT_INTERVAL);
+  //       this.addCron('refreshStakingReward', this.refreshStakingReward(currentAccountInfo.address), CRON_REFRESH_STAKING_REWARD_INTERVAL);
+  //       this.addCron('refreshHistory', this.refreshHistory(currentAccountInfo.address), CRON_REFRESH_HISTORY_INTERVAL);
+  //       // this.removeCron('refreshBalance');
+  //     }
+  //     state.subscribeCurrentAccount().subscribe({
+  //       next: ({ address }) => {
+  //         this.resetNft();
+  //         this.resetNftTransferMeta();
+  //         this.resetStakingReward();
+  //         this.resetHistory();
+  //         this.removeCron('refreshBalance');
+  //         this.removeCron('refreshNft');
+  //         this.removeCron('refreshStakingReward');
+  //         this.removeCron('refreshHistory');
+  //         this.addCron('refreshBalance', this.refreshBalance(address), CRON_AUTO_RECOVER_DOTSAMA_INTERVAL);
+  //         this.addCron('refreshNft', this.refreshNft(address), CRON_REFRESH_NFT_INTERVAL);
+  //         this.addCron('refreshStakingReward', this.refreshStakingReward(address), CRON_REFRESH_STAKING_REWARD_INTERVAL);
+  //         this.addCron('refreshHistory', this.refreshHistory(address), CRON_REFRESH_HISTORY_INTERVAL);
+  //       }
+  //     });
+  //   });
+  //   // state.subscribeCurrentAccount().unsubscribe();
+  // }
+  // stopSubscribe () {
+  //   state.subscribeCurrentAccount().unsubscribe();
+  // }
+
 
   init() {
+    console.log('WatchTest KoniCron.init()');
     this.addCron('refreshPrice', this.refreshPrice, _constants.CRON_REFRESH_PRICE_INTERVAL);
     this.addCron('recoverAPI', this.recoverAPI, _constants.CRON_AUTO_RECOVER_DOTSAMA_INTERVAL, false);
 
     _handlers.state.getCurrentAccount(currentAccountInfo => {
       if (currentAccountInfo) {
         this.addCron('refreshBalance', this.refreshBalance(currentAccountInfo.address), _constants.CRON_AUTO_RECOVER_DOTSAMA_INTERVAL);
+        console.log('WatchTest KoniCron.init().getCurrentAcccount()'); // this.refreshBalance(currentAccountInfo.address);
+
         this.addCron('refreshNft', this.refreshNft(currentAccountInfo.address), _constants.CRON_REFRESH_NFT_INTERVAL);
         this.addCron('refreshStakingReward', this.refreshStakingReward(currentAccountInfo.address), _constants.CRON_REFRESH_STAKING_REWARD_INTERVAL);
-        this.addCron('refreshHistory', this.refreshHistory(currentAccountInfo.address), _constants.CRON_REFRESH_HISTORY_INTERVAL);
+        this.addCron('refreshHistory', this.refreshHistory(currentAccountInfo.address), _constants.CRON_REFRESH_HISTORY_INTERVAL); // this.removeCron('refreshBalance');
       }
 
       _handlers.state.subscribeCurrentAccount().subscribe({
@@ -91,6 +131,8 @@ class KoniCron {
         }
       });
     });
+
+    _handlers.state.unSubscribeBalance();
   }
 
   recoverAPI() {
