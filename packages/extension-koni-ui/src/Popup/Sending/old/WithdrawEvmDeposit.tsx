@@ -299,43 +299,32 @@ function WithdrawEvmDeposit ({ api, apiUrl, currentAccount, networkKey, setWrapp
     setWrapperClass('');
   }, [setWrapperClass]);
 
-  const [availableNativeBalance, setAvailableNativeBalance] = useState<string | null>(null);
-
-  chrome.storage.local.get(['availableNativeBalance'], function (result) {
-    if (typeof result.availableNativeBalance === 'string') {
-      setAvailableNativeBalance(result.availableNativeBalance);
-      //      console.log('Arth value_data: ', availableNativeBalance);
-    } else {
-      setAvailableNativeBalance('0');
-    }
-  });
-
-  let isAvailableFaucet = false;
-
-  if (availableNativeBalance === '0' || (availableNativeBalance?.split('_')[0] === senderId && availableNativeBalance?.split('_')[1] === '0')) {
-    isAvailableFaucet = true;
+  interface AddressBalances {
+    [address: string]: string;
   }
-
-  console.log('Arth Withdraw availableNativeBalance[0]: ', availableNativeBalance?.split('_')[0]);
-  console.log('Arth Withdraw availableNativeBalance[1]: ', availableNativeBalance?.split('_')[1]);
-  console.log('Arth Withdraw isAvailableFaucet: ', isAvailableFaucet);
-
+  const [addressBalances, setAddressBalances] = useState<AddressBalances>({});
+  chrome.storage.local.get(['addressBalances'], function (result) {
+      setAddressBalances(result.addressBalances);
+      //console.log('Arth result.addressBalances: ', result.addressBalances);
+  });
+  
   return (
     <>
       {!isShowTxResult
-        ? (
+      ? (
+      <div className='withdraw-balance-wrapper'>
+        <a>Your withdrawable EVM Deposit Amount is</a>
+        {displayEvmDepositAmount !== null && displayEvmDepositAmount > 0
+          ? <p className='amount'>{displayEvmDepositAmount} ASTR</p>
+          : <p className='amount'>0 ASTR</p>
+        }
 
-          <div className='withdraw-balance-wrapper'>
-            <a>Your withdrawable EVM Deposit Amount is</a>
-            {displayEvmDepositAmount !== null && displayEvmDepositAmount > 0
-              ? <p className='amount'>{displayEvmDepositAmount} ASTR</p>
-              : <p className='amount'>0 ASTR</p>
-            }
-            <div className='info'>
-              <h3>Attention</h3>
-              {isAvailableFaucet
-                ? (
-                  <><p>Make sure you are not trying
+      <div className='info'>
+          <h3>Attention</h3>
+
+          {(addressBalances && senderId && addressBalances[senderId] === '0')
+            ? (
+              <><p>Make sure you are not trying
                 to send your assets to an exchange.
                 If you transfer funds from this address
                 to an exchange, your funds will be lost.</p><Button
