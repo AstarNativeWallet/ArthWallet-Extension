@@ -10,9 +10,9 @@ import { TFunction } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import receivedIcon from '@polkadot/extension-koni-ui/assets/receive-icon.svg';
 import { ChainRegistry, CurrentAccountInfo, CurrentNetworkInfo, NftCollection as _NftCollection, NftItem as _NftItem, TransactionHistoryItemType } from '@polkadot/extension-base/background/KoniTypes';
 import { AccountJson } from '@polkadot/extension-base/background/types';
+import { reformatAddress } from '@polkadot/extension-koni-base/utils/utils';
 import cloneLogo from '@polkadot/extension-koni-ui/assets/clone.svg';
 import crowdloans from '@polkadot/extension-koni-ui/assets/home-tab-icon/crowdloans.svg';
 import crowdloansActive from '@polkadot/extension-koni-ui/assets/home-tab-icon/crowdloans-active.svg';
@@ -24,6 +24,7 @@ import staking from '@polkadot/extension-koni-ui/assets/home-tab-icon/staking.sv
 import stakingActive from '@polkadot/extension-koni-ui/assets/home-tab-icon/staking-active.svg';
 import transfers from '@polkadot/extension-koni-ui/assets/home-tab-icon/transfers.svg';
 import transfersActive from '@polkadot/extension-koni-ui/assets/home-tab-icon/transfers-active.svg';
+import receivedIcon from '@polkadot/extension-koni-ui/assets/receive-icon.svg';
 import { AccountContext, AccountQrModal, Link } from '@polkadot/extension-koni-ui/components';
 import { BalanceVal } from '@polkadot/extension-koni-ui/components/balance';
 import Tooltip from '@polkadot/extension-koni-ui/components/Tooltip';
@@ -42,6 +43,8 @@ import NftContainer from '@polkadot/extension-koni-ui/Popup/Home/Nfts/render/Nft
 import StakingContainer from '@polkadot/extension-koni-ui/Popup/Home/Staking/StakingContainer';
 import TabHeaders from '@polkadot/extension-koni-ui/Popup/Home/Tabs/TabHeaders';
 import { TabHeaderItemType } from '@polkadot/extension-koni-ui/Popup/Home/types';
+// import { ApiPromise, SubmittableResult } from '@polkadot/api';
+import useApi from '@polkadot/extension-koni-ui/Popup/Sending/old/hook/useApi';
 import { RootState } from '@polkadot/extension-koni-ui/stores';
 import { ThemeProps } from '@polkadot/extension-koni-ui/types';
 import { BN_ZERO, isAccountAll, NFT_DEFAULT_GRID_SIZE, NFT_GRID_HEIGHT_THRESHOLD, NFT_HEADER_HEIGHT, NFT_PER_ROW, NFT_PREVIEW_HEIGHT } from '@polkadot/extension-koni-ui/util';
@@ -52,17 +55,15 @@ import sendIcon from '../../assets/send-icon.svg';
 import useToast from '../../hooks/useToast';
 // import swapIcon from '../../assets/swap-icon.svg';
 import ChainBalances from './ChainBalances/ChainBalances';
+import TokenListing from './ChainBalances/TokenListing';
 import Crowdloans from './Crowdloans/Crowdloans';
 import TransactionHistory from './TransactionHistory/TransactionHistory';
 import ActionButton from './ActionButton';
 import WithdrawButton from './WithdrawButton';
 
-//import { ApiPromise, SubmittableResult } from '@polkadot/api';
-import useApi from '@polkadot/extension-koni-ui/Popup/Sending/old/hook/useApi';
-
-//import Available from '../Sending/old/component/Available';
-//import AvailableEVM from '../Sending/old/component/AvailableEVM';
-//import AvailableNativeNum from '../Sending/old/component/AvailableNativeNum';
+// import Available from '../Sending/old/component/Available';
+// import AvailableEVM from '../Sending/old/component/AvailableEVM';
+// import AvailableNativeNum from '../Sending/old/component/AvailableNativeNum';
 // import { getBalances, parseBalancesInfo } from '@polkadot/extension-koni-ui/util';
 
 interface WrapperProps extends ThemeProps {
@@ -174,13 +175,12 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
   const { t } = useTranslation();
   const { currentNetwork: { isEthereum } } = useSelector((state: RootState) => state);
 
-  const { api, apiUrl, isApiReady, isNotSupport } = useApi('astarEvm');  //networkKey);
+  const { api, apiUrl, isApiReady, isNotSupport } = useApi('astarEvm'); // networkKey);
 
-console.log(api);
-console.log(apiUrl);
-console.log(isApiReady);
-console.log(isNotSupport);
-
+  console.log(api);
+  console.log(apiUrl);
+  console.log(isApiReady);
+  console.log(isNotSupport);
 
   const { address } = currentAccount;
   const [isShowBalanceDetail, setShowBalanceDetail] = useState<boolean>(false);
@@ -314,6 +314,8 @@ console.log(isNotSupport);
     setShowBalanceDetail(false);
   }, [setShowBalanceDetail]);
 
+  const formattedAddress = reformatAddress(currentAccount.address, networkPrefix, isEthereum);
+
   const onChangeAccount = useCallback((address: string) => {
     setShowBalanceDetail(false);
   }, []);
@@ -322,8 +324,6 @@ console.log(isNotSupport);
     if (typeof result.isEvmDeposit === 'boolean') {
       setIsEvmDeposit(result.isEvmDeposit);
     }
-
-    //console.log('Arth isEvmDeposit: ', result.isEvmDeposit);
   });
 
   /*
@@ -359,121 +359,7 @@ console.log(isNotSupport);
         text={t<string>('Accounts')}
         toggleZeroBalances={_toggleZeroBalances}
       />
-      {/*
-      <div className={'home-action-block'}>
-        <div className='account-total-balance'>
-          <div
-            className={'account-total-btn'}
-            data-for={trigger}
-            data-tip={true}
-            onClick={_toggleBalances}
-          >
-            {isShowBalance
-              ? <BalanceVal
-                startWithSymbol
-                symbol={'$'}
-                value={isShowBalanceDetail ? selectedNetworkBalance : totalBalanceValue}
-              />
-              : <span>*********</span>
-            }
-          </div>
-        </div>
-        {!_isAccountAll && (
-          <div className='home-account-button-container'>
-            {isEvmDeposit &&
-            <Link
-              className='action-button-wrapper'
-              to={'/account/withdraw-evm-deposit'}
-            >
-              <WithdrawButton
-                tooltipContent={t<string>('Withdraw EVM Deposit')}
-              />
-            </Link>
-            }
-            <div className='action-button-wrapper'>
-              <ActionButton
-                iconSrc={buyIcon}
-                onClick={_showQrModal}
-                tooltipContent={t<string>('Receive')}
-              />
-            </div>
-            <Link
-              className={'action-button-wrapper'}
-              to={'/account/send-from-native-fund'}
-            >
-              <ActionButton
-                iconSrc={sendIcon}
-                tooltipContent={(networkKey === 'astar' || networkKey === 'astarEvm' || networkKey === 'shiden' || networkKey === 'shidenEvm') ? t<string>('Native → Native/EVM Send') : t<string>('Native → Native Send') }
-              />
-            </Link>
-            <Link
-              className={'action-button-wrapper'}
-              to={'/account/send-from-evm-fund'}
-            >
-              <ActionButton
-                iconSrc={sendIcon}
-                tooltipContent={(networkKey === 'astar' || networkKey === 'astarEvm' || networkKey === 'shiden' || networkKey === 'shidenEvm') ? t<string>('EVM → EVM/EVMDeposit Send') : t<string>('EVM → EVM Send') }
-              />
-            </Link>
-            {/* <Link
-              className={'action-button-wrapper'}
-              to={'/account/donate'}
-            >
-              <ActionButton
-                iconSrc={donateIcon}
-                tooltipContent={t<string>('Donate')}
-              />
-            </Link>
-          </div>
-        )}
-        {_isAccountAll && (
-          <div className='home-account-button-container'>
-            <div className='action-button-wrapper'>
-              <ActionButton
-                iconSrc={buyIcon}
-                isDisabled
-                tooltipContent={t<string>('Receive')}
-              />
-            </div>
-            <div className='action-button-wrapper'>
-              <ActionButton
-                iconSrc={sendIcon}
-                isDisabled
-                tooltipContent={t<string>('Send')}
-              />
-            </div>
-            <div className='action-button-wrapper'>
-              <ActionButton
-                iconSrc={donateIcon}
-                isDisabled
-                tooltipContent={t<string>('Donate')}
-              />
-            </div>
-          </div>
-        )}
-      </div>
-        */}
       <div className={'home-tab-contents'}>
-
-
-
-{/*
-      <Available
-                  api={api}
-                  apiUrl={apiUrl}
-                  params={senderId}
-                />
-      */}
-{/*
-
-<AvailableEVM
-                  api={api}
-                  apiUrl={apiUrl}
-                  networkKey={networkKey}
-                  params={senderId}
-                />
-    */}
-
         {activatedTab === 1 && (
           <div
             className='Home-contents'
@@ -492,23 +378,27 @@ console.log(isNotSupport);
                     {currentAccount.name}
                   </a>
                   <div className='address-wrap'>
-                    <a className='address-name'>
-                      {toShortAddress(address || t('<unknown>'), 10)}
-                    </a>
-                    <CopyToClipboard text={address || address || ''}>
-                      <img
-                        alt='copy'
-                        className='account-info-copy-icon'
+                    <CopyToClipboard text={formattedAddress}>
+                      <div
+                        className='address-icon'
                         onClick={_onCopy}
-                        src={cloneLogo}
-                      />
+                      >
+                        <span className='address-name'>{toShortAddress(formattedAddress || t('<unknown>'), 10)}</span>
+                        <img
+                          alt='copy'
+                          className='account-info-copy-icon'
+                          onClick={_onCopy}
+                          src={cloneLogo}
+                        />
+                      </div>
+
                     </CopyToClipboard>
                     <img
-                    alt='receive'
-                    className='chain-balance-item__receive'
-                    onClick={_showQrModal}
-                    src={receivedIcon}
-                  />
+                      alt='receive'
+                      className='chain-balance-item__receive'
+                      onClick={_showQrModal}
+                      src={receivedIcon}
+                    />
                   </div>
                 </div>
               }
@@ -523,6 +413,7 @@ console.log(isNotSupport);
                     startWithSymbol
                     symbol={'$'}
                     value={isShowBalanceDetail ? selectedNetworkBalance : totalBalanceValue}
+                    // eslint-disable-next-line @typescript-eslint/indent
                     />
                   : <span>*********</span>
                 }
@@ -616,7 +507,21 @@ console.log(isNotSupport);
                     </div>
                   </div>
                 }
-                {isShowBalanceDetail &&
+                <div>
+                  <TokenListing
+                    address={address}
+                    currentNetworkKey={networkKey}
+                    isShowBalanceDetail={isShowBalanceDetail}
+                    isShowZeroBalances={isShowZeroBalances}
+                    networkBalanceMaps={networkBalanceMaps}
+                    networkKeys={showedNetworks}
+                    networkMetadataMap={networkMetadataMap}
+                    setQrModalOpen={setQrModalOpen}
+                    setQrModalProps={setQrModalProps}
+                    setSelectedNetworkBalance={setSelectedNetworkBalance}
+                    setShowBalanceDetail={setShowBalanceDetail}
+                  />
+                  {isShowBalanceDetail &&
                   <div
                     className='home__back-btn'
                     onClick={_backToHome}
@@ -628,21 +533,23 @@ console.log(isNotSupport);
                     />
                     <span>{t<string>('Back to home')}</span>
                   </div>
-                }
-                <ChainBalances
-                  address={address}
-                  currentNetworkKey={networkKey}
-                  isShowBalanceDetail={isShowBalanceDetail}
-                  isShowZeroBalances={isShowZeroBalances}
-                  networkBalanceMaps={networkBalanceMaps}
-                  networkKeys={showedNetworks}
-                  networkMetadataMap={networkMetadataMap}
-                  setQrModalOpen={setQrModalOpen}
-                  setQrModalProps={setQrModalProps}
-                  setSelectedNetworkBalance={setSelectedNetworkBalance}
-                  setShowBalanceDetail={setShowBalanceDetail}
-                />
-
+                  }
+                  {networkKey !== 'all' && (
+                    <ChainBalances
+                      address={address}
+                      currentNetworkKey={networkKey}
+                      isShowBalanceDetail={isShowBalanceDetail}
+                      isShowZeroBalances={isShowZeroBalances}
+                      networkBalanceMaps={networkBalanceMaps}
+                      networkKeys={showedNetworks}
+                      networkMetadataMap={networkMetadataMap}
+                      setQrModalOpen={setQrModalOpen}
+                      setQrModalProps={setQrModalProps}
+                      setSelectedNetworkBalance={setSelectedNetworkBalance}
+                      setShowBalanceDetail={setShowBalanceDetail}
+                    />
+                  )}
+                </div>
               </div>
             )}
           </div>
@@ -867,7 +774,6 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
     margin : 20px auto;
     /*margin : 20px 30px;*/
     border-radius: 8px;
-    background-color: #282A37;
   }
  
   .home__account-qr-modal .subwallet-modal {
@@ -892,9 +798,7 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
   }
   .total-text {
     position: absolute;
-    width: 48px;
     height: 20px;
-    left: 151px;
     top: 24px;
     
     font-family: 'Roboto';
@@ -957,14 +861,17 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
       margin:5px 0px;
     }
     .address-name {
+      flex:1;
       color: rgba(255, 255, 255, 0.7);
-      display:inline-block;
-      margin-top:5px;
+      margin-right: 8px;
     }
     .account-info-copy-icon {
-      display:inline-block;
-      margin-left:8px;
+      min-width: 20px;
+      height: 20px;
       margin-right:8px
+    }
+    .address-icon {
+      display:flex;
     }
 
 `));

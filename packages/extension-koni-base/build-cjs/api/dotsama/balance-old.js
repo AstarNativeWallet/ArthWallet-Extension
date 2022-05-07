@@ -1,5 +1,7 @@
 "use strict";
 
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -7,7 +9,11 @@ exports.getFreeBalance = getFreeBalance;
 exports.subscribeBalance = subscribeBalance;
 exports.subscribeEVMBalance = subscribeEVMBalance;
 
+var _ethers = require("ethers");
+
 var _rxjs = require("rxjs");
+
+var _web = _interopRequireDefault(require("web3"));
 
 var _KoniTypes = require("@polkadot/extension-base/background/KoniTypes");
 
@@ -17,7 +23,7 @@ var _registry = require("@polkadot/extension-koni-base/api/dotsama/registry");
 
 var _balance = require("@polkadot/extension-koni-base/api/web3/balance");
 
-var _web = require("@polkadot/extension-koni-base/api/web3/web3");
+var _web2 = require("@polkadot/extension-koni-base/api/web3/web3");
 
 var _handlers = require("@polkadot/extension-koni-base/background/handlers");
 
@@ -27,10 +33,16 @@ var _utils = require("@polkadot/extension-koni-base/utils/utils");
 
 var _util = require("@polkadot/util");
 
+var _utilCrypto = require("@polkadot/util-crypto");
+
 // Copyright 2019-2022 @polkadot/extension-koni-base authors & contributors
 // SPDX-License-Identifier: Apache-2.0
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+console.log('ethereumChains: ');
+console.log(_apiHelper.ethereumChains);
+console.log('moonbeamBaseChains: ');
+console.log(_apiHelper.moonbeamBaseChains); // eslint-disable-next-line @typescript-eslint/no-unused-vars
 // @ts-ignore
+
 function subscribeWithDerive(addresses, networkKey, networkAPI, callback) {
   const freeMap = {};
   const reservedMap = {};
@@ -117,7 +129,7 @@ function subscribeERC20Interval(addresses, networkKey, api, originBalanceItem, c
       } = _ref4;
 
       if (erc20Address) {
-        ERC20ContractMap[symbol] = (0, _web.getERC20Contract)(networkKey, erc20Address);
+        ERC20ContractMap[symbol] = (0, _web2.getERC20Contract)(networkKey, erc20Address);
       }
     });
     getTokenBalances();
@@ -204,19 +216,80 @@ function subscribeTokensBalance(addresses, networkKey, api, originBalanceItem, c
 }
 
 function subscribeWithAccountMulti(addresses, networkKey, networkAPI, callback) {
-  const balanceItem = {
-    state: _KoniTypes.APIItemState.PENDING,
-    free: '0',
-    reserved: '0',
-    miscFrozen: '0',
-    feeFrozen: '0',
-    children: undefined
-  }; // @ts-ignore
-
+  // @ts-ignore
   let unsub;
+  let unsub2;
+
+  const balanceJson = _handlers.state.getBalance();
+
+  console.log('balanceJson networkKey: ', networkKey);
+  console.log('balanceJson.details[networkKey]: ', balanceJson.details[networkKey]);
+  const balanceItem = {
+    state: balanceJson.details[networkKey].state || _KoniTypes.APIItemState.PENDING,
+    free: balanceJson.details[networkKey].free || '0',
+    reserved: balanceJson.details[networkKey].reserved || '0',
+    miscFrozen: balanceJson.details[networkKey].miscFrozen || '0',
+    feeFrozen: balanceJson.details[networkKey].feeFrozen || '0',
+    children: balanceJson.details[networkKey].children || undefined
+  };
+
+  async function getBalanceAstarEvm(networkKey) {
+    let wssURL = '';
+
+    switch (networkKey) {
+      case 'astarEvm':
+        wssURL = 'wss://rpc.astar.network';
+        break;
+
+      case 'shidenEvm':
+        wssURL = 'wss://rpc.shiden.astar.network';
+        break;
+
+      case 'shibuyaEvm':
+        wssURL = 'wss://rpc.shibuya.astar.network';
+        break;
+
+      case 'astar':
+        wssURL = 'wss://rpc.astar.network';
+        break;
+
+      default:
+        break;
+    }
+
+    const ss58Address = addresses[0];
+    const address = (0, _util.u8aToHex)((0, _utilCrypto.addressToEvm)(ss58Address));
+    const web3 = new _web.default(new _web.default.providers.WebsocketProvider(wssURL));
+    const deposit = await web3.eth.getBalance(address);
+    const displayEvmDepositAmount = Number(_ethers.ethers.utils.formatEther(deposit.toString()));
+    const evmDepositAmount = deposit; // const evmDepositAmount = '100000000000000000';
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+
+    chrome.storage.local.set({
+      displayEvmDepositAmount: displayEvmDepositAmount
+    }); // eslint-disable-next-line @typescript-eslint/no-floating-promises
+
+    chrome.storage.local.set({
+      evmDepositAmount: evmDepositAmount
+    });
+
+    if (parseFloat(deposit) > 0) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      chrome.storage.local.set({
+        isEvmDeposit: true
+      });
+    } else {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      chrome.storage.local.set({
+        isEvmDeposit: false
+      });
+    }
+
+    return deposit;
+  }
 
   if (!['kintsugi', 'interlay', 'kintsugi_test'].includes(networkKey)) {
-    unsub = networkAPI.api.query.system.account.multi(addresses, balances => {
+    unsub = networkAPI.api.query.system.account.multi(addresses, async balances => {
       let [free, reserved, miscFrozen, feeFrozen] = [new _util.BN(0), new _util.BN(0), new _util.BN(0), new _util.BN(0)];
       balances.forEach(balance => {
         var _balance$data, _balance$data$free, _balance$data2, _balance$data2$reserv, _balance$data3, _balance$data3$miscFr, _balance$data4, _balance$data4$feeFro;
@@ -225,17 +298,36 @@ function subscribeWithAccountMulti(addresses, networkKey, networkAPI, callback) 
         reserved = reserved.add(((_balance$data2 = balance.data) === null || _balance$data2 === void 0 ? void 0 : (_balance$data2$reserv = _balance$data2.reserved) === null || _balance$data2$reserv === void 0 ? void 0 : _balance$data2$reserv.toBn()) || new _util.BN(0));
         miscFrozen = miscFrozen.add(((_balance$data3 = balance.data) === null || _balance$data3 === void 0 ? void 0 : (_balance$data3$miscFr = _balance$data3.miscFrozen) === null || _balance$data3$miscFr === void 0 ? void 0 : _balance$data3$miscFr.toBn()) || new _util.BN(0));
         feeFrozen = feeFrozen.add(((_balance$data4 = balance.data) === null || _balance$data4 === void 0 ? void 0 : (_balance$data4$feeFro = _balance$data4.feeFrozen) === null || _balance$data4$feeFro === void 0 ? void 0 : _balance$data4$feeFro.toBn()) || new _util.BN(0));
-      });
+      }); // console.log('networkKey: ', networkKey);
+
+      switch (networkKey) {
+        // case 'astarEVM':
+        //   feeFrozen = new BN(await getBalanceAstarEvm('astarEvm'));
+        //   break;
+        // case 'shidenEVM':
+        //   feeFrozen = new BN(await getBalanceAstarEvm('shidenEvm'));
+        //   break;
+        // case 'shibuyaEVM':
+        //   feeFrozen = new BN(await getBalanceAstarEvm('shibuyaEvm'));
+        //   break;
+        case 'astar':
+          feeFrozen = new _util.BN(await getBalanceAstarEvm('astar'));
+          break;
+
+        default:
+          break;
+      }
+
       balanceItem.state = _KoniTypes.APIItemState.READY;
       balanceItem.free = free.toString();
       balanceItem.reserved = reserved.toString();
       balanceItem.miscFrozen = miscFrozen.toString();
-      balanceItem.feeFrozen = feeFrozen.toString();
-      callback(networkKey, balanceItem);
-    });
-  }
+      balanceItem.feeFrozen = feeFrozen.toString(); // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      // chrome.storage.local.set({ balanceItem: balanceItem });
 
-  let unsub2;
+      callback(networkKey, balanceItem);
+    }); // });
+  }
 
   if (['bifrost', 'acala', 'karura'].includes(networkKey)) {
     unsub2 = subscribeTokensBalance(addresses, networkKey, networkAPI.api, balanceItem, balanceItem => {
@@ -253,29 +345,35 @@ function subscribeWithAccountMulti(addresses, networkKey, networkAPI, callback) 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     unsub && (await unsub)();
     unsub2 && unsub2();
-  };
+  }; // });
 }
 
 function subscribeEVMBalance(networkKey, api, addresses, callback) {
-  const balanceItem = {
+  const balanceJson = _handlers.state.getBalance();
+
+  console.log('balanceJsonEVM networkKey: ', networkKey);
+  console.log('balanceJsonEVM.details[networkKey]: ', balanceJson.details[networkKey]);
+  const balanceItemEVM = {
     state: _KoniTypes.APIItemState.PENDING,
-    free: '0',
-    reserved: '0',
-    miscFrozen: '0',
-    feeFrozen: '0'
+    free: balanceJson.details[networkKey].free || '0',
+    reserved: balanceJson.details[networkKey].reserved || '0',
+    miscFrozen: balanceJson.details[networkKey].miscFrozen || '0',
+    feeFrozen: balanceJson.details[networkKey].feeFrozen || '0'
   };
 
   function getBalance() {
     (0, _balance.getEVMBalance)(networkKey, addresses).then(balances => {
-      balanceItem.free = (0, _utils.sumBN)(balances.map(b => new _util.BN(b || '0'))).toString();
-      balanceItem.state = _KoniTypes.APIItemState.READY;
-      callback(networkKey, balanceItem);
+      balanceItemEVM.free = (0, _utils.sumBN)(balances.map(b => new _util.BN(b || '0'))).toString();
+      balanceItemEVM.state = _KoniTypes.APIItemState.READY;
+      callback(networkKey, balanceItemEVM);
     }).catch(console.error);
   }
 
   getBalance();
   const interval = setInterval(getBalance, _constants.ASTAR_REFRESH_BALANCE_INTERVAL);
-  const unsub2 = subscribeERC20Interval(addresses, networkKey, api, balanceItem, callback);
+  const unsub2 = subscribeERC20Interval(addresses, networkKey, api, balanceItemEVM, callback); // console.log(balanceItemEVM);
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+
   return () => {
     clearInterval(interval);
     unsub2 && unsub2();
@@ -289,7 +387,7 @@ function subscribeBalance(addresses, dotSamaAPIMap, callback) {
     const networkAPI = await apiProps.isReady;
     const useAddresses = _apiHelper.ethereumChains.indexOf(networkKey) > -1 ? evmAddresses : substrateAddresses;
 
-    if (networkKey === 'astarEvm' || networkKey === 'shidenEvm') {
+    if (networkKey === 'astarEvm' || networkKey === 'shidenEvm' || networkKey === 'shibuyaEvm') {
       return subscribeEVMBalance(networkKey, networkAPI.api, useAddresses, callback);
     }
 
@@ -320,7 +418,7 @@ async function getFreeBalance(networkKey, address, token) {
 
     if (!(tokenInfo !== null && tokenInfo !== void 0 && tokenInfo.isMainToken)) {
       if (_apiHelper.moonbeamBaseChains.indexOf(networkKey) > -1 && tokenInfo !== null && tokenInfo !== void 0 && tokenInfo.erc20Address) {
-        const contract = (0, _web.getERC20Contract)(networkKey, tokenInfo.erc20Address); // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+        const contract = (0, _web2.getERC20Contract)(networkKey, tokenInfo.erc20Address); // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 
         const free = await contract.methods.balanceOf(address).call(); // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-return
 

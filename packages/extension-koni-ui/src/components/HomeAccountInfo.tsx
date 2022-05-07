@@ -12,10 +12,14 @@ import React, { useCallback, useContext, useEffect, useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
+// import AvailableNativeNum from '../Popup/Sending/old/component/AvailableNativeNum';
+// import { getWeb3Api } from '@polkadot/extension-koni-base/api/web3/web3';
+import Web3 from 'web3';
 
+import { reformatAddress } from '@polkadot/extension-koni-base/utils/utils';
 import allAccountLogoDefault from '@polkadot/extension-koni-ui/assets/all-account-icon.svg';
 import cloneLogo from '@polkadot/extension-koni-ui/assets/clone.svg';
-//import { BalanceVal } from '@polkadot/extension-koni-ui/components/balance';
+// import { BalanceVal } from '@polkadot/extension-koni-ui/components/balance';
 import Identicon from '@polkadot/extension-koni-ui/components/Identicon';
 import { RootState } from '@polkadot/extension-koni-ui/stores';
 import { accountAllRecoded, defaultRecoded, isAccountAll, recodeAddress } from '@polkadot/extension-koni-ui/util';
@@ -27,7 +31,7 @@ import getParentNameSuri from '../util/getParentNameSuri';
 import { AccountContext } from './contexts';
 
 export interface Props {
-  address?: string | null;
+  address: string ;
   className?: string;
   genesisHash?: string | null;
   isExternal?: boolean | null;
@@ -80,18 +84,21 @@ function HomeAccountInfo ({ address, className, genesisHash, iconSize = 32, isEx
       : (networkInfo?.icon || 'polkadot')
   ) as IconTheme;
 
-  const _onCopy = useCallback(
-    () => show(t('Copied')),
-    [show, t]
-  );
+  const _onCopy = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
+    show(t('Copied'));
+  }, [show, t]);
 
-  const toShortAddress = (_address: string | null, halfLength?: number) => {
+  const toShortAddress = (_address: string, halfLength?: number) => {
     const address = (_address || '').toString();
 
-    const addressLength = halfLength || 7;
+    const addressLength = 7;
 
-    return address.length > 13 ? `${address.slice(0, addressLength)}…${address.slice(-addressLength)}` : address;
+    return address.length > 13 ? `${address.slice(0, addressLength)}……${address.slice(-addressLength)}` : address;
   };
+
+  const { networkPrefix } = useSelector((state: RootState) => state.currentNetwork);
+  const formattedAddress = reformatAddress(address, networkPrefix, isEthereum);
 
   const Name = () => {
     return (
@@ -199,11 +206,6 @@ function HomeAccountInfo ({ address, className, genesisHash, iconSize = 32, isEx
           <div
             className='account-info-banner account-info-chain'
           >
-            { /*<BalanceVal
-              startWithSymbol
-              symbol={'$'}
-              value ={'x'}
-                      /> */}
 
           { (_isAccountAll) ? <p></p> : (addressBalances)
             ? <p className='symbol'>{addressBalances[(address || '').toString()]} ASTR</p>
@@ -215,10 +217,11 @@ function HomeAccountInfo ({ address, className, genesisHash, iconSize = 32, isEx
             {isShowAddress && <div
               className='account-info-full-address'
               data-field='address'
+              onClick={_onCopy}
             >
-              {_isAccountAll ? t<string>('All Accounts') : toShortAddress(formatted || address || t('<unknown>'), 10)}
+              {!_isAccountAll && (toShortAddress(formattedAddress || t('<unknown>'), 10))}
             </div>}
-            {showCopyBtn && <CopyToClipboard text={(formatted && formatted) || ''}>
+            {showCopyBtn && !_isAccountAll && <CopyToClipboard text={formattedAddress}>
               <img
                 alt='copy'
                 className='account-info-copy-icon'

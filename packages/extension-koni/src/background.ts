@@ -50,12 +50,31 @@ cryptoWaitReady()
 
     chrome.runtime.onMessage.addListener(
       function (request) {
+        console.log('WatchTest chrome.runtime request: ', request);
+
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         if (request.withdrawEvmDeposit === 'success' || request.sendFromEvmToEvmDeposit === 'success' || request.sendFromNativeToEvm === 'success' || request.sendFromNativeToNative === 'success' || request.sendFromEvmToEvm === 'success') {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+          console.log('WatchTest chrome.runtime in success');
           koniCron.init();
+          // koniCron.stopSubscribe();
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+          // subscriptions.unsubscribe();
         }
       }
     );
+
+    // chrome.alarms.create('hoge', { delayInMinutes: 0.5, periodInMinutes: 2 });
+    // chrome.alarms.onAlarm.addListener((alarm) => {
+    //   if (alarm.name === 'hoge') {
+    //     console.log('WatchTest chrome.runtime by time.');
+    //     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    //     koniCron.refresh();
+    //     // koniCron.stopSubscribe();
+    //     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    //     subscriptions.unsubscribe();
+    //   }
+    // });
 
     initBackgroundWindow(keyring);
 

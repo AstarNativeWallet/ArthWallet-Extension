@@ -223,7 +223,7 @@ function AuthTransaction ({ api, apiUrl, className, extrinsic, onCancel, request
     <div className={className}>
       <Modal className={'kn-signer-modal'}>
         <div className='kn-l-header'>
-          {/*<div className='kn-l-header__part-1' />*/}
+          {/* <div className='kn-l-header__part-1' /> */}
           <div className='kn-l-header__part-2'>
             {t<string>('Authorize Transaction Withdraw')}
           </div>

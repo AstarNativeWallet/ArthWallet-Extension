@@ -128,6 +128,7 @@ export default React.memo(styled(NftCollection)(({ theme }: ThemeProps) => `
     display: flex;
     justify-content: space-between;
     margin-bottom: 12px;
+    margin-top: 20px;
   }
 
   .header-title {

@@ -109,6 +109,13 @@ export class KoniSubscription {
     };
   }
 
+  balanceSubscriptionUnSubscribe () {
+    // this.subscriptionMap((subscription) => {
+    //   subscription.unsubscribe();
+    // })
+    return state.unSubscribeBalance;
+  }
+
   initCrowdloanSubscription (addresses: string[]) {
     const subscriptionPromise = subscribeCrowdloan(addresses, dotSamaAPIMap, (networkKey, rs) => {
       state.setCrowdloanItem(networkKey, rs);

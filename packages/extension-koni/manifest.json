@@ -1,13 +1,14 @@
 {
   "author": "ArthWallet Labo",
-  "description": "Web3 Multiverse Gateway for Astar & Shiden Ecosystem",
+  "description": "The wallet connects the Astar & Shiden Ecosystem to other ecosystems.",
   "homepage_url": "https://twitter.com/ArthWallet",
-  "name": "[MGBtnsWD]ArthWallet - Astar Extension Wallet",
-  "short_name": "[MGBtnsWD]ArthWallet",
+  "name": "ArthWallet - Native wallet on AstarNetwork",
+  "short_name": "ArthWallet",
   "manifest_version": 2,
   "permissions": [
     "storage",
-    "tabs"
+    "tabs",
+    "alarms"
   ],
   "background": {
     "scripts": [
@@ -16,7 +17,7 @@
     "persistent": true
   },
   "browser_action": {
-    "default_title": "[MGBtnsWD]ArthWallet",
+    "default_title": "ArthWallet",
     "default_popup": "index.html"
   },
   "content_scripts": [

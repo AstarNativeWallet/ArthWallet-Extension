@@ -95,22 +95,21 @@ function FormatBalance ({ children, className = '', format, formatIndex, isShort
 
   // labelPost here looks messy, however we ensure we have one less text node
   return (
-      <span
-        className='ui--FormatBalance-value'
-        data-testid='balance-summary'
-      >{
-          valueFormatted
-            ? splitFormat(valueFormatted, labelPost, isShort)
-            : value
-              ? value === 'all'
-                ? <>{t<string>('everything')}{labelPost || ''}</>
-                : applyFormat(value, formatInfo, withCurrency, withSi, isShort, labelPost)
-              : applyFormat(BN_ZERO, formatInfo, withCurrency, withSi, isShort, labelPost)
-        }</span>
+    <span
+      className='ui--FormatBalance-value'
+      data-testid='balance-summary'
+    >{
+        valueFormatted
+          ? splitFormat(valueFormatted, labelPost, isShort)
+          : value
+            ? value === 'all'
+              ? <>{t<string>('everything')}{labelPost || ''}</>
+              : applyFormat(value, formatInfo, withCurrency, withSi, isShort, labelPost)
+            : applyFormat(BN_ZERO, formatInfo, withCurrency, withSi, isShort, labelPost)
+      }</span>
   );
 }
 
 export default React.memo(styled(FormatBalance)`
 
 `);
-

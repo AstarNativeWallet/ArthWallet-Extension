@@ -60,12 +60,14 @@ class KoniCron {
   }
 
   init() {
+    console.log('WatchTest KoniCron.init()');
     this.addCron('refreshPrice', this.refreshPrice, _constants.CRON_REFRESH_PRICE_INTERVAL);
     this.addCron('recoverAPI', this.recoverAPI, _constants.CRON_AUTO_RECOVER_DOTSAMA_INTERVAL, false);
 
     _handlers.state.getCurrentAccount(currentAccountInfo => {
       if (currentAccountInfo) {
         this.addCron('refreshBalance', this.refreshBalance(currentAccountInfo.address), _constants.CRON_AUTO_RECOVER_DOTSAMA_INTERVAL);
+        console.log('WatchTest KoniCron.init().getCurrentAcccount()');
         this.addCron('refreshNft', this.refreshNft(currentAccountInfo.address), _constants.CRON_REFRESH_NFT_INTERVAL);
         this.addCron('refreshStakingReward', this.refreshStakingReward(currentAccountInfo.address), _constants.CRON_REFRESH_STAKING_REWARD_INTERVAL);
         this.addCron('refreshHistory', this.refreshHistory(currentAccountInfo.address), _constants.CRON_REFRESH_HISTORY_INTERVAL);
@@ -100,7 +102,7 @@ class KoniCron {
       let {
         address
       } = _ref2;
-      console.log('Auto recovering API');
+      console.log('WatchTest recoverAPI');
       Object.values(_handlers.dotSamaAPIMap).forEach(apiProp => {
         if (apiProp.apiRetry && apiProp.apiRetry > _constants.DOTSAMA_MAX_CONTINUE_RETRY) {
           apiProp.recoverConnect && apiProp.recoverConnect();
@@ -114,8 +116,9 @@ class KoniCron {
     return () => {
       var _this$subscriptions2;
 
-      console.log('Refresh Balance state');
+      console.log('WatchTest refreshBalance');
       ((_this$subscriptions2 = this.subscriptions) === null || _this$subscriptions2 === void 0 ? void 0 : _this$subscriptions2.subscribeBalancesAndCrowdloans) && this.subscriptions.subscribeBalancesAndCrowdloans(address);
+      this.subscriptions.balanceSubscriptionUnSubscribe();
     };
   }
 
