@@ -239,6 +239,7 @@ export default React.memo(styled(NftContainer)(({ theme }: Props) => `
 
   .total-title {
     margin-bottom: 20px;
+    margin-top:20px;
   }
 
   .grid-container {

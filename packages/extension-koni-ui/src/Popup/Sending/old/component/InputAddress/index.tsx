@@ -562,7 +562,7 @@ const ExportedComponent = withMulti(
   }
 
   .ui--AddressSearch.visible {
-    z-index: 3;
+    z-index: 7;
 
     > .text {
       opacity: 0.5;

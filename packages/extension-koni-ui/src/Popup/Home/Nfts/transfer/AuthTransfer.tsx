@@ -8,7 +8,7 @@ import styled from 'styled-components';
 import { BackgroundWindow, RequestNftForceUpdate } from '@polkadot/extension-base/background/KoniTypes';
 import { AccountJson } from '@polkadot/extension-base/background/types';
 import { reformatAddress } from '@polkadot/extension-koni-base/utils/utils';
-import { Spinner } from '@polkadot/extension-koni-ui/components';
+import { Button, Spinner } from '@polkadot/extension-koni-ui/components';
 import Modal from '@polkadot/extension-koni-ui/components/Modal';
 import Output from '@polkadot/extension-koni-ui/components/Output';
 import useToast from '@polkadot/extension-koni-ui/hooks/useToast';
@@ -19,6 +19,7 @@ import { AddressProxy } from '@polkadot/extension-koni-ui/Popup/Sending/old/type
 import { cacheUnlock } from '@polkadot/extension-koni-ui/Popup/Sending/old/util';
 import { RootState } from '@polkadot/extension-koni-ui/stores';
 import { ThemeProps } from '@polkadot/extension-koni-ui/types';
+import { t } from 'i18next';
 
 const bWindow = chrome.extension.getBackgroundPage() as BackgroundWindow;
 const { keyring } = bWindow.pdotApi;
@@ -255,12 +256,6 @@ function AuthTransfer ({ chain, className, collectionId, nftItem, recipientAddre
             >
               Authorize transaction
             </div>
-            <div
-              className={'close-button-confirm'}
-              onClick={hideConfirm}
-            >
-              x
-            </div>
           </div>
           <div
             className={'auth-container'}
@@ -293,17 +288,25 @@ function AuthTransfer ({ chain, className, collectionId, nftItem, recipientAddre
                 Your balance is too low to cover fees.
               </div>
             }
+            <div className={'kn-l-submit-wrapper'}>
+            <Button
+              className={'cancel-btn'}
+              onClick={hideConfirm}
+            >
+              {t<string>('cancel')}
+            </Button>
             <div
               className={'submit-btn'}
               // eslint-disable-next-line @typescript-eslint/no-misused-promises
               onClick={handleSignAndSubmit}
-              style={{ marginTop: !balanceError ? '40px' : '0', background: loading ? 'rgba(0, 75, 255, 0.25)' : '#004BFF', cursor: loading ? 'default' : 'pointer' }}
+              style={{ background: loading ? 'rgba(40, 78, 169, 0.5)' : 'rgba(40, 78, 169, 1)', cursor: loading ? 'default' : 'pointer' }}
             >
               {
                 !loading
-                  ? 'Sign and Submit'
+                  ? <span className='_sign'>{t<string>('Sign and Submit')}</span>
                   : <Spinner className={'spinner-loading'} />
               }
+            </div>
             </div>
           </div>
         </div>
@@ -348,12 +351,11 @@ export default React.memo(styled(AuthTransfer)(({ theme }: Props) => `
   }
 
   .submit-btn {
-    position: relative;
-    border-radius: 8px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
+    display: inline-block;
+    height: 48px;
+    width: 256px;
+    border-radius: 6px;
+    background: rgba(40, 78, 169, 1);
     color: #FFFFFF;
     cursor: pointer;
   }
@@ -392,7 +394,41 @@ export default React.memo(styled(AuthTransfer)(({ theme }: Props) => `
   }
 
   .header-title-confirm {
-    width: 85%;
+    width: 100%;
     text-align: center;
+  }
+  .cancel-btn {
+    display: inline-block;
+    margin-right: 28px;
+    margin-left: 15px;
+    height: 48px;
+    width: 144px;
+    background: rgba(48, 59, 87, 1);
+    border-radius: 6px;
+  }
+  ._sign {
+    font-family: 'Lexend';
+    font-style: normal;
+    font-weight: 500;
+    line-height: 100%;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.03em;
+    margin-left: 65px;
+    margin-top:15px;
+    color: #FFFFFF;
+  }
+  .kn-l-submit-wrapper {
+    display:flex;
+    z-index:6;
+    position: sticky;
+    bottom: -15px;
+    padding: 15px 0px;
+    margin-top: 20px;
+    margin-left: -15px;
+    margin-bottom: -15px;
+    margin-right: -15px;
+    background-color: ${theme.background};
   }
 `));

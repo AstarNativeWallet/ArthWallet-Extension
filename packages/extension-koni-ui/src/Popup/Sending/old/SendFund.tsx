@@ -386,7 +386,6 @@ function SendFund ({ api, apiUrl, className = '', currentAccount, isEthereum, ne
             label={t<string>('Send to address')}
             // isDisabled={!!propRecipientId}
             */}
-          
           <div className='subtitle-transfer'>
             {t<string>('Transfer')}
           </div>

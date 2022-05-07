@@ -218,6 +218,7 @@ async function subscribeWithAccountMulti(addresses, networkKey, networkAPI, call
 
 
   const balanceItem = {
+    {/*
     state: _handlers.state.getBalance().details[networkKey].state || _KoniTypes.APIItemState.PENDING,
     free: _handlers.state.getBalance().details[networkKey].free || '0',
     reserved: _handlers.state.getBalance().details[networkKey].reserved || '0',
@@ -231,7 +232,29 @@ async function subscribeWithAccountMulti(addresses, networkKey, networkAPI, call
   let unsub;
   let unsub2;
   console.log(`WatchTest balanceJson.details[${networkKey}]: `, balanceJson.details[networkKey]);
+*/}
+    state: balanceJson.details[networkKey].state || _KoniTypes.APIItemState.PENDING,
+    free: balanceJson.details[networkKey].free || '0',
+    reserved: balanceJson.details[networkKey].reserved || '0',
+    miscFrozen: balanceJson.details[networkKey].miscFrozen || '0',
+    feeFrozen: balanceJson.details[networkKey].feeFrozen || '0',
+    children: balanceJson.details[networkKey].children || undefined
+  }; // console.log('Arth subscribeWithAccountMulti addresses: ', addresses[0]);
 
+  if (networkKey === 'astar') {
+    console.log('Arth subscribeWithAccountMulti networkKey: ', networkKey);
+    console.log('Arth subscribeWithAccountMulti addresses: ', addresses[0]);
+
+    const astarBalance = _web.default.utils.fromWei(balanceJson.details[networkKey].free, 'ether').substring(0, 5);
+
+    console.log('Arth subscribeWithAccountMulti free: ', astarBalance);
+
+    if (astarBalance !== '0') {
+      chrome.storage.local.set({
+        availableNativeBalance: addresses[0] + '_' + astarBalance
+      }, function () {});
+    }
+  }
   async function getBalanceAstar(networkKey) {
     let wssURL = '';
 
