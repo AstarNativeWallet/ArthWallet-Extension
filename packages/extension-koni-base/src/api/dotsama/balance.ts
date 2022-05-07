@@ -85,7 +85,7 @@ function subscribeERC20Interval (addresses: string[], networkKey: string, api: A
           decimals
         };
       } catch (err) {
-        console.log('There is problem when fetching ' + symbol + ' token balance', err);
+        // console.log('There is problem when fetching ' + symbol + ' token balance', err);
       }
     });
 
@@ -270,8 +270,8 @@ async function subscribeWithAccountMulti (addresses: string[], networkKey: strin
       balanceItem.miscFrozen = miscFrozen;
       balanceItem.feeFrozen = feeFrozen;
 
-      console.log('WatchTest unsub2 astarBalanceItem is: ', balanceItem);
-      console.log('WatchTest balanceItem.free !== "0" is: ', balanceItem.free !== '0');
+      // console.log('WatchTest unsub2 astarBalanceItem is: ', balanceItem);
+      // console.log('WatchTest balanceItem.free !== "0" is: ', balanceItem.free !== '0');
 
       if (balanceItem.free !== '0') {
         // state.setBalanceItem(networkKey, balanceItem);
@@ -280,11 +280,11 @@ async function subscribeWithAccountMulti (addresses: string[], networkKey: strin
         return;
       }
 
-      console.log('WatchTest balanceItem.free === "0"');
-      console.log('WatchTest after return astarBalanceItem is: ', balanceItem);
+      // console.log('WatchTest balanceItem.free === "0"');
+      // console.log('WatchTest after return astarBalanceItem is: ', balanceItem);
 
       unsub2 = () => {
-        console.log('WatchTest unsub2 balanceItem.free === "0"');
+        // console.log('WatchTest unsub2 balanceItem.free === "0"');
       };
     } else if (moonbeamBaseChains.indexOf(networkKey) > -1) {
       unsub2 = subscribeERC20Interval(addresses, networkKey, networkAPI.api, balanceItem, callback);
@@ -334,7 +334,7 @@ async function subscribeWithAccountMulti (addresses: string[], networkKey: strin
 
 export async function subscribeEVMBalance (balanceJson: BalanceJson, networkKey: string, api: ApiPromise, addresses: string[]): Promise<BalanceItem> {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  console.log(`balanceJson.details[${networkKey}]: `, balanceJson.details[networkKey]);
+  // console.log(`balanceJson.details[${networkKey}]: `, balanceJson.details[networkKey]);
 
   const balanceItem: BalanceItem = {
     state: balanceJson.details[networkKey].state || APIItemState.PENDING,
@@ -361,7 +361,7 @@ export function subscribeBalance (addresses: string[], dotSamaAPIMap: Record<str
     const networkAPI = await apiProps.isReady;
     const useAddresses = ethereumChains.indexOf(networkKey) > -1 ? evmAddresses : substrateAddresses;
 
-    console.log('WatchTest useAddresses: ', useAddresses);
+    // console.log('WatchTest useAddresses: ', useAddresses);
 
     if (!useAddresses || useAddresses.length === 0) {
       // Return zero balance if not have any address
