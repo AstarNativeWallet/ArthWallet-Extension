@@ -298,23 +298,15 @@ function WithdrawEvmDeposit ({ api, apiUrl, currentAccount, networkKey, setWrapp
     setWrapperClass('');
   }, [setWrapperClass]);
 
-  const [availableNativeBalance, setAvailableNativeBalance] = useState<string | null>(null);
-  chrome.storage.local.get(['availableNativeBalance'], function (result) {
-    if (typeof result.availableNativeBalance === 'string') {
-      setAvailableNativeBalance(result.availableNativeBalance);
-//      console.log('Arth value_data: ', availableNativeBalance);
-    } else {
-      setAvailableNativeBalance('0');
-    }
+  interface AddressBalances {
+    [address: string]: string;
+  }
+  const [addressBalances, setAddressBalances] = useState<AddressBalances>({});
+  chrome.storage.local.get(['addressBalances'], function (result) {
+      setAddressBalances(result.addressBalances);
+      //console.log('Arth result.addressBalances: ', result.addressBalances);
   });
 
-  let isAvailableFaucet = false;
-  if (availableNativeBalance === '0' || (availableNativeBalance?.split('_')[0] === senderId && availableNativeBalance?.split('_')[1] === '0')) {
-    isAvailableFaucet = true;
-  }
-  console.log('Arth Withdraw availableNativeBalance[0]: ', availableNativeBalance?.split('_')[0]);
-  console.log('Arth Withdraw availableNativeBalance[1]: ', availableNativeBalance?.split('_')[1]);
-  console.log('Arth Withdraw isAvailableFaucet: ', isAvailableFaucet);
   
   return (
     <>
@@ -332,7 +324,7 @@ function WithdrawEvmDeposit ({ api, apiUrl, currentAccount, networkKey, setWrapp
       <div className='info'>
           <h3>Attention</h3>
 
-          {isAvailableFaucet
+          {(addressBalances && senderId && addressBalances[senderId] === '0')
             ? (
               <><p>Make sure you are not trying
                 to send your assets to an exchange.

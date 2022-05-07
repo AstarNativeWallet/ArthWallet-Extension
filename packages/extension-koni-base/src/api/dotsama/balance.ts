@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 import Web3 from 'web3';
 import { Contract } from 'web3-eth-contract';
 
-import { ApiPromise } from '@polkadot/api';
+import { ApiPromise, WsProvider } from '@polkadot/api';
 import { UnsubscribePromise } from '@polkadot/api/types';
 import { DeriveBalancesAll } from '@polkadot/api-derive/types';
 import { APIItemState, ApiProps, BalanceChildItem, BalanceItem, TokenBalanceRaw, TokenInfo } from '@polkadot/extension-base/background/KoniTypes';
@@ -20,6 +20,7 @@ import { categoryAddresses, sumBN } from '@polkadot/extension-koni-base/utils/ut
 import { AccountInfo } from '@polkadot/types/interfaces';
 import { BN, u8aToHex } from '@polkadot/util';
 import { addressToEvm } from '@polkadot/util-crypto';
+
 
 console.log('ethereumChains: '); console.log(ethereumChains);
 console.log('moonbeamBaseChains: '); console.log(moonbeamBaseChains);
@@ -182,6 +183,75 @@ function subscribeTokensBalance (addresses: string[], networkKey: string, api: A
   return unsubAll;
 }
 
+interface AddressBalances {
+  [address: string]: string;
+}
+let addressBalances: AddressBalances = {};
+
+function subscribeWithAccountAstar (address: string, networkKey: string) {
+
+  console.log('Arth subscribeWithAccountAstar addresses: ', address);
+
+
+  if (networkKey === 'astar') {
+
+    async function getNativeBalance () {
+      const provider = new WsProvider('wss://rpc.astar.network');
+      const api = await ApiPromise.create({ provider });
+      let { data: { free: previousFree } } = await api.query.system.account(address);
+
+      let balance = new BN(previousFree).toString();
+      let astarBalance = Web3.utils.fromWei(balance, 'ether').substring(0, 5);
+
+      addressBalances[address] = astarBalance;
+      console.log('Arth subscribeWithAccountAstar astarBalance: ', address, ' / ', astarBalance);
+
+      chrome.storage.local.set({addressBalances}, function () {});
+      console.log('Arth subscribeWithAccountAstar addressBalances: ', addressBalances);
+  
+    }
+    getNativeBalance().catch(console.error).finally(() => process.exit());
+
+  } else if (networkKey === 'astarEvm') {
+
+    async function getBalanceAstarEvm (networkKey: string, address: string) {
+
+      let wssURL = '';
+    
+      if (networkKey === 'astarEvm' || networkKey === 'astar') {
+        wssURL = 'wss://rpc.astar.network';
+      } else if (networkKey === 'shidenEvm') {
+        wssURL = 'wss://rpc.shiden.astar.network';
+      } else if (networkKey === 'shibuyaEvm') {
+        wssURL = 'wss://rpc.shibuya.astar.network';
+      }
+  
+      let astarBalance = '0';
+  
+      if (networkKey === 'astar') {
+        const web3 = new Web3(new Web3.providers.WebsocketProvider(wssURL));
+        const balance = await web3.eth.getBalance(address);   
+        astarBalance = web3.utils.fromWei(balance, 'ether').substring(0, 5);
+      } else if (networkKey === 'astarEvm') {
+        const web3 = new Web3(new Web3.providers.WebsocketProvider(wssURL));
+        const balance = await web3.eth.getBalance(address);   
+        astarBalance = web3.utils.fromWei(balance, 'ether').substring(0, 5);
+      }
+
+      addressBalances[address] = astarBalance;
+      console.log('Arth subscribeWithAccountAstar: ' + networkKey + ', ' + address + ', ' + astarBalance);
+
+      chrome.storage.local.set({addressBalances}, function () {});
+      console.log('Arth subscribeWithAccountAstar addressBalances: ', addressBalances);
+
+    }
+
+    getBalanceAstarEvm('astarEvm', address);
+
+  }
+
+}
+
 function subscribeWithAccountMulti (addresses: string[], networkKey: string, networkAPI: ApiProps, callback: (networkKey: string, rs: BalanceItem) => void) {
   // @ts-ignore
   let unsub: UnsubscribePromise;
@@ -201,18 +271,9 @@ function subscribeWithAccountMulti (addresses: string[], networkKey: string, net
     children: balanceJson.details[networkKey].children || undefined
   };
 
-  //console.log('Arth subscribeWithAccountMulti addresses: ', addresses[0]);
   if (networkKey === 'astar') {
-    console.log('Arth subscribeWithAccountMulti networkKey: ', networkKey);
-    console.log('Arth subscribeWithAccountMulti addresses: ', addresses[0]);
-    const astarBalance = Web3.utils.fromWei(balanceJson.details[networkKey].free, 'ether').substring(0, 5);
-
-    console.log('Arth subscribeWithAccountMulti free: ', astarBalance);
-
-    if (astarBalance !== '0') {
-      chrome.storage.local.set({
-        'availableNativeBalance': (addresses[0] + '_' + astarBalance)
-      }, function () {});
+    for (let address of addresses) {
+      subscribeWithAccountAstar (address, networkKey);
     }
   }
 
@@ -353,6 +414,10 @@ export function subscribeEVMBalance (networkKey: string, api: ApiPromise, addres
   getBalance();
   const interval = setInterval(getBalance, ASTAR_REFRESH_BALANCE_INTERVAL);
   const unsub2 = subscribeERC20Interval(addresses, networkKey, api, balanceItemEVM, callback);
+
+  for (let address of addresses) {
+    subscribeWithAccountAstar (address, networkKey);
+  }
 
   // console.log(balanceItemEVM);
 

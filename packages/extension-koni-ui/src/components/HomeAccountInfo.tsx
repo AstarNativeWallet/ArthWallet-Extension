@@ -26,21 +26,6 @@ import useTranslation from '../hooks/useTranslation';
 import getParentNameSuri from '../util/getParentNameSuri';
 import { AccountContext } from './contexts';
 
-//import AvailableNativeNum from '../Popup/Sending/old/component/AvailableNativeNum';
-//import { getWeb3Api } from '@polkadot/extension-koni-base/api/web3/web3';
-
-
-import Web3 from 'web3';
-//import { BN, u8aToHex } from '@polkadot/util';
-//import { addressToEvm } from '@polkadot/util-crypto';
-//import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-
-import { ApiPromise, WsProvider } from '@polkadot/api';
-import { AccountJson } from '@polkadot/extension-base/background/types';
-import { useCall } from '@polkadot/extension-koni-ui/Popup/Sending/old/hook/useCall';
-import { DeriveBalancesAll } from '@polkadot/api-derive/types';
-import { BN } from '@polkadot/util';
-
 export interface Props {
   address?: string | null;
   className?: string;
@@ -55,16 +40,9 @@ export interface Props {
   isShowAddress?: boolean;
   isShowBanner?: boolean;
   iconSize?: number;
-
-  api: ApiPromise;
-  apiUrl: string;
-  currentAccount?: AccountJson | null;
-  isEthereum: boolean;
-  networkKey: string;
-
 }
 
-function HomeAccountInfo ({ api, apiUrl, address, className, genesisHash, iconSize = 32, isExternal, isHardware, isShowAddress = true, isShowBanner = true, name, parentName, showCopyBtn = true, suri, type: givenType }: Props): React.ReactElement<Props> {
+function HomeAccountInfo ({ address, className, genesisHash, iconSize = 32, isExternal, isHardware, isShowAddress = true, isShowBanner = true, name, parentName, showCopyBtn = true, suri, type: givenType }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { accounts } = useContext(AccountContext);
   const [{ account,
@@ -79,26 +57,6 @@ function HomeAccountInfo ({ api, apiUrl, address, className, genesisHash, iconSi
   const allAccountLogo = useSelector((state: RootState) => state.allAccount.allAccountLogo);
 
   const _isAccountAll = address && isAccountAll(address);
-
-
-
-  if (formatted && formatted !== 'ALL') {
-
-    console.log('Arth HomeAccountInfo formatted: ', formatted);
-
-    async function getNativeBalance () {
-      const provider = new WsProvider('wss://rpc.astar.network');
-      const api = await ApiPromise.create({ provider });
-      let { data: { free: previousFree } } = await api.query.system.account(formatted);
-
-      let balance = new BN(previousFree).toString();
-      let astarBalance = Web3.utils.fromWei(balance, 'ether').substring(0, 5);
-      console.log('Arth has a astarBalance: ', formatted, ' / ', astarBalance);
-
-    }
-    getNativeBalance().catch(console.error).finally(() => process.exit());
-
-  }
 
   useEffect((): void => {
     if (!address) {
@@ -164,120 +122,14 @@ function HomeAccountInfo ({ api, apiUrl, address, className, genesisHash, iconSi
 
   const parentNameSuri = getParentNameSuri(parentName, suri);
 
-  const [availableNativeBalance, setAvailableNativeBalance] = useState<string | null>(null);
-  const [availableEVMBalance, setAvailableEVMBalance] = useState<string | null>(null);
-
-  async function getBalanceAstarEvm (networkKey: string, address: string) {
-
-    let wssURL = '';
-  
-    if (networkKey === 'astarEvm' || networkKey === 'astar') {
-      wssURL = 'wss://rpc.astar.network';
-    } else if (networkKey === 'shidenEvm') {
-      wssURL = 'wss://rpc.shiden.astar.network';
-    } else if (networkKey === 'shibuyaEvm') {
-      wssURL = 'wss://rpc.shibuya.astar.network';
-    }
-
-    let astarBalance = '0';
-
-    if (networkKey === 'astar') {
-      const web3 = new Web3(new Web3.providers.WebsocketProvider(wssURL));
-      const balance = await web3.eth.getBalance(address);   
-      astarBalance = web3.utils.fromWei(balance, 'ether').substring(0, 5);
-    } else if (networkKey === 'astarEvm') {
-      const web3 = new Web3(new Web3.providers.WebsocketProvider(wssURL));
-      const balance = await web3.eth.getBalance(address);   
-      astarBalance = web3.utils.fromWei(balance, 'ether').substring(0, 5);
-    }
-    console.log('Arth await balance: ' + networkKey + ', SS58:' + address + ' -> H160:' + address + ', ' + astarBalance);
-
-    chrome.storage.local.set({
-      'availableEVMBalance': (address + '_' + astarBalance)
-    }, function () {});
-  }
-
-  console.log('Arth networkInfo: ', networkInfo?.chain);
-
-  if (networkInfo?.chain === 'Astar') {
-    //getBalanceAstarEvm('astar', (address || '').toString());
-  } else if (networkInfo?.chain === 'Astar - EVM') {
-    getBalanceAstarEvm('astarEvm', (address || '').toString());
-  }
-
-/*  
-  chrome.storage.local.get(['availableNativeBalance'], function (result) {
-    if (typeof result.availableNativeBalance === 'string') {
-      setAvailableNativeBalance(result.availableNativeBalance);
-      console.log('Arth value_data: ', availableNativeBalance);
-    } else {
-      setAvailableNativeBalance('0');
-    }
-  });
-  chrome.storage.local.get(['availableEVMBalance'], function (result) {
-    if (typeof result.availableEVMBalance === 'string') {
-      setAvailableEVMBalance(result.availableEVMBalance);
-      console.log('Arth value_data: ', availableEVMBalance);
-    } else {
-      setAvailableEVMBalance('0');
-    }
-  });
-*/
-
-
-/*
-  type AddressBalances = {
+  interface AddressBalances {
     [address: string]: string;
   }
-
-  let addreeBalances: AddressBalances = {};
-  //addreeBalances['5FURcxweuwfwJkC39TNR9zu8K8DJnaf62q5hcmCw5to6Febh']    = '1000';
-  //addreeBalances['5FC4kKBg4sgowvA4uQmSaqLaVpRJC8mJaJ6W3Y8C2xYtWazQ']    = '2000';
-  //addreeBalances['0x3908f5b9f831c1e74C0B1312D0f06126a58f4Ac0']    = '3000';
-    if (formatted) {
-      addreeBalances[formatted]    = '3000';
-      chrome.storage.local.set({addreeBalances}, function(){
-      });
-    // ここにset終わったあとの処理
-  }
-
-  const [addressBalances, setAddressBalances] = useState<AddressBalances>();
+  const [addressBalances, setAddressBalances] = useState<AddressBalances>({});
   chrome.storage.local.get(['addressBalances'], function (result) {
     setAddressBalances(result.addressBalances);
-    console.log('Arth result.addressBalances: ', result.addressBalances);
+    //console.log('Arth result.addressBalances: ', result.addressBalances);
   });
-
-  console.log('Arth formatted: ', formatted);
-  console.log('Arth addreeBalances: ', addreeBalances);
-
-  if (addressBalances?.address) {
-    console.log('Arth addressBalances.address: ', addressBalances.address);
-  }
-*/
-
-
-
-
-/*
-chrome.storage.local.get(['addressBalances'], function (result) {
-//    if (typeof result.addreeBalances === 'string') {
-    setAddressBalances(result.addressBalances);
-//    console.log('Arth addreeBalances: ', result.addreeBalances);
-//    } else {
-//      setAvailableEVMBalance('0');
-//    }
-  });
-*/
-
-  //console.log('Arth addreeBalances 2: ', addreeBalances[(address || '').toString()]);
-
-  
-
-/*
-  chrome.storage.local.get(function(allresult){
-    console.log('Arth chrome: ', allresult);
-  });
-*/
 
   return (
     <div className={className}>
@@ -343,27 +195,22 @@ chrome.storage.local.get(['addressBalances'], function (result) {
               {networkInfo.chain.replace(' Relay Chain', '')}
             </div>
           )} */}
+          
           <div
             className='account-info-banner account-info-chain'
           >
-
-          { /*(availableNativeBalance !== null && (address || '').toString() === (availableNativeBalance.split('_')[0]))
-            ? <p className='symbol'>{availableNativeBalance.split('_')[1]} ASTR</p>
-              : (availableEVMBalance !== null && (address || '').toString() === (availableEVMBalance.split('_')[0]))
-                ? <p className='symbol'>{availableEVMBalance.split('_')[1]} ASTR</p>
-                  : <p className='symbol'>0 ASTR</p> */
-          }
-
             { /*<BalanceVal
               startWithSymbol
               symbol={'$'}
               value ={'x'}
                       /> */}
 
-          { /*(address || '').toString()*/ }
-          { /*addressBalances[(address || '').toString()]*/ }
-
+          { (_isAccountAll) ? <p></p> : (addressBalances)
+            ? <p className='symbol'>{addressBalances[(address || '').toString()]} ASTR</p>
+            : <p className='symbol'>0 ASTR</p>
+          }
           </div>
+
           <div className='account-info-address-display'>
             {isShowAddress && <div
               className='account-info-full-address'

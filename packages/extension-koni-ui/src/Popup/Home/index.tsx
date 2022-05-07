@@ -873,7 +873,9 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
   .home__account-qr-modal .subwallet-modal {
     max-width: 460px;
   }
-
+  .WithdrawButton-sc-nrp1nq-0 a {
+    color: #f0f0f0;
+  }
 
   .home__back-btn {
     color: ${theme.buttonTextColor2};
