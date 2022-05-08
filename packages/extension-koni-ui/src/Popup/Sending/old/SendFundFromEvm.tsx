@@ -229,7 +229,8 @@ function SendFundFromEvm ({ api, apiUrl, className = '', currentAccount, handler
             .transfer(toId, balances.availableBalance)
             .paymentInfo(fromId)
             .then(({ partialFee }): void => {
-              const adjFee = partialFee.muln(110).div(BN_HUNDRED);
+              // const adjFee = partialFee.muln(110).div(BN_HUNDRED);
+              const adjFee = partialFee.muln(1100).div(BN_HUNDRED);
               const maxTransfer = balances.availableBalance.sub(adjFee);
 
               if (isSync) {

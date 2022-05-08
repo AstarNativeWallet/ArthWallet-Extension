@@ -100,7 +100,7 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
   };
 
   const renderContent = () => {
-    console.log('ArthSwap WithdrawEvmDeposit content rendering.');
+    console.log('Arth WithdrawEvmDeposit content rendering.');
 
     if (currentAccount && isAccountAll(currentAccount.address)) {
       return notSupportSendFund('ACCOUNT');
@@ -132,7 +132,6 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
     <div className={`-wrapper ${className} ${wrapperClass}`}>
       <Header
         showAdd
-        showCancelButton
         showSearch
         showSettings
         showSubHeader
@@ -156,40 +155,46 @@ function WithdrawEvmDeposit ({ api, apiUrl, currentAccount, networkKey, setWrapp
   const [displayEvmDepositAmount, setDisplayEvmDepositAmount] = useState<number | null>(null);
   const { isShowTxResult } = txResult;
 
-  chrome.storage.local.get(['displayEvmDepositAmount'], function (result) {
-    if (typeof result.displayEvmDepositAmount === 'number') {
-      setDisplayEvmDepositAmount(result.displayEvmDepositAmount);
-    } else {
-      setDisplayEvmDepositAmount(0);
-    }
-  });
+  setTimeout((): void => {
+    chrome.storage.local.get(['displayEvmDepositAmount'], function (result) {
+      if (typeof result.displayEvmDepositAmount === 'number') {
+        setDisplayEvmDepositAmount(result.displayEvmDepositAmount);
+      } else {
+        setDisplayEvmDepositAmount(0);
+      }
+    });
+  }, 500);
 
   const txParams: unknown[] | (() => unknown[]) | null =
     useMemo(() => {
       if (typeof propSenderId !== 'undefined') {
         const h160address = buildEvmAddress(propSenderId);
 
-        chrome.storage.local.get(['evmDepositAmount'], function (result) {
-          if (typeof result.evmDepositAmount === 'string') {
-            const withdrawEvmDepositAmount: BN = new BN(result.evmDepositAmount);
+        setTimeout((): void => {
+          chrome.storage.local.get(['evmDepositAmount'], function (result) {
+            if (typeof result.evmDepositAmount === 'string') {
+              const withdrawEvmDepositAmount: BN = new BN(result.evmDepositAmount);
 
-            setEvmDepositAmount(withdrawEvmDepositAmount);
-          } else {
-            console.log('evmDepositAmount is not valid type.', result.evmDepositAmount);
-          }
-        });
+              setEvmDepositAmount(withdrawEvmDepositAmount);
+            } else {
+              console.log('evmDepositAmount is not valid type.', result.evmDepositAmount);
+            }
+          });
+        }, 500);
 
-        chrome.storage.local.get(['evmTransferbleAmount'], function (result) {
-          if (typeof result.evmTransferbleAmount === 'string') {
-            const evmTransferbleAmount: BN = new BN(result.evmTransferbleAmount);
+        setTimeout((): void => {
+          chrome.storage.local.get(['evmTransferbleAmount'], function (result) {
+            if (typeof result.evmTransferbleAmount === 'string') {
+              const evmTransferbleAmount: BN = new BN(result.evmTransferbleAmount);
 
-            console.log('Arth evmTransferbleAmount is not valid type.', evmTransferbleAmount);
+              console.log('Arth evmTransferbleAmount is not valid type.', evmTransferbleAmount);
 
-            // setEvmDepositAmount(withdrawEvmDepositAmount);
-          } else {
-            console.log('Arth evmTransferbleAmount is not valid type.', result.evmDepositAmount);
-          }
-        });
+              // setEvmDepositAmount(withdrawEvmDepositAmount);
+            } else {
+              console.log('Arth evmTransferbleAmount is not valid type.', result.evmDepositAmount);
+            }
+          });
+        }, 500);
 
         return isFunction(api.tx.evm.withdraw) ? [h160address, evmDepositAmount] : null;
       }
@@ -303,33 +308,34 @@ function WithdrawEvmDeposit ({ api, apiUrl, currentAccount, networkKey, setWrapp
     [address: string]: string;
   }
   const [addressBalances, setAddressBalances] = useState<AddressBalances>({});
-  chrome.storage.local.get(['addressBalances'], function (result) {
+
+  setTimeout((): void => {
+    chrome.storage.local.get(['addressBalances'], function (result) {
       setAddressBalances(result.addressBalances);
-      //console.log('Arth result.addressBalances: ', result.addressBalances);
-  });
-  
+      // console.log('Arth result.addressBalances: ', result.addressBalances);
+    });
+  }, 500);
+
   return (
     <>
       {!isShowTxResult
-      ? (
-      <div className='withdraw-balance-wrapper'>
-        <a>Your withdrawable EVM Deposit Amount is</a>
-        {displayEvmDepositAmount !== null && displayEvmDepositAmount > 0
-          ? <p className='amount'>{displayEvmDepositAmount} ASTR</p>
-          : <p className='amount'>0 ASTR</p>
-        }
-
-      <div className='info'>
-          <h3>Attention</h3>
-
-          {(addressBalances && senderId && addressBalances[senderId] === '0')
-            ? (
-              <><p>Make sure you are not trying
+        ? (
+          <div className='withdraw-balance-wrapper'>
+            <a>Your withdrawable EVM Deposit Amount is</a>
+            {displayEvmDepositAmount !== null && displayEvmDepositAmount > 0
+              ? <p className='amount'>{displayEvmDepositAmount} ASTR</p>
+              : <p className='amount'>0 ASTR</p>
+            }
+            <div className='info'>
+              <h3>Attention</h3>
+              {(addressBalances && senderId && addressBalances[senderId] === '0')
+                ? (
+                  <><p>Make sure you are not trying
                 to send your assets to an exchange.
                 If you transfer funds from this address
                 to an exchange, your funds will be lost.</p><Button
                     className={'faucet-btn'}
-                    to='/'
+                    href={'https://portal.astar.network/#/'}
                   >
                     {t<string>('Faucet')}
                   </Button></>
@@ -344,7 +350,7 @@ function WithdrawEvmDeposit ({ api, apiUrl, currentAccount, networkKey, setWrapp
                 href='https://medium.com/astar-network/using-astar-network-account-between-substrate-and-evm-656643df22a0'
                 rel='noreferrer'
                 target='_blank'
-                                      >See more</a></p>
+              >See more</a></p>
               </p>
 
             </div>

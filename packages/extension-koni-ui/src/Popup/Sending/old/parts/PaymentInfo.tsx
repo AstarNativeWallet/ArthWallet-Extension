@@ -47,7 +47,7 @@ function PaymentInfo ({ accountId, api, apiUrl, className = '', extrinsic, isBus
         } catch (error) {
           console.error(error);
         }
-      }, 0);
+      }, 100);
   }, [api, accountId, extrinsic, mountedRef]);
 
   if (!dispatchInfo || !extrinsic) {

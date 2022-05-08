@@ -12,10 +12,9 @@ import React, { useCallback, useContext, useEffect, useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
+
 // import AvailableNativeNum from '../Popup/Sending/old/component/AvailableNativeNum';
 // import { getWeb3Api } from '@polkadot/extension-koni-base/api/web3/web3';
-import Web3 from 'web3';
-
 import { reformatAddress } from '@polkadot/extension-koni-base/utils/utils';
 import allAccountLogoDefault from '@polkadot/extension-koni-ui/assets/all-account-icon.svg';
 import cloneLogo from '@polkadot/extension-koni-ui/assets/clone.svg';
@@ -133,11 +132,16 @@ function HomeAccountInfo ({ address, className, genesisHash, iconSize = 32, isEx
     [address: string]: string;
   }
   const [addressBalances, setAddressBalances] = useState<AddressBalances>({});
-  chrome.storage.local.get(['addressBalances'], function (result) {
-    setAddressBalances(result.addressBalances);
-    //console.log('Arth result.addressBalances: ', result.addressBalances);
-  });
 
+  setTimeout((): void => {
+  // useEffect((): void => {
+    chrome.storage.local.get(['addressBalances'], function (result) {
+      setAddressBalances(result.addressBalances);
+      // console.log('Arth result.addressBalances: ', result.addressBalances);
+    });
+  // }, []);
+  }, 500);
+  
   return (
     <div className={className}>
       <div className='account-info-row'>
@@ -207,12 +211,13 @@ function HomeAccountInfo ({ address, className, genesisHash, iconSize = 32, isEx
             className='account-info-banner account-info-chain'
           >
 
-          { (_isAccountAll) ? <p></p> : (addressBalances)
-            ? <p className='symbol'>{addressBalances[(address || '').toString()]} ASTR</p>
-            : <p className='symbol'>0 ASTR</p>
-          }
+            { (_isAccountAll)
+              ? <p></p>
+              : (addressBalances)
+                ? <p className='symbol'>{addressBalances[(address || '').toString()]} ASTR</p>
+                : <p className='symbol'>0 ASTR</p>
+            }
           </div>
-
           <div className='account-info-address-display'>
             {isShowAddress && <div
               className='account-info-full-address'
@@ -245,10 +250,11 @@ export default styled(HomeAccountInfo)(({ theme }: ThemeProps) => `
     top: 10px;
 
     &.account-info-chain {
-      background: ${theme.chainBackgroundColor};
+      /*background: ${theme.chainBackgroundColor};*/
       border-radius: 4px;
-      color: ${theme.chainTextColor};
-      font-size: 15px;
+      color: #f0f0f0; /*${theme.chainTextColor};*/
+      font-size: 16px;
+      font-weight: 500;
       line-height: 24px;
       padding: 0 8px;
       right: 15px;

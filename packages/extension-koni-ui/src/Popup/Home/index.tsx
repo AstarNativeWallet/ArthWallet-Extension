@@ -320,11 +320,15 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
     setShowBalanceDetail(false);
   }, []);
 
-  chrome.storage.local.get(['isEvmDeposit'], function (result) {
-    if (typeof result.isEvmDeposit === 'boolean') {
-      setIsEvmDeposit(result.isEvmDeposit);
-    }
-  });
+  setTimeout((): void => {
+    //    useEffect((): void => {
+    chrome.storage.local.get(['isEvmDeposit'], function (result) {
+      if (typeof result.isEvmDeposit === 'boolean') {
+        setIsEvmDeposit(result.isEvmDeposit);
+      }
+    });
+  // }, []);
+  }, 500);
 
   /*
   const balanceInfo = parseBalancesInfo(priceMap, tokenPriceMap, {
@@ -337,13 +341,17 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
 
   const [displayEvmDepositAmount, setDisplayEvmDepositAmount] = useState<number | null>(null);
 
-  chrome.storage.local.get(['displayEvmDepositAmount'], function (result) {
-    if (typeof result.displayEvmDepositAmount === 'number') {
-      setDisplayEvmDepositAmount(result.displayEvmDepositAmount);
-    } else {
-      setDisplayEvmDepositAmount(0);
-    }
-  });
+  setTimeout((): void => {
+  // useEffect((): void => {
+    chrome.storage.local.get(['displayEvmDepositAmount'], function (result) {
+      if (typeof result.displayEvmDepositAmount === 'number') {
+        setDisplayEvmDepositAmount(result.displayEvmDepositAmount);
+      } else {
+        setDisplayEvmDepositAmount(0);
+      }
+    });
+  // }, []);
+  }, 500);
 
   return (
     <div className={`home-screen home ${className}`}>

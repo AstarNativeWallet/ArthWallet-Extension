@@ -16,9 +16,10 @@ interface Props extends ThemeProps {
   isDisabled?: boolean;
   onClick?: () => void | Promise<void | boolean>;
   to?: string;
+  href?: string;
 }
 
-function Button ({ children, className = '', isBusy, isDisabled, onClick, to }: Props): React.ReactElement<Props> {
+function Button ({ children, className = '', href, isBusy, isDisabled, onClick, to }: Props): React.ReactElement<Props> {
   const _onClick = useCallback(
     (): void => {
       if (isBusy || isDisabled) {
@@ -29,6 +30,8 @@ function Button ({ children, className = '', isBusy, isDisabled, onClick, to }: 
 
       if (to) {
         window.location.hash = to;
+      } else if (href) {
+        window.location.href = href;
       }
     },
     [isBusy, isDisabled, onClick, to]
