@@ -9,6 +9,8 @@ exports.getFreeBalance = getFreeBalance;
 exports.subscribeBalance = subscribeBalance;
 exports.subscribeEVMBalance = subscribeEVMBalance;
 
+require("@polkadot/api-augment");
+
 var _ethers = require("ethers");
 
 var _rxjs = require("rxjs");
@@ -211,6 +213,68 @@ function subscribeTokensBalance(addresses, networkKey, api, originBalanceItem, c
   return unsubAll;
 }
 
+const addressBalances = {};
+
+function subscribeWithAccountAstar(address, networkKey, networkAPI) {
+  // console.log('Arth subscribeWithAccountAstar addresses: ', address);
+  if (networkKey === 'astar') {
+    async function getNativeBalance() {
+      //      const provider = new WsProvider('wss://astar.blastapi.io/7a594131-0860-4ef6-9d73-41f76b8bcb3f');
+      //      const api = await ApiPromise.create({ provider });
+      // let { data: { free: previousFree } } = await networkAPI.api.query.system.account(address);
+      // let balance = new BN(previousFree).toString();
+      const {
+        data: {
+          free: previousFree
+        }
+      } = await networkAPI.api.query.system.account(address);
+      const balance = new _util.BN(previousFree).toString();
+
+      const astarBalance = _web.default.utils.fromWei(balance, 'ether').substring(0, 5);
+
+      addressBalances[address] = astarBalance; // console.log('Arth subscribeWithAccountAstar astarBalance: ', address, ' / ', astarBalance);
+
+      chrome.storage.local.set({
+        addressBalances
+      }, function () {}); // console.log('Arth subscribeWithAccountAstar addressBalances: ', addressBalances);
+    }
+
+    getNativeBalance().catch(console.error).finally(() => process.exit());
+  } else if (networkKey === 'astarEvm') {
+    async function getBalanceAstarEvm(networkKey, address) {
+      let wssURL = '';
+
+      if (networkKey === 'astarEvm' || networkKey === 'astar') {
+        wssURL = 'wss://rpc.astar.network';
+      } else if (networkKey === 'shidenEvm') {
+        wssURL = 'wss://rpc.shiden.astar.network';
+      } else if (networkKey === 'shibuyaEvm') {
+        wssURL = 'wss://rpc.shibuya.astar.network';
+      }
+
+      let astarBalance = '0';
+
+      if (networkKey === 'astar') {
+        const web3 = new _web.default(new _web.default.providers.WebsocketProvider(wssURL));
+        const balance = await web3.eth.getBalance(address);
+        astarBalance = web3.utils.fromWei(balance, 'ether').substring(0, 5);
+      } else if (networkKey === 'astarEvm') {
+        const web3 = new _web.default(new _web.default.providers.WebsocketProvider(wssURL));
+        const balance = await web3.eth.getBalance(address);
+        astarBalance = web3.utils.fromWei(balance, 'ether').substring(0, 5);
+      }
+
+      addressBalances[address] = astarBalance; // console.log('Arth subscribeWithAccountAstar: ' + networkKey + ', ' + address + ', ' + astarBalance);
+
+      chrome.storage.local.set({
+        addressBalances
+      }, function () {}); // console.log('Arth subscribeWithAccountAstar addressBalances: ', addressBalances);
+    }
+
+    getBalanceAstarEvm('astarEvm', address);
+  }
+}
+
 async function subscribeWithAccountMulti(addresses, networkKey, networkAPI, callback) {
   const balanceJson = _handlers.state.getBalance(); // eslint-disable-next-line react-hooks/rules-of-hooks
   // console.log('WatchTest useSelector is: ', useSelector((state: RootState) => state.balance));
@@ -223,33 +287,11 @@ async function subscribeWithAccountMulti(addresses, networkKey, networkAPI, call
     miscFrozen: _handlers.state.getBalance().details[networkKey].miscFrozen || '0',
     feeFrozen: _handlers.state.getBalance().details[networkKey].feeFrozen || '0',
     children: _handlers.state.getBalance().details[networkKey].children || undefined
-  }; // console.log('WatchTest balanceItem is: ', balanceItem);
-  // @ts-ignore
-  // console.log('WatchTest networkKey is: ', networkKey);
-
+  };
   let unsub;
-  let unsub2; // if (networkKey === 'astarEvm') {
-  //   console.log(`WatchTest balanceJson.details[${networkKey}]: `, balanceJson.details[networkKey]);
-  // }
+  let unsub2;
 
   async function getBalanceAstar(networkKey) {
-    {
-      /*
-      // console.log('Arth subscribeWithAccountMulti addresses: ', addresses[0]);
-      if (networkKey === 'astar') {
-      console.log('Arth subscribeWithAccountMulti networkKey: ', networkKey);
-      console.log('Arth subscribeWithAccountMulti addresses: ', addresses[0]);
-      const astarBalance = Web3.utils.fromWei(balanceJson.details[networkKey].free, 'ether').substring(0, 5);
-      console.log('Arth subscribeWithAccountMulti free: ', astarBalance);
-      if (astarBalance !== '0') {
-      chrome.storage.local.set({
-        availableNativeBalance: (addresses[0] + '_' + astarBalance)
-      }, function () {});
-      }
-      }
-      async function getBalanceAstarEvm (networkKey: string) {
-      */
-    }
     let wssURL = '';
 
     switch (networkKey) {
@@ -317,6 +359,11 @@ async function subscribeWithAccountMulti(addresses, networkKey, networkAPI, call
         reserved,
         state: balanceItemState
       } = await subscribeEVMBalance(balanceJson, networkKey, networkAPI.api, addresses);
+
+      for (const address of addresses) {
+        subscribeWithAccountAstar(address, networkKey, networkAPI);
+      }
+
       balanceItem.state = balanceItemState;
       balanceItem.free = free;
       balanceItem.reserved = reserved;
@@ -347,6 +394,10 @@ async function subscribeWithAccountMulti(addresses, networkKey, networkAPI, call
           miscFrozen = miscFrozen.add(((_balance$data3 = balance.data) === null || _balance$data3 === void 0 ? void 0 : (_balance$data3$miscFr = _balance$data3.miscFrozen) === null || _balance$data3$miscFr === void 0 ? void 0 : _balance$data3$miscFr.toBn()) || new _util.BN(0));
           feeFrozen = feeFrozen.add(((_balance$data4 = balance.data) === null || _balance$data4 === void 0 ? void 0 : (_balance$data4$feeFro = _balance$data4.feeFrozen) === null || _balance$data4$feeFro === void 0 ? void 0 : _balance$data4$feeFro.toBn()) || new _util.BN(0));
         });
+
+        for (const address of addresses) {
+          subscribeWithAccountAstar(address, networkKey, networkAPI);
+        }
 
         switch (networkKey) {
           case 'astar':

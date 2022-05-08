@@ -223,24 +223,9 @@ function AuthTransaction ({ api, apiUrl, className, extrinsic, onCancel, request
     <div className={className}>
       <Modal className={'kn-signer-modal'}>
         <div className='kn-l-header'>
-          {/* <div className='kn-l-header__part-1' /> */}
           <div className='kn-l-header__part-2'>
-            {t<string>('Authorize Transaction Withdraw')}
+            {t<string>('Authorize Transaction - Withdraw')}
           </div>
-          {/**
-          <div className='kn-l-header__part-3'>
-            {isBusy
-              ? (
-                <span className={'kn-l-close-btn -disabled'}>{t('Cancel')}</span>
-              )
-              : (
-                <span
-                  className={'kn-l-close-btn'}
-                  onClick={_onCancel}
-                >{t('Cancel')}</span>
-              )
-            }
-          </div> */}
         </div>
         <div className='kn-l-body'>
 
@@ -323,7 +308,7 @@ export default React.memo(styled(AuthTransaction)(({ theme }: ThemeProps) => `
   }
 
   .kn-l-header {
-    display: flex;
+    display: block;
     align-items: center;
     height: 72px;
     box-shadow: ${theme.headerBoxShadow};
@@ -338,17 +323,13 @@ export default React.memo(styled(AuthTransaction)(({ theme }: ThemeProps) => `
     overflow-y: auto;
   }
 
-  .kn-l-header__part-1 {
-    flex: 1;
-  }
-
   .kn-l-header__part-2 {
     color: ${theme.textColor};
     font-size: 20px;
     font-weight: 500;
     text-align:center;
     align-items:center;
-    margin: 20px auto;
+    margin: 20px 0;
   }
 
   .kn-l-header__part-3 {
@@ -397,13 +378,14 @@ export default React.memo(styled(AuthTransaction)(({ theme }: ThemeProps) => `
   }
   .cancel-btn {
     display: inline-block;
-    margin-right: 28px;
+    margin-right: 20px !important;
     margin-left: 0px !important;
     height: 48px;
     width: 144px;
     background: rgba(48, 59, 87, 1);
     border-radius: 6px;
   }
+
   .kn-l-submit-btn {
     display: inline-block;
     height: 48px;

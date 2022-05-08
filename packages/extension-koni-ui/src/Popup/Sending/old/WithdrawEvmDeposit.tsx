@@ -1,7 +1,7 @@
 // Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
@@ -100,7 +100,7 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
   };
 
   const renderContent = () => {
-    console.log('ArthSwap WithdrawEvmDeposit content rendering.');
+//    console.log('Arth WithdrawEvmDeposit content rendering.');
 
     if (currentAccount && isAccountAll(currentAccount.address)) {
       return notSupportSendFund('ACCOUNT');
@@ -132,18 +132,17 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
     <div className={`-wrapper ${className} ${wrapperClass}`}>
       <Header
         showAdd
-        showCancelButton
         showSearch
         showSettings
         showSubHeader
-        subHeaderName={t<string>('Withdraw EVM Deposit')}
+        subHeaderName={t<string>('EVM Deposit Withdraw')}
       />
       {renderContent()}
     </div>
   );
 }
 
-function WithdrawEvmDeposit ({ api, apiUrl, currentAccount, networkKey, setWrapperClass }: ContentProps): React.ReactElement {
+function WithdrawEvmDeposit ({ api, apiUrl, className = '', currentAccount, networkKey, setWrapperClass }: ContentProps): React.ReactElement {
   const { t } = useTranslation();
 
   const propSenderId = currentAccount?.address;
@@ -156,40 +155,56 @@ function WithdrawEvmDeposit ({ api, apiUrl, currentAccount, networkKey, setWrapp
   const [displayEvmDepositAmount, setDisplayEvmDepositAmount] = useState<number | null>(null);
   const { isShowTxResult } = txResult;
 
-  chrome.storage.local.get(['displayEvmDepositAmount'], function (result) {
-    if (typeof result.displayEvmDepositAmount === 'number') {
-      setDisplayEvmDepositAmount(result.displayEvmDepositAmount);
-    } else {
-      setDisplayEvmDepositAmount(0);
-    }
-  });
+  interface AddressBalances {
+    [address: string]: string;
+  }
+  const [addressBalances, setAddressBalances] = useState<AddressBalances>({});
+  //setTimeout((): void => {
+  useEffect((): void => {
+    chrome.storage.local.get(['addressBalances'], function (result) {
+      setAddressBalances(result.addressBalances);
+      // console.log('Arth result.addressBalances: ', result.addressBalances);
+    });
+  }, []);
+  //}, 500);
+
+  setTimeout((): void => {
+    chrome.storage.local.get(['displayEvmDepositAmount'], function (result) {
+      if (typeof result.displayEvmDepositAmount === 'number') {
+        setDisplayEvmDepositAmount(result.displayEvmDepositAmount);
+      } else {
+        setDisplayEvmDepositAmount(0);
+      }
+    });
+  }, 500);
 
   const txParams: unknown[] | (() => unknown[]) | null =
     useMemo(() => {
       if (typeof propSenderId !== 'undefined') {
         const h160address = buildEvmAddress(propSenderId);
 
-        chrome.storage.local.get(['evmDepositAmount'], function (result) {
-          if (typeof result.evmDepositAmount === 'string') {
-            const withdrawEvmDepositAmount: BN = new BN(result.evmDepositAmount);
+        setTimeout((): void => {
+          chrome.storage.local.get(['evmDepositAmount'], function (result) {
+            if (typeof result.evmDepositAmount === 'string') {
+              const withdrawEvmDepositAmount: BN = new BN(result.evmDepositAmount);
+              setEvmDepositAmount(withdrawEvmDepositAmount);
+            } else {
+              console.log('evmDepositAmount is not valid type.', result.evmDepositAmount);
+            }
+          });
+        }, 500);
 
-            setEvmDepositAmount(withdrawEvmDepositAmount);
-          } else {
-            console.log('evmDepositAmount is not valid type.', result.evmDepositAmount);
-          }
-        });
-
-        chrome.storage.local.get(['evmTransferbleAmount'], function (result) {
-          if (typeof result.evmTransferbleAmount === 'string') {
-            const evmTransferbleAmount: BN = new BN(result.evmTransferbleAmount);
-
-            console.log('Arth evmTransferbleAmount is not valid type.', evmTransferbleAmount);
-
-            // setEvmDepositAmount(withdrawEvmDepositAmount);
-          } else {
-            console.log('Arth evmTransferbleAmount is not valid type.', result.evmDepositAmount);
-          }
-        });
+        setTimeout((): void => {
+          chrome.storage.local.get(['evmTransferbleAmount'], function (result) {
+            if (typeof result.evmTransferbleAmount === 'string') {
+              const evmTransferbleAmount: BN = new BN(result.evmTransferbleAmount);
+              console.log('Arth evmTransferbleAmount is not valid type.', evmTransferbleAmount);
+              // setEvmDepositAmount(withdrawEvmDepositAmount);
+            } else {
+              console.log('Arth evmTransferbleAmount is not valid type.', result.evmDepositAmount);
+            }
+          });
+        }, 500);
 
         return isFunction(api.tx.evm.withdraw) ? [h160address, evmDepositAmount] : null;
       }
@@ -255,9 +270,11 @@ function WithdrawEvmDeposit ({ api, apiUrl, currentAccount, networkKey, setWrapp
         onGetTxResult(true, extrinsicHash);
       }).catch((e) => console.log('Error when update Transaction History', e));
 
-      chrome.runtime.sendMessage({ withdrawEvmDeposit: 'success' }, function () {
-        console.log('withdraw EVM deposit success');
-      });
+      setTimeout((): void => {
+        chrome.runtime.sendMessage({ withdrawEvmDeposit: 'success' }, function () {
+          console.log('withdraw EVM deposit success');
+        });
+      }, 500);
     } else {
       onGetTxResult(true);
     }
@@ -299,61 +316,43 @@ function WithdrawEvmDeposit ({ api, apiUrl, currentAccount, networkKey, setWrapp
     setWrapperClass('');
   }, [setWrapperClass]);
 
-  interface AddressBalances {
-    [address: string]: string;
-  }
-  const [addressBalances, setAddressBalances] = useState<AddressBalances>({});
-  chrome.storage.local.get(['addressBalances'], function (result) {
-      setAddressBalances(result.addressBalances);
-      //console.log('Arth result.addressBalances: ', result.addressBalances);
-  });
-  
   return (
     <>
-      {!isShowTxResult
-      ? (
-      <div className='withdraw-balance-wrapper'>
-        <a>Your withdrawable EVM Deposit Amount is</a>
-        {displayEvmDepositAmount !== null && displayEvmDepositAmount > 0
-          ? <p className='amount'>{displayEvmDepositAmount} ASTR</p>
-          : <p className='amount'>0 ASTR</p>
-        }
-
-      <div className='info'>
-          <h3>Attention</h3>
-
-          {(addressBalances && senderId && addressBalances[senderId] === '0')
-            ? (
-              <><p>Make sure you are not trying
-                to send your assets to an exchange.
-                If you transfer funds from this address
-                to an exchange, your funds will be lost.</p><Button
-                    className={'faucet-btn'}
-                    to='/'
-                  >
-                    {t<string>('Faucet')}
-                  </Button></>
-                )
-                : (
+      {/* eslint-disable-next-line multiline-ternary */}
+      {!isShowTxResult ? (
+        <div className={`${className} -main-content`}>
+          <div className='withdraw-balance-wrapper'>
+            <a>Your withdrawable EVM Deposit Amount is</a>
+              {displayEvmDepositAmount !== null && displayEvmDepositAmount > 0
+              ? <p className='amount'>{displayEvmDepositAmount} ASTR</p>
+              : <p className='amount'>0 ASTR</p>}
+              <div className='info'>
+                <h3>Attention</h3>
+                { (addressBalances && senderId && addressBalances[senderId] === '0')
+                ? ( 
+                  <><p>Make sure you are not trying
+                    to send your assets to an exchange.
+                    If you transfer funds from this address
+                    to an exchange, your funds will be lost.</p><Button
+                      className={'faucet-btn'}
+                      href={'https://portal.astar.network/#/'}
+                    >{t<string>('Faucet')}
+                    </Button></>
+                ) : ( 
                   <p></p>
                 )}
               <h4>What is 'EVM Deposit'</h4>
               <p>'EVM Deposit' is an EVM address converted from a Native address,
-             which must be passed through once when sending funds from EVM to Native.
-              <p className='see-more'><a
-                href='https://medium.com/astar-network/using-astar-network-account-between-substrate-and-evm-656643df22a0'
-                rel='noreferrer'
-                target='_blank'
-                                      >See more</a></p>
+                which must be passed through once when sending funds from EVM to Native.
+                <p className='see-more'><a
+                  href='https://medium.com/astar-network/using-astar-network-account-between-substrate-and-evm-656643df22a0'
+                  rel='noreferrer'
+                  target='_blank'
+                  >See more</a>
+                </p>
               </p>
-
             </div>
-
           </div>
-        )
-        : (<div></div>)}
-      {!isShowTxResult
-        ? (
           <div className={'kn-l-submit-wrapper'}>
             <Button
               className={'cancel-btn'}
@@ -368,14 +367,14 @@ function WithdrawEvmDeposit ({ api, apiUrl, currentAccount, networkKey, setWrapp
               {t<string>('Withdraw')}
             </Button>
           </div>
-        )
-        : (
-          <WithdrawEvmDepositResult
-            networkKey={networkKey}
-            onResend={_onResend}
-            txResult={txResult}
-          />
-        )}
+        </div>
+      ) : (
+        <WithdrawEvmDepositResult
+          networkKey={networkKey}
+          onResend={_onResend}
+          txResult={txResult}
+        />
+      )}
       {extrinsic && isShowTxModal && (
         <AuthTransaction
           api={api}
@@ -418,7 +417,7 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
     padding-right: 15px;
     padding-bottom: 15px;
     flex: 1;
-    padding-top: 25px;
+    padding-top: 0px;
     overflow-y: auto;
 
     // &::-webkit-scrollbar {
@@ -496,8 +495,8 @@ export default React.memo(styled(Wrapper)(({ theme }: Props) => `
   }
   .cancel-btn {
     display: inline-block;
-    margin-right: 28px;
-    margin-left: 15px;
+    margin-right: 20px;
+    margin-left: 0px;
     height: 48px;
     width: 144px;
     background: rgba(48, 59, 87, 1);

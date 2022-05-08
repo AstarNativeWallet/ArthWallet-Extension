@@ -246,5 +246,7 @@
   "Password for this account": "",
   "Get started": "",
   "See More Token": "",
-  "Select a contact or paste the address you want to send NFTs to.": ""
+  "Select a contact or paste the address you want to send NFTs to.": "",
+  "Authorize Transaction - Withdraw": "",
+  "EVM Deposit Withdraw": ""
 }
