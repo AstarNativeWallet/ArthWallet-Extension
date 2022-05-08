@@ -243,7 +243,7 @@ function HomeAccountInfo ({ address, className, genesisHash, iconSize = 32, isEx
 }
 
 export default styled(HomeAccountInfo)(({ theme }: ThemeProps) => `
-  .account-info-banner {
+.account-info-banner {
     font-size: 12px;
     line-height: 16px;
     position: absolute;
@@ -372,4 +372,5 @@ export default styled(HomeAccountInfo)(({ theme }: ThemeProps) => `
     color: ${theme.labelColor};
     width: 0.875em;
   }
+
 `);

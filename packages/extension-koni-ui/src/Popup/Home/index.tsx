@@ -882,4 +882,15 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
       display:flex;
     }
 
+.IsAccountALL .action-button-wrapper{
+  display: none;
+}
+.all-account-row {
+  display: none;    
+}
+.account-menu-lists > div {
+  background-color: rgba(196, 196, 196, 0.2) !important;
+  margin-top: 14px;
+}
+
 `));

@@ -15,7 +15,7 @@ import { AccountContext, ActionContext } from '@polkadot/extension-koni-ui/compo
 import { saveCurrentAccountAddress, triggerAccountsSubscription } from '@polkadot/extension-koni-ui/messaging';
 import { RootState } from '@polkadot/extension-koni-ui/stores';
 import { ThemeProps } from '@polkadot/extension-koni-ui/types';
-import { findAccountByAddress /*, isAccountAll */ } from '@polkadot/extension-koni-ui/util';
+import { findAccountByAddress, isAccountAll } from '@polkadot/extension-koni-ui/util';
 
 import HomeAccountInfo from '../../components/HomeAccountInfo';
 
@@ -31,7 +31,7 @@ function HomeAccountList ({ address, changeAccountCallback, className, closeSett
   const { accounts } = useContext(AccountContext);
   const onAction = useContext(ActionContext);
   const currentAccount = useSelector((state: RootState) => state.currentAccount.account);
-  // const _isAllAccount = isAccountAll(address);
+  const _isAllAccount = isAccountAll(address);
   // const { t } = useTranslation();
 
   useEffect((): void => {
@@ -75,7 +75,7 @@ function HomeAccountList ({ address, changeAccountCallback, className, closeSett
 
   return (
     <div
-      className={className}
+      className={_isAllAccount ? 'all-account-row' : className }
       onClick={_changeAccount}
     >
 
