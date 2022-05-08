@@ -1,7 +1,7 @@
 // Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
@@ -100,7 +100,7 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
   };
 
   const renderContent = () => {
-    console.log('Arth WithdrawEvmDeposit content rendering.');
+//    console.log('Arth WithdrawEvmDeposit content rendering.');
 
     if (currentAccount && isAccountAll(currentAccount.address)) {
       return notSupportSendFund('ACCOUNT');
@@ -154,6 +154,19 @@ function WithdrawEvmDeposit ({ api, apiUrl, className = '', currentAccount, netw
   const [evmDepositAmount, setEvmDepositAmount] = useState<BN | null>(null);
   const [displayEvmDepositAmount, setDisplayEvmDepositAmount] = useState<number | null>(null);
   const { isShowTxResult } = txResult;
+
+  interface AddressBalances {
+    [address: string]: string;
+  }
+  const [addressBalances, setAddressBalances] = useState<AddressBalances>({});
+  //setTimeout((): void => {
+  useEffect((): void => {
+    chrome.storage.local.get(['addressBalances'], function (result) {
+      setAddressBalances(result.addressBalances);
+      // console.log('Arth result.addressBalances: ', result.addressBalances);
+    });
+  }, []);
+  //}, 500);
 
   setTimeout((): void => {
     chrome.storage.local.get(['displayEvmDepositAmount'], function (result) {
@@ -302,18 +315,6 @@ function WithdrawEvmDeposit ({ api, apiUrl, className = '', currentAccount, netw
 
     setWrapperClass('');
   }, [setWrapperClass]);
-
-  interface AddressBalances {
-    [address: string]: string;
-  }
-  const [addressBalances, setAddressBalances] = useState<AddressBalances>({});
-
-  setTimeout((): void => {
-    chrome.storage.local.get(['addressBalances'], function (result) {
-      setAddressBalances(result.addressBalances);
-      // console.log('Arth result.addressBalances: ', result.addressBalances);
-    });
-  }, 500);
 
   return (
     <>
