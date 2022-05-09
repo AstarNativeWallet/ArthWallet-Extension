@@ -1,7 +1,7 @@
 // Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { useCallback, useMemo, useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
@@ -100,7 +100,7 @@ function Wrapper ({ className = '', theme }: Props): React.ReactElement<Props> {
   };
 
   const renderContent = () => {
-//    console.log('Arth WithdrawEvmDeposit content rendering.');
+    //    console.log('Arth WithdrawEvmDeposit content rendering.');
 
     if (currentAccount && isAccountAll(currentAccount.address)) {
       return notSupportSendFund('ACCOUNT');
@@ -159,14 +159,15 @@ function WithdrawEvmDeposit ({ api, apiUrl, className = '', currentAccount, netw
     [address: string]: string;
   }
   const [addressBalances, setAddressBalances] = useState<AddressBalances>({});
-  //setTimeout((): void => {
+
+  // setTimeout((): void => {
   useEffect((): void => {
     chrome.storage.local.get(['addressBalances'], function (result) {
       setAddressBalances(result.addressBalances);
       // console.log('Arth result.addressBalances: ', result.addressBalances);
     });
   }, []);
-  //}, 500);
+  // }, 500);
 
   setTimeout((): void => {
     chrome.storage.local.get(['displayEvmDepositAmount'], function (result) {
@@ -187,6 +188,7 @@ function WithdrawEvmDeposit ({ api, apiUrl, className = '', currentAccount, netw
           chrome.storage.local.get(['evmDepositAmount'], function (result) {
             if (typeof result.evmDepositAmount === 'string') {
               const withdrawEvmDepositAmount: BN = new BN(result.evmDepositAmount);
+
               setEvmDepositAmount(withdrawEvmDepositAmount);
             } else {
               console.log('evmDepositAmount is not valid type.', result.evmDepositAmount);
@@ -198,6 +200,7 @@ function WithdrawEvmDeposit ({ api, apiUrl, className = '', currentAccount, netw
           chrome.storage.local.get(['evmTransferbleAmount'], function (result) {
             if (typeof result.evmTransferbleAmount === 'string') {
               const evmTransferbleAmount: BN = new BN(result.evmTransferbleAmount);
+
               console.log('Arth evmTransferbleAmount is not valid type.', evmTransferbleAmount);
               // setEvmDepositAmount(withdrawEvmDepositAmount);
             } else {
@@ -323,33 +326,34 @@ function WithdrawEvmDeposit ({ api, apiUrl, className = '', currentAccount, netw
         <div className={`${className} -main-content`}>
           <div className='withdraw-balance-wrapper'>
             <a>Your withdrawable EVM Deposit Amount is</a>
-              {displayEvmDepositAmount !== null && displayEvmDepositAmount > 0
+            {displayEvmDepositAmount !== null && displayEvmDepositAmount > 0
               ? <p className='amount'>{displayEvmDepositAmount} ASTR</p>
               : <p className='amount'>0 ASTR</p>}
-              <div className='info'>
-                <h3>Attention</h3>
-                { (addressBalances && senderId && addressBalances[senderId] === '0')
-                ? ( 
+            <div className='info'>
+              <h3>Attention</h3>
+              { (addressBalances && senderId && addressBalances[senderId] === '0')
+                ? (
                   <><p>Make sure you are not trying
                     to send your assets to an exchange.
                     If you transfer funds from this address
                     to an exchange, your funds will be lost.</p><Button
-                      className={'faucet-btn'}
-                      href={'https://portal.astar.network/#/'}
-                    >{t<string>('Faucet')}
-                    </Button></>
-                ) : ( 
+                    className={'faucet-btn'}
+                    href={'https://portal.astar.network/#/'}
+                  >{t<string>('Faucet')}
+                  </Button></>
+                )
+                : (
                   <p></p>
                 )}
               <h4>What is 'EVM Deposit'</h4>
               <p>'EVM Deposit' is an EVM address converted from a Native address,
                 which must be passed through once when sending funds from EVM to Native.
-                <p className='see-more'><a
-                  href='https://medium.com/astar-network/using-astar-network-account-between-substrate-and-evm-656643df22a0'
-                  rel='noreferrer'
-                  target='_blank'
-                  >See more</a>
-                </p>
+              <p className='see-more'><a
+                href='https://medium.com/astar-network/using-astar-network-account-between-substrate-and-evm-656643df22a0'
+                rel='noreferrer'
+                target='_blank'
+                                      >See more</a>
+              </p>
               </p>
             </div>
           </div>

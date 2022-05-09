@@ -141,7 +141,7 @@ function HomeAccountInfo ({ address, className, genesisHash, iconSize = 32, isEx
     });
   // }, []);
   }, 500);
-  
+
   return (
     <div className={className}>
       <div className='account-info-row'>
