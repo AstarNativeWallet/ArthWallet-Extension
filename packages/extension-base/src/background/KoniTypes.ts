@@ -240,6 +240,7 @@ export interface NetWorkInfo {
   nativeToken?: string;
   crowdloanUrl?: string;
   decimals?: number;
+  isSubscribe?: boolean;
 }
 
 export interface DonateInfo {

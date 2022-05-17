@@ -25,6 +25,10 @@ function getRpcsMap (): Record<string, string> {
   Object.keys(NETWORKS).forEach((networkKey) => {
     const networkInfo = NETWORKS[networkKey];
 
+    if (!networkInfo.isSubscribe) {
+      return;
+    }
+
     if (!networkInfo.genesisHash || networkInfo.genesisHash.toLowerCase() === 'unknown') {
       return;
     }

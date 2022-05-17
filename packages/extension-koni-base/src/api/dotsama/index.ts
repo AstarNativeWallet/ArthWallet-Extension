@@ -24,14 +24,25 @@ export function connectDotSamaApis (networks = NETWORKS): Record<string, ApiProp
   const apisMap: Record<string, ApiProps> = {};
 
   Object.keys(networks).forEach((networkKey) => {
-    const network = networks[networkKey];
 
-    if (!network.genesisHash || network.genesisHash.toLowerCase() === 'unknown' || !network.provider) {
-      return;
+    //console.log('Arth networkKey: ', networkKey);
+    //console.log('Arth networks[networkKey].isSubscribe: ', networks[networkKey].isSubscribe);
+
+    if (networks[networkKey].isSubscribe) {
+
+      const network = networks[networkKey];
+      //console.log('Arth networks: ', networks);
+
+      if (!network.genesisHash || network.genesisHash.toLowerCase() === 'unknown' || !network.provider) {
+        return;
+      }
+
+      apisMap[networkKey] = initApi(networkKey, network.provider);
     }
 
-    apisMap[networkKey] = initApi(networkKey, network.provider);
   });
+
+  console.log('Arth apisMap: ', apisMap);
 
   return apisMap;
 }

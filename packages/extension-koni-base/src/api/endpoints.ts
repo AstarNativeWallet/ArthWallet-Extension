@@ -13,7 +13,8 @@ const NETWORKS: Record<string, NetWorkInfo> = {
     provider: 'wss://polkadot.api.onfinality.io/public-ws',
     groups: ['RELAY_CHAIN'],
     nativeToken: 'DOT',
-    decimals: 10
+    decimals: 10,
+    isSubscribe: true
   },
   kusama: {
     chain: 'Kusama Relay Chain',
@@ -23,7 +24,8 @@ const NETWORKS: Record<string, NetWorkInfo> = {
     provider: 'wss://kusama.api.onfinality.io/public-ws',
     groups: ['RELAY_CHAIN'],
     nativeToken: 'KSM',
-    decimals: 12
+    decimals: 12,
+    isSubscribe: true
   },
   westend: {
     chain: 'Westend Relay Chain',
@@ -94,7 +96,8 @@ const NETWORKS: Record<string, NetWorkInfo> = {
     paraId: 2006,
     nativeToken: 'ASTR',
     crowdloanUrl: 'https://crowdloan.astar.network/#/',
-    decimals: 18
+    decimals: 18,
+    isSubscribe: true
   },
   astarEvm: {
     chain: 'Astar - EVM',
@@ -106,7 +109,8 @@ const NETWORKS: Record<string, NetWorkInfo> = {
     groups: ['POLKADOT_PARACHAIN', 'ASTAR_MAINNET'],
     isEthereum: true,
     nativeToken: 'ASTR',
-    decimals: 18
+    decimals: 18,
+    isSubscribe: true
   },
   parallel: {
     chain: 'Parallel',
@@ -387,7 +391,8 @@ const NETWORKS: Record<string, NetWorkInfo> = {
     groups: ['KUSAMA_PARACHAIN'],
     paraId: 2007,
     nativeToken: 'SDN',
-    crowdloanUrl: 'https://polkadot.js.org/apps/#/parachains/crowdloan'
+    crowdloanUrl: 'https://polkadot.js.org/apps/#/parachains/crowdloan',
+    isSubscribe: true
   },
   shidenEvm: {
     chain: 'Shiden - EVM',
@@ -396,7 +401,8 @@ const NETWORKS: Record<string, NetWorkInfo> = {
     provider: 'wss://rpc.shiden.astar.network',
     groups: ['KUSAMA_PARACHAIN'],
     nativeToken: 'SDN',
-    isEthereum: true
+    isEthereum: true,
+    isSubscribe: true
   },
   khala: {
     chain: 'Khala',

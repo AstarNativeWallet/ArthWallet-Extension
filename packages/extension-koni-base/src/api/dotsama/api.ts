@@ -102,6 +102,7 @@ async function loadOnReady (registry: Registry, api: ApiPromise): Promise<ApiSta
 }
 
 export function initApi (networkKey: string, apiUrl: string): ApiProps {
+  
   const registry = new TypeRegistry();
 
   const provider = apiUrl.startsWith('http') ? new HttpProvider(apiUrl) : new WsProvider(apiUrl, DOTSAMA_AUTO_CONNECT_MS);
@@ -169,13 +170,8 @@ export function initApi (networkKey: string, apiUrl: string): ApiProps {
   }) as unknown as ApiProps;
 
   api.on('connected', () => {
-    console.log('DotSamaAPI connected to', apiUrl);
+    console.log('Arth DotSamaAPI connected to', apiUrl);
     result.apiRetry = 0;
-
-    if (result.isApiReadyOnce) {
-      result.isApiReady = true;
-    }
-
     result.isApiConnected = true;
   });
 
@@ -184,10 +180,10 @@ export function initApi (networkKey: string, apiUrl: string): ApiProps {
     result.isApiReady = false;
     result.apiRetry = (result.apiRetry || 0) + 1;
 
-    console.log(`DotSamaAPI disconnected from ${JSON.stringify(apiUrl)} ${JSON.stringify(result.apiRetry)} times`);
+    console.log(`Arth DotSamaAPI disconnected from ${JSON.stringify(apiUrl)} ${JSON.stringify(result.apiRetry)} times`);
 
     if (result.apiRetry > DOTSAMA_MAX_CONTINUE_RETRY) {
-      console.log(`Discontinue to use ${JSON.stringify(apiUrl)} because max retry`);
+      console.log(`Arth Discontinue to use ${JSON.stringify(apiUrl)} because max retry`);
       provider.disconnect()
         .then(console.log)
         .catch(console.error);
@@ -195,7 +191,7 @@ export function initApi (networkKey: string, apiUrl: string): ApiProps {
   });
 
   api.on('ready', () => {
-    console.log('DotSamaAPI ready with', apiUrl);
+    console.log('Arth DotSamaAPI ready with', apiUrl);
     loadOnReady(registry, api)
       .then((rs) => {
         objectSpread(result, rs);
@@ -206,4 +202,5 @@ export function initApi (networkKey: string, apiUrl: string): ApiProps {
   });
 
   return result;
+
 }

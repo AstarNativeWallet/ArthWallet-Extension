@@ -46,6 +46,10 @@ function getRpcsMap() {
   Object.keys(_endpoints.default).forEach(networkKey => {
     const networkInfo = _endpoints.default[networkKey];
 
+    if (!networkInfo.isSubscribe) {
+      return;
+    }
+
     if (!networkInfo.genesisHash || networkInfo.genesisHash.toLowerCase() === 'unknown') {
       return;
     }

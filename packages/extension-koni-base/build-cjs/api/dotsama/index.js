@@ -46,14 +46,19 @@ function connectDotSamaApis() {
   let networks = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _endpoints.default;
   const apisMap = {};
   Object.keys(networks).forEach(networkKey => {
-    const network = networks[networkKey];
+    //console.log('Arth networkKey: ', networkKey);
+    //console.log('Arth networks[networkKey].isSubscribe: ', networks[networkKey].isSubscribe);
+    if (networks[networkKey].isSubscribe) {
+      const network = networks[networkKey]; //console.log('Arth networks: ', networks);
 
-    if (!network.genesisHash || network.genesisHash.toLowerCase() === 'unknown' || !network.provider) {
-      return;
+      if (!network.genesisHash || network.genesisHash.toLowerCase() === 'unknown' || !network.provider) {
+        return;
+      }
+
+      apisMap[networkKey] = (0, _api.initApi)(networkKey, network.provider);
     }
-
-    apisMap[networkKey] = (0, _api.initApi)(networkKey, network.provider);
   });
+  console.log('Arth apisMap: ', apisMap);
   return apisMap;
 }
 

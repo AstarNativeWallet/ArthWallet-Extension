@@ -75,6 +75,10 @@ export const fetchDotSamaCrowdloan = async () => {
   polkadotCrowdloan?.data?.crowdloans?.nodes.forEach((node) => {
     let parachainId = node?.parachainId.substring(0, 4);
 
+    if (parachainId !== '2006') {
+      return;
+    }
+
     parachainId = parachainId ? `polkadot-${parachainId}` : '';
     paraList.push(parachainId);
 
@@ -87,6 +91,10 @@ export const fetchDotSamaCrowdloan = async () => {
   });
   kusamaCrowdloan?.data?.crowdloans?.nodes.forEach((node) => {
     let parachainId = node?.parachainId.substring(0, 4);
+
+    if (parachainId !== '2007') {
+      return;
+    }
 
     parachainId = parachainId ? `kusama-${parachainId}` : '';
     paraList.push(parachainId);

@@ -180,28 +180,23 @@ function initApi(networkKey, apiUrl) {
 
   };
   api.on('connected', () => {
-    console.log('DotSamaAPI connected to', apiUrl);
+    console.log('Arth DotSamaAPI connected to', apiUrl);
     result.apiRetry = 0;
-
-    if (result.isApiReadyOnce) {
-      result.isApiReady = true;
-    }
-
     result.isApiConnected = true;
   });
   api.on('disconnected', () => {
     result.isApiConnected = false;
     result.isApiReady = false;
     result.apiRetry = (result.apiRetry || 0) + 1;
-    console.log(`DotSamaAPI disconnected from ${JSON.stringify(apiUrl)} ${JSON.stringify(result.apiRetry)} times`);
+    console.log(`Arth DotSamaAPI disconnected from ${JSON.stringify(apiUrl)} ${JSON.stringify(result.apiRetry)} times`);
 
     if (result.apiRetry > _constants.DOTSAMA_MAX_CONTINUE_RETRY) {
-      console.log(`Discontinue to use ${JSON.stringify(apiUrl)} because max retry`);
+      console.log(`Arth Discontinue to use ${JSON.stringify(apiUrl)} because max retry`);
       provider.disconnect().then(console.log).catch(console.error);
     }
   });
   api.on('ready', () => {
-    console.log('DotSamaAPI ready with', apiUrl);
+    console.log('Arth DotSamaAPI ready with', apiUrl);
     loadOnReady(registry, api).then(rs => {
       (0, _util.objectSpread)(result, rs);
     }).catch(error => {

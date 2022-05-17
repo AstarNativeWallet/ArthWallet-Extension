@@ -77,6 +77,11 @@ const fetchDotSamaCrowdloan = async () => {
   const paraList = [];
   polkadotCrowdloan === null || polkadotCrowdloan === void 0 ? void 0 : (_polkadotCrowdloan$da = polkadotCrowdloan.data) === null || _polkadotCrowdloan$da === void 0 ? void 0 : (_polkadotCrowdloan$da2 = _polkadotCrowdloan$da.crowdloans) === null || _polkadotCrowdloan$da2 === void 0 ? void 0 : _polkadotCrowdloan$da2.nodes.forEach(node => {
     let parachainId = node === null || node === void 0 ? void 0 : node.parachainId.substring(0, 4);
+
+    if (parachainId !== '2006') {
+      return;
+    }
+
     parachainId = parachainId ? `polkadot-${parachainId}` : '';
     paraList.push(parachainId);
 
@@ -89,6 +94,11 @@ const fetchDotSamaCrowdloan = async () => {
   });
   kusamaCrowdloan === null || kusamaCrowdloan === void 0 ? void 0 : (_kusamaCrowdloan$data = kusamaCrowdloan.data) === null || _kusamaCrowdloan$data === void 0 ? void 0 : (_kusamaCrowdloan$data2 = _kusamaCrowdloan$data.crowdloans) === null || _kusamaCrowdloan$data2 === void 0 ? void 0 : _kusamaCrowdloan$data2.nodes.forEach(node => {
     let parachainId = node === null || node === void 0 ? void 0 : node.parachainId.substring(0, 4);
+
+    if (parachainId !== '2007') {
+      return;
+    }
+
     parachainId = parachainId ? `kusama-${parachainId}` : '';
     paraList.push(parachainId);
 
