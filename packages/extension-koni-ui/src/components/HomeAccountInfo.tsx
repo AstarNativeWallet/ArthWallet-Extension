@@ -29,6 +29,8 @@ import useTranslation from '../hooks/useTranslation';
 import getParentNameSuri from '../util/getParentNameSuri';
 import { AccountContext } from './contexts';
 
+import { AssetImageMap } from '@polkadot/extension-koni-ui/assets';
+
 export interface Props {
   address: string ;
   className?: string;
@@ -210,12 +212,11 @@ function HomeAccountInfo ({ address, className, genesisHash, iconSize = 32, isEx
           <div
             className='account-info-banner account-info-chain'
           >
-
             { (_isAccountAll)
               ? <p></p>
-              : (addressBalances)
+              : (addressBalances && addressBalances[(address || '').toString()])
                 ? <p className='symbol'>{addressBalances[(address || '').toString()]} ASTR</p>
-                : <p className='symbol'>0 ASTR</p>
+                : <p className='symbol loading-wrapper'><img src={AssetImageMap.loading} /></p>
             }
           </div>
           <div className='account-info-address-display'>
@@ -371,6 +372,10 @@ export default styled(HomeAccountInfo)(({ theme }: ThemeProps) => `
     margin-right: 0.3rem;
     color: ${theme.labelColor};
     width: 0.875em;
+  }
+
+  .loading-wrapper img {
+    width: 30px;
   }
 
 `);
