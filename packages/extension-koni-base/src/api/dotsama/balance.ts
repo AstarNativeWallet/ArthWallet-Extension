@@ -216,11 +216,11 @@ function subscribeWithAccountAstar (address: string, networkKey: string, network
       let wssURL = '';
 
       if (networkKey === 'astarEvm' || networkKey === 'astar') {
-        wssURL = 'wss://rpc.astar.network';
+        wssURL = 'wss://astar.api.onfinality.io/public-ws';
       } else if (networkKey === 'shidenEvm') {
-        wssURL = 'wss://rpc.shiden.astar.network';
+        wssURL = 'wss://astar.api.onfinality.io/public-ws';
       } else if (networkKey === 'shibuyaEvm') {
-        wssURL = 'wss://rpc.shibuya.astar.network';
+        wssURL = 'wss://shiden.api.onfinality.io/public-ws';
       }
 
       let astarBalance = '0';
@@ -271,13 +271,13 @@ async function subscribeWithAccountMulti (addresses: string[], networkKey: strin
 
     switch (networkKey) {
       case 'astar':
-        wssURL = 'wss://rpc.astar.network';
+        wssURL = 'wss://astar.api.onfinality.io/public-ws';
         break;
       case 'shiden':
-        wssURL = 'wss://rpc.shiden.network';
+        wssURL = 'wss://shiden.api.onfinality.io/public-ws';
         break;
       case 'shibuya':
-        wssURL = 'wss://rpc.shibuya.network';
+        wssURL = 'wss://rpc.shibuya.astar.network';
         break;
       default:
         break;

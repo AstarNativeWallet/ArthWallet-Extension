@@ -398,7 +398,7 @@ const NETWORKS: Record<string, NetWorkInfo> = {
     chain: 'Shiden - EVM',
     genesisHash: '0xf1cf9022c7ebb34b162d5b5e34e705a5a740b2d0ecc1009fb89023e62a488108___EVM',
     ss58Format: 5,
-    provider: 'wss://rpc.shiden.astar.network',
+    provider: 'wss://shiden.api.onfinality.io/public-ws',
     groups: ['KUSAMA_PARACHAIN'],
     nativeToken: 'SDN',
     isEthereum: true,

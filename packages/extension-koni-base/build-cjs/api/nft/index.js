@@ -1,7 +1,5 @@
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -9,23 +7,9 @@ exports.NftHandler = void 0;
 
 var _apiHelper = require("@polkadot/extension-koni-base/api/dotsama/api-helper");
 
-var _acala_nft = require("@polkadot/extension-koni-base/api/nft/acala_nft");
-
-var _bit = require("@polkadot/extension-koni-base/api/nft/bit.country");
-
 var _config = require("@polkadot/extension-koni-base/api/nft/config");
 
 var _eth_nft = require("@polkadot/extension-koni-base/api/nft/eth_nft");
-
-var _karura_nft = require("@polkadot/extension-koni-base/api/nft/karura_nft");
-
-var _quartz_nft = _interopRequireDefault(require("@polkadot/extension-koni-base/api/nft/quartz_nft"));
-
-var _rmrk_nft = require("@polkadot/extension-koni-base/api/nft/rmrk_nft");
-
-var _statemine_nft = _interopRequireDefault(require("@polkadot/extension-koni-base/api/nft/statemine_nft"));
-
-var _unique_nft = _interopRequireDefault(require("@polkadot/extension-koni-base/api/nft/unique_nft"));
 
 var _handlers = require("@polkadot/extension-koni-base/background/handlers");
 
@@ -33,42 +17,39 @@ var _utils = require("@polkadot/extension-koni-base/utils/utils");
 
 // Copyright 2019-2022 @polkadot/extension-koni authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+//import { AcalaNftApi } from '@polkadot/extension-koni-base/api/nft/acala_nft';
+//import { BitCountryNftApi } from '@polkadot/extension-koni-base/api/nft/bit.country';
+//import QuartzNftApi from '@polkadot/extension-koni-base/api/nft/quartz_nft';
+//import { RmrkNftApi } from '@polkadot/extension-koni-base/api/nft/rmrk_nft';
+//import StatemineNftApi from '@polkadot/extension-koni-base/api/nft/statemine_nft';
+//import UniqueNftApi from '@polkadot/extension-koni-base/api/nft/unique_nft';
 function createNftApi(chain, api, addresses) {
   const [substrateAddresses, evmAddresses] = (0, _utils.categoryAddresses)(addresses);
   const useAddresses = _apiHelper.ethereumChains.indexOf(chain) > -1 ? evmAddresses : substrateAddresses;
 
   switch (chain) {
-    case _config.SUPPORTED_NFT_NETWORKS.karura:
-      return new _karura_nft.KaruraNftApi(api, useAddresses, chain);
-
-    case _config.SUPPORTED_NFT_NETWORKS.acala:
-      return new _acala_nft.AcalaNftApi(api, useAddresses, chain);
-
-    case _config.SUPPORTED_NFT_NETWORKS.rmrk:
-      // eslint-disable-next-line no-case-declarations
-      const rmrkNftApi = new _rmrk_nft.RmrkNftApi();
-      rmrkNftApi.setChain(_config.SUPPORTED_NFT_NETWORKS.rmrk);
-      rmrkNftApi.setAddresses(useAddresses);
-      return rmrkNftApi;
-
-    case _config.SUPPORTED_NFT_NETWORKS.statemine:
-      return new _statemine_nft.default(api, useAddresses, chain);
-
-    case _config.SUPPORTED_NFT_NETWORKS.uniqueNft:
-      return new _unique_nft.default(api, useAddresses, chain);
-
-    case _config.SUPPORTED_NFT_NETWORKS.quartz:
-      return new _quartz_nft.default(api, useAddresses, chain);
-
-    case _config.SUPPORTED_NFT_NETWORKS.bitcountry:
-      return new _bit.BitCountryNftApi(api, useAddresses, chain);
-
-    case _config.SUPPORTED_NFT_NETWORKS.moonbeam:
-      return new _eth_nft.Web3NftApi(useAddresses, chain);
-
-    case _config.SUPPORTED_NFT_NETWORKS.moonriver:
-      return new _eth_nft.Web3NftApi(useAddresses, chain);
-
+    //    case SUPPORTED_NFT_NETWORKS.karura:
+    //      return new KaruraNftApi(api, useAddresses, chain);
+    //    case SUPPORTED_NFT_NETWORKS.acala:
+    //      return new AcalaNftApi(api, useAddresses, chain);
+    //    case SUPPORTED_NFT_NETWORKS.rmrk:
+    // eslint-disable-next-line no-case-declarations
+    //      const rmrkNftApi = new RmrkNftApi();
+    //      rmrkNftApi.setChain(SUPPORTED_NFT_NETWORKS.rmrk);
+    //      rmrkNftApi.setAddresses(useAddresses);
+    //      return rmrkNftApi;
+    //    case SUPPORTED_NFT_NETWORKS.statemine:
+    //      return new StatemineNftApi(api, useAddresses, chain);
+    //    case SUPPORTED_NFT_NETWORKS.uniqueNft:
+    //      return new UniqueNftApi(api, useAddresses, chain);
+    //    case SUPPORTED_NFT_NETWORKS.quartz:
+    //      return new QuartzNftApi(api, useAddresses, chain);
+    //    case SUPPORTED_NFT_NETWORKS.bitcountry:
+    //      return new BitCountryNftApi(api, useAddresses, chain);
+    //    case SUPPORTED_NFT_NETWORKS.moonbeam:
+    //      return new Web3NftApi(useAddresses, chain);
+    //    case SUPPORTED_NFT_NETWORKS.moonriver:
+    //      return new Web3NftApi(useAddresses, chain);
     case _config.SUPPORTED_NFT_NETWORKS.astarEvm:
       return new _eth_nft.Web3NftApi(useAddresses, chain);
   }

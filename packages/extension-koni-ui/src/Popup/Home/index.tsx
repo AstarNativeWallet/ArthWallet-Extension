@@ -169,6 +169,7 @@ function Wrapper ({ className, theme }: WrapperProps): React.ReactElement {
 let tooltipId = 0;
 
 function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, network, showCopyBtn = true }: Props): React.ReactElement {
+
   const { icon: iconTheme,
     networkKey,
     networkPrefix } = network;
@@ -183,12 +184,21 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
   console.log(isNotSupport);
 
   const { address } = currentAccount;
+
+  let _isAccountAll = isAccountAll(address);
+
   const [isShowBalanceDetail, setShowBalanceDetail] = useState<boolean>(false);
   const [isEvmDeposit, setIsEvmDeposit] = useState<boolean>(false);
   const backupTabId = window.localStorage.getItem('homeActiveTab') || '1';
   const [activatedTab, setActivatedTab] = useState<number>(Number(backupTabId));
   const _setActiveTab = useCallback((tabId: number) => {
     window.localStorage.setItem('homeActiveTab', `${tabId}`);
+
+    console.log('Arth homeActiveTab: ', tabId);
+    if (tabId === 1) {
+      console.log('Arth isAccountAll: ', isAccountAll);
+      _isAccountAll = true; //isAccountAll(address);
+    }
     setActivatedTab(tabId);
     setShowBalanceDetail(false);
   }, []);
@@ -288,8 +298,6 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
   const _closeQrModal = useCallback(() => {
     setQrModalOpen(false);
   }, []);
-
-  const _isAccountAll = isAccountAll(address);
 
   const tabItems = useMemo<TabHeaderItemType[]>(() => {
     return getTabHeaderItems(address, t);

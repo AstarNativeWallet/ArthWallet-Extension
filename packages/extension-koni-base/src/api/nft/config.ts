@@ -34,13 +34,15 @@ export enum SUPPORTED_NFT_NETWORKS {
   moonbeam = 'moonbeam',
   moonriver = 'moonriver',
   astarEvm = 'astarEvm',
+  shiden = 'shiden',
+  shibuya = 'shibuya'
 }
 
 export enum SUPPORTED_TRANSFER_CHAIN_NAME {
   moonbeam = 'moonbeam',
   moonbase = 'moonbase',
-  astarEvm = 'astarEvm',
   moonriver = 'moonriver',
+  astarEvm = 'astarEvm',
   shiden = 'shiden',
   shibuya = 'shibuya'
 }
