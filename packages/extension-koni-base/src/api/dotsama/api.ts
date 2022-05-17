@@ -102,7 +102,6 @@ async function loadOnReady (registry: Registry, api: ApiPromise): Promise<ApiSta
 }
 
 export function initApi (networkKey: string, apiUrl: string): ApiProps {
-  
   const registry = new TypeRegistry();
 
   const provider = apiUrl.startsWith('http') ? new HttpProvider(apiUrl) : new WsProvider(apiUrl, DOTSAMA_AUTO_CONNECT_MS);
@@ -202,5 +201,4 @@ export function initApi (networkKey: string, apiUrl: string): ApiProps {
   });
 
   return result;
-
 }

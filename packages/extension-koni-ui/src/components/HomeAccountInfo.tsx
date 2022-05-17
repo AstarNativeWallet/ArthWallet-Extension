@@ -28,7 +28,6 @@ import useToast from '../hooks/useToast';
 import useTranslation from '../hooks/useTranslation';
 import getParentNameSuri from '../util/getParentNameSuri';
 import { AccountContext } from './contexts';
-
 import { AssetImageMap } from '@polkadot/extension-koni-ui/assets';
 
 export interface Props {
