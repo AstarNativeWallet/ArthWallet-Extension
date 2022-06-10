@@ -206,6 +206,13 @@ export const PREDEFINE_TOKEN_DATA_MAP: Record<string, Record<string, TokenInfo>>
     }
   },
   astarEvm: {
+    DOT: {
+      isMainToken: false,
+      symbol: 'DOT',
+      erc20Address: '0xffffffffffffffffffffffffffffffffffffffff',
+      decimals: 10,
+      name: 'XCM Polkadot Token'
+    },
     ARSW: {
       isMainToken: false,
       symbol: 'ARSW',

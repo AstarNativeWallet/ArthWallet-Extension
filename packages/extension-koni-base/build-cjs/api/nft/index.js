@@ -17,12 +17,12 @@ var _utils = require("@polkadot/extension-koni-base/utils/utils");
 
 // Copyright 2019-2022 @polkadot/extension-koni authors & contributors
 // SPDX-License-Identifier: Apache-2.0
-//import { AcalaNftApi } from '@polkadot/extension-koni-base/api/nft/acala_nft';
-//import { BitCountryNftApi } from '@polkadot/extension-koni-base/api/nft/bit.country';
-//import QuartzNftApi from '@polkadot/extension-koni-base/api/nft/quartz_nft';
-//import { RmrkNftApi } from '@polkadot/extension-koni-base/api/nft/rmrk_nft';
-//import StatemineNftApi from '@polkadot/extension-koni-base/api/nft/statemine_nft';
-//import UniqueNftApi from '@polkadot/extension-koni-base/api/nft/unique_nft';
+// import { AcalaNftApi } from '@polkadot/extension-koni-base/api/nft/acala_nft';
+// import { BitCountryNftApi } from '@polkadot/extension-koni-base/api/nft/bit.country';
+// import QuartzNftApi from '@polkadot/extension-koni-base/api/nft/quartz_nft';
+// import { RmrkNftApi } from '@polkadot/extension-koni-base/api/nft/rmrk_nft';
+// import StatemineNftApi from '@polkadot/extension-koni-base/api/nft/statemine_nft';
+// import UniqueNftApi from '@polkadot/extension-koni-base/api/nft/unique_nft';
 function createNftApi(chain, api, addresses) {
   const [substrateAddresses, evmAddresses] = (0, _utils.categoryAddresses)(addresses);
   const useAddresses = _apiHelper.ethereumChains.indexOf(chain) > -1 ? evmAddresses : substrateAddresses;

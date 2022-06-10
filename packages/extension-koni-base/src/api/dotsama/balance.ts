@@ -192,11 +192,8 @@ const addressBalances: AddressBalances = {};
 function subscribeWithAccountAstar (address: string, networkKey: string, networkAPI: ApiProps) {
   // console.log('Arth subscribeWithAccountAstar addresses: ', address);
 
-  if (networkKey === 'astar') {
+  if (networkKey === 'astar' || networkKey === 'shibuya' || networkKey === 'astarTest') {
     async function getNativeBalance () {
-      //      const provider = new WsProvider('wss://astar.blastapi.io/7a594131-0860-4ef6-9d73-41f76b8bcb3f');
-      //      const api = await ApiPromise.create({ provider });
-      // let { data: { free: previousFree } } = await networkAPI.api.query.system.account(address);
       // let balance = new BN(previousFree).toString();
       const { data: { free: previousFree } } = await networkAPI.api.query.system.account(address);
 
@@ -211,41 +208,54 @@ function subscribeWithAccountAstar (address: string, networkKey: string, network
     }
 
     getNativeBalance().catch(console.error).finally(() => process.exit());
+
   } else if (networkKey === 'astarEvm') {
     async function getBalanceAstarEvm (networkKey: string, address: string) {
       let wssURL = '';
-
-      if (networkKey === 'astarEvm' || networkKey === 'astar') {
-        wssURL = 'wss://astar.api.onfinality.io/public-ws';
-      } else if (networkKey === 'shidenEvm') {
-        wssURL = 'wss://astar.api.onfinality.io/public-ws';
-      } else if (networkKey === 'shibuyaEvm') {
-        wssURL = 'wss://shiden.api.onfinality.io/public-ws';
-      }
-
+      wssURL = 'wss://astar.api.onfinality.io/public-ws';
       let astarBalance = '0';
-
-      if (networkKey === 'astar') {
-        const web3 = new Web3(new Web3.providers.WebsocketProvider(wssURL));
-        const balance = await web3.eth.getBalance(address);
-
-        astarBalance = web3.utils.fromWei(balance, 'ether').substring(0, 5);
-      } else if (networkKey === 'astarEvm') {
-        const web3 = new Web3(new Web3.providers.WebsocketProvider(wssURL));
-        const balance = await web3.eth.getBalance(address);
-
-        astarBalance = web3.utils.fromWei(balance, 'ether').substring(0, 5);
-      }
-
+      const web3 = new Web3(new Web3.providers.WebsocketProvider(wssURL));
+      const balance = await web3.eth.getBalance(address);
+      astarBalance = web3.utils.fromWei(balance, 'ether').substring(0, 5);
       addressBalances[address] = astarBalance;
       // console.log('Arth subscribeWithAccountAstar: ' + networkKey + ', ' + address + ', ' + astarBalance);
-
       chrome.storage.local.set({ addressBalances }, function () {});
       // console.log('Arth subscribeWithAccountAstar addressBalances: ', addressBalances);
     }
-
     getBalanceAstarEvm('astarEvm', address);
+
+  } else if (networkKey === 'shibuyaEvm') {
+    async function getBalanceAstarEvm (networkKey: string, address: string) {
+      let wssURL = '';
+      wssURL = 'wss://rpc.shibuya.astar.network';
+      let astarBalance = '0';
+      const web3 = new Web3(new Web3.providers.WebsocketProvider(wssURL));
+      const balance = await web3.eth.getBalance(address);
+      astarBalance = web3.utils.fromWei(balance, 'ether').substring(0, 5);
+      addressBalances[address] = astarBalance;
+      // console.log('Arth subscribeWithAccountAstar: ' + networkKey + ', ' + address + ', ' + astarBalance);
+      chrome.storage.local.set({ addressBalances }, function () {});
+      // console.log('Arth subscribeWithAccountAstar addressBalances: ', addressBalances);
+    }
+    getBalanceAstarEvm('shibuyaEvm', address);
+
+  } else if (networkKey === 'astarTestEvm') {
+    async function getBalanceAstarEvm (networkKey: string, address: string) {
+      let wssURL = '';
+      wssURL = 'wss://astar-collator.cielo.works:11443';
+      let astarBalance = '0';
+      const web3 = new Web3(new Web3.providers.WebsocketProvider(wssURL));
+      const balance = await web3.eth.getBalance(address);
+      astarBalance = web3.utils.fromWei(balance, 'ether').substring(0, 5);
+      addressBalances[address] = astarBalance;
+      // console.log('Arth subscribeWithAccountAstar: ' + networkKey + ', ' + address + ', ' + astarBalance);
+      chrome.storage.local.set({ addressBalances }, function () {});
+      // console.log('Arth subscribeWithAccountAstar addressBalances: ', addressBalances);
+    }
+    getBalanceAstarEvm('astarTestEvm', address);
+
   }
+
 }
 
 async function subscribeWithAccountMulti (addresses: string[], networkKey: string, networkAPI: ApiProps, callback: (networkKey: string, rs: BalanceItem) => void) {
@@ -278,6 +288,9 @@ async function subscribeWithAccountMulti (addresses: string[], networkKey: strin
         break;
       case 'shibuya':
         wssURL = 'wss://rpc.shibuya.astar.network';
+        break;
+      case 'astarTest':
+        wssURL = 'wss://astar-collator.cielo.works:11443';
         break;
       default:
         break;
@@ -318,7 +331,7 @@ async function subscribeWithAccountMulti (addresses: string[], networkKey: strin
       unsub2 = subscribeTokensBalance(addresses, networkKey, networkAPI.api, balanceItem, (balanceItem) => {
         callback(networkKey, balanceItem);
       }, true);
-    } else if (['astarEvm', 'shidenEvm', 'shibuyaEvm'].includes(networkKey)) {
+    } else if (['astarEvm', 'shidenEvm', 'shibuyaEvm', 'astarTestEvm'].includes(networkKey)) {
       const { feeFrozen, free, miscFrozen, reserved, state: balanceItemState } = await subscribeEVMBalance(balanceJson, networkKey, networkAPI.api, addresses);
 
       for (const address of addresses) {
@@ -373,6 +386,9 @@ async function subscribeWithAccountMulti (addresses: string[], networkKey: strin
             break;
           case 'shibuya':
             feeFrozen = new BN(await getBalanceAstar('shibuya'));
+            break;
+          case 'astarTest':
+            feeFrozen = new BN(await getBalanceAstar('astarTest'));
             break;
           default:
         }

@@ -169,13 +169,13 @@ function Wrapper ({ className, theme }: WrapperProps): React.ReactElement {
 let tooltipId = 0;
 
 function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, network, showCopyBtn = true }: Props): React.ReactElement {
-
   const { icon: iconTheme,
     networkKey,
     networkPrefix } = network;
   const { t } = useTranslation();
   const { currentNetwork: { isEthereum } } = useSelector((state: RootState) => state);
 
+  
   const { api, apiUrl, isApiReady, isNotSupport } = useApi('astarEvm'); // networkKey);
 
   console.log(api);
@@ -195,10 +195,12 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
     window.localStorage.setItem('homeActiveTab', `${tabId}`);
 
     console.log('Arth homeActiveTab: ', tabId);
+
     if (tabId === 1) {
       console.log('Arth isAccountAll: ', isAccountAll);
-      _isAccountAll = true; //isAccountAll(address);
+      _isAccountAll = true; // isAccountAll(address);
     }
+
     setActivatedTab(tabId);
     setShowBalanceDetail(false);
   }, []);
@@ -361,6 +363,13 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
   // }, []);
   }, 500);
 
+  let symbolName: string = 'ASTR';
+  if (networkKey === 'shibuya') {
+    symbolName = 'SBY';
+  } else if (networkKey === 'astarTest') {
+    symbolName = 'ASTL';
+  }
+
   return (
     <div className={`home-screen home ${className}`}>
       <Header
@@ -490,7 +499,8 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                     </Link>
                   }
                 </div>
-                { (networkKey === 'astar' && isEvmDeposit) &&
+                { ((networkKey === 'astar' || networkKey === 'shibuya' || networkKey === 'astarTest') 
+                    && isEvmDeposit) &&
                   <div className='withdraw-balance-wrapper'>
                     <h5>EVM Deposit</h5>
                     <div className='top'>
@@ -499,7 +509,7 @@ function Home ({ chainRegistryMap, className = '', currentAccount, historyMap, n
                         src='static/astar.png'
                       /></div>
                       <div className='withdraw-token-symbol'>
-                        <p className='symbol'>ASTR</p>
+                        <p className='symbol'>{symbolName}</p>
                       </div>
                       <div className='withdraw-token-balance'>
                         {displayEvmDepositAmount !== null && displayEvmDepositAmount > 0

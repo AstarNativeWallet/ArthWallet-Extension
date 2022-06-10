@@ -16,6 +16,7 @@ import styled from 'styled-components';
 // import AvailableNativeNum from '../Popup/Sending/old/component/AvailableNativeNum';
 // import { getWeb3Api } from '@polkadot/extension-koni-base/api/web3/web3';
 import { reformatAddress } from '@polkadot/extension-koni-base/utils/utils';
+import { AssetImageMap } from '@polkadot/extension-koni-ui/assets';
 import allAccountLogoDefault from '@polkadot/extension-koni-ui/assets/all-account-icon.svg';
 import cloneLogo from '@polkadot/extension-koni-ui/assets/clone.svg';
 // import { BalanceVal } from '@polkadot/extension-koni-ui/components/balance';
@@ -28,7 +29,6 @@ import useToast from '../hooks/useToast';
 import useTranslation from '../hooks/useTranslation';
 import getParentNameSuri from '../util/getParentNameSuri';
 import { AccountContext } from './contexts';
-import { AssetImageMap } from '@polkadot/extension-koni-ui/assets';
 
 export interface Props {
   address: string ;

@@ -112,6 +112,55 @@ const NETWORKS: Record<string, NetWorkInfo> = {
     decimals: 18,
     isSubscribe: true
   },
+  shibuya: {
+    chain: 'Shibuya',
+    genesisHash: '0xddb89973361a170839f80f152d2e9e38a376a5a7eccefcade763f46a8e567019',
+    ss58Format: 5,
+    // provider: 'wss://shibuya.public.blastapi.io',
+    provider: 'wss://rpc.shibuya.astar.network',
+    groups: ['TEST_NET', 'ASTAR_MAINNET'],
+    paraId: 1000,
+    nativeToken: 'SBY',
+    crowdloanUrl: 'https://crowdloan.astar.network/#/',
+    decimals: 18,
+    isSubscribe: true
+  },
+  shibuyaEvm: {
+    chain: 'Shibuya - EVM',
+    genesisHash: '0xddb89973361a170839f80f152d2e9e38a376a5a7eccefcade763f46a8e567019___EVM',
+    ss58Format: 5,
+    //provider: 'https://shibuya.public.blastapi.io',
+    provider: 'https://evm.shibuya.astar.network',
+    groups: ['TEST_NET', 'ASTAR_MAINNET'],
+    isEthereum: true,
+    nativeToken: 'SBY',
+    decimals: 18,
+    isSubscribe: true
+  },
+  astarTest: {
+    chain: 'AstarTest',
+    genesisHash: '0xddb89973361a170839f80f152d2e9e38a376a5a7eccefcade763f46a8e567999',
+    ss58Format: 5,
+    provider: 'wss://astar-collator.cielo.works:11443',
+    groups: ['TEST_NET', 'ASTAR_MAINNET'],
+    paraId: 9999,
+    nativeToken: 'ASTL',
+    crowdloanUrl: 'https://crowdloan.astar.network/#/',
+    decimals: 18,
+    isSubscribe: true
+  },
+  astarTestEvm: {
+    chain: 'AstarTest - EVM',
+    genesisHash: '0xddb89973361a170839f80f152d2e9e38a376a5a7eccefcade763f46a8e567999___EVM',
+    ss58Format: 5,
+    provider: 'wss://astar-collator.cielo.works:11443',
+    groups: ['TEST_NET', 'ASTAR_MAINNET'],
+    isEthereum: true,
+    nativeToken: 'ASTL',
+    decimals: 18,
+    isSubscribe: true
+  },
+
   parallel: {
     chain: 'Parallel',
     genesisHash: '0xe61a41c53f5dcd0beb09df93b34402aada44cb05117b71059cce40a2723a4e97',
