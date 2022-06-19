@@ -842,7 +842,7 @@ export default React.memo(styled(Wrapper)(({ theme }: WrapperProps) => `
     height: 150px;
     margin: 18px auto;
     
-    background: radial-gradient(98.81% 537.96% at 0% 58.33%, #8380C2 0%, #D4D3FF 100%);
+    background: linear-gradient(103.69deg, #4B9ED1 9.8%, #6CDEB0 81.2%);
     border-radius: 6px;
     }
 
