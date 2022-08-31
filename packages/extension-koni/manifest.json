@@ -1,9 +1,9 @@
 {
-  "author": "ArthWallet Labo",
+  "author": "FOLIOS Labo",
   "description": "The wallet connects the Astar & Shiden Ecosystem to other ecosystems.",
-  "homepage_url": "https://twitter.com/ArthWallet",
-  "name": "ArthWallet - Native wallet on AstarNetwork",
-  "short_name": "ArthWallet",
+  "homepage_url": "https://twitter.com/folios_astar",
+  "name": "FOLIOS",
+  "short_name": "FOLIOS",
   "manifest_version": 2,
   "permissions": [
     "storage",
@@ -17,7 +17,7 @@
     "persistent": true
   },
   "browser_action": {
-    "default_title": "ArthWallet",
+    "default_title": "FOLIOS",
     "default_popup": "index.html"
   },
   "content_scripts": [
@@ -33,11 +33,11 @@
     }
   ],
   "icons": {
-    "16": "images/icon-16.png",
-    "32": "images/icon-32.png",
-    "48": "images/icon-48.png",
-    "64": "images/icon-64.png",
-    "128": "images/icon-128.png"
+    "16": "images/Icon-16.png",
+    "32": "images/Icon-32.png",
+    "48": "images/Icon-48.png",
+    "64": "images/Icon-64.png",
+    "128": "images/Icon-128.png"
   },
   "web_accessible_resources": [
     "page.js"

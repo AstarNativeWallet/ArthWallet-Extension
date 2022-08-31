@@ -1,5 +1,5 @@
-## SubWallet Extension
-Our SubWallet is forked from polkadot-js/extension. We aim to adding more features while being able to rebase the polkadot-js origin at any time.
+## FOLIOS Extension
+Our FOLIOS is forked from Subwallet(based on polkadot-js/extension).
 ## Main Concept
 ![Main Concept](https://github.com/Koniverse/Subwallet-V2/wiki/images/ExtensionConcept.png)
 The extension is compiled from folder `packages/extension-koni`
@@ -66,7 +66,7 @@ Store is used to persist data into local storage. Stores is defined in folder `p
   ```
 
 ## Add a message handle 
-Subwallet extension use message passing concept via browser API to interact between Background - Extensions - Chrome Tabs.
+FOLIOS extension use message passing concept via browser API to interact between Background - Extensions - Chrome Tabs.
 - Extension or Chrome Tabs send a message with id and type to Background
 - Background handle message by id and type and response data.
 - There are 2 message type:
@@ -100,7 +100,7 @@ Cronjob is define in folder `packages/extension-koni-base/src/cron`.
 ## Develop UI
 
 ### UI Structure
-- SubWallet Extension UI build with ReactJS.
+- FOLIOS Extension UI build with ReactJS.
 - Popup: Main extension page, show when click into extension icon in browser extension list.
 - Portfolio (Coming soon): Display more complicated view like dashboard, transaction...
 - Another folders:
@@ -114,7 +114,7 @@ Cronjob is define in folder `packages/extension-koni-base/src/cron`.
   - messaging.ts: Send to background and handle return message.
 
 ### Add new redux store
-- Subwallet extension use [redux-tookit](https://redux-toolkit.js.org/) to generate store.
+- FOLIOS extension use [redux-tookit](https://redux-toolkit.js.org/) to generate store.
 - Define redux store reducers and state into separate file by method `createSlice` of redux toolkit.
 - Map reducer into root store in file index.ts
 
@@ -125,7 +125,7 @@ Read "Add a message handle"
 Extension auto validate code with eslint. Please setup eslint in editor and run `yarn lint` before commit code.
 
 ## Write test
-Subwallet run test with [jest](https://jestjs.io/). Create new file with name `filename.spec.ts` to write test.
+FOLIOS run test with [jest](https://jestjs.io/). Create new file with name `filename.spec.ts` to write test.
 
 ## Commit and Build
 - Please run `yarn lint` and `yarn test`
