@@ -1,10 +1,10 @@
-// Copyright 2019-2022 @polkadot/extension-koni authors & contributors
+// Copyright 2019-2022 @subwallet/extension-koni authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { ApiProps, NftCollection, NftItem } from '@polkadot/extension-base/background/KoniTypes';
-import { SUPPORTED_NFT_NETWORKS } from '@polkadot/extension-koni-base/api/nft/config';
-import { BaseNftApi } from '@polkadot/extension-koni-base/api/nft/nft';
-import { hexToStr, hexToUTF16, parseIpfsLink, utf16ToString } from '@polkadot/extension-koni-base/utils/utils';
+import { ApiProps, NftCollection, NftItem } from '@subwallet/extension-base/background/KoniTypes';
+import { SUPPORTED_NFT_NETWORKS } from '@subwallet/extension-koni-base/api/nft/config';
+import { BaseNftApi, HandleNftParams } from '@subwallet/extension-koni-base/api/nft/nft';
+import { hexToStr, hexToUTF16, parseIpfsLink, utf16ToString } from '@subwallet/extension-koni-base/utils';
 
 import { deserializeNft } from './protobuf';
 
@@ -23,8 +23,8 @@ interface CollectionProperties {
 
 export default class QuartzNftApi extends BaseNftApi {
   // eslint-disable-next-line no-useless-constructor
-  constructor (api: ApiProps | null, addresses: string[], chain?: string) {
-    super(api, addresses, chain);
+  constructor (api: ApiProps | null, addresses: string[], chain: string) {
+    super(chain, api, addresses);
   }
 
   /**
@@ -129,7 +129,7 @@ export default class QuartzNftApi extends BaseNftApi {
     };
   }
 
-  public async handleNfts (updateItem: (data: NftItem) => void, updateCollection: (data: NftCollection) => void, updateReady: (ready: boolean) => void) {
+  public async handleNfts (params: HandleNftParams) {
     const collectionCount = await this.getCreatedCollectionCount();
     const collectionPropertiesMap: Record<number, any> = {};
     const collectionIds: number[] = [];
@@ -177,12 +177,23 @@ export default class QuartzNftApi extends BaseNftApi {
       ]);
 
       if (allNftId.length <= 0) {
-        updateReady(true);
+        params.updateReady(true);
+        params.updateNftIds(SUPPORTED_NFT_NETWORKS.quartz);
+
+        return;
       }
+
+      const collectionNftIds: Record<string, string[]> = {};
 
       await Promise.all(allNftId.map(async (tokenId) => {
         const collectionId = nftMap[tokenId];
         const collectionProperties = collectionPropertiesMap[parseInt(collectionId)] as CollectionProperties;
+
+        if (collectionNftIds[collectionId]) {
+          collectionNftIds[collectionId].push(tokenId);
+        } else {
+          collectionNftIds[collectionId] = [tokenId];
+        }
 
         const nftData = await this.getNftData(collectionProperties, parseInt(collectionId), parseInt(tokenId));
 
@@ -198,7 +209,7 @@ export default class QuartzNftApi extends BaseNftApi {
             chain: SUPPORTED_NFT_NETWORKS.quartz
           } as NftItem;
 
-          updateItem(parsedItem);
+          params.updateItem(parsedItem);
 
           const parsedCollection = {
             collectionId: collectionId.toString(),
@@ -207,19 +218,22 @@ export default class QuartzNftApi extends BaseNftApi {
             chain: SUPPORTED_NFT_NETWORKS.quartz
           } as NftCollection;
 
-          updateCollection(parsedCollection);
-          updateReady(true);
+          params.updateCollection(parsedCollection);
+          params.updateReady(true);
         }
       }));
+
+      params.updateCollectionIds(SUPPORTED_NFT_NETWORKS.quartz, Object.keys(collectionNftIds));
+      Object.entries(collectionNftIds).forEach(([collectionId, nftIds]) => params.updateNftIds(SUPPORTED_NFT_NETWORKS.quartz, collectionId, nftIds));
     } catch (e) {
       console.error('Failed to fetch quartz nft', e);
     }
   }
 
-  public async fetchNfts (updateItem: (data: NftItem) => void, updateCollection: (data: NftCollection) => void, updateReady: (ready: boolean) => void): Promise<number> {
+  public async fetchNfts (params: HandleNftParams): Promise<number> {
     try {
       await this.connect();
-      await this.handleNfts(updateItem, updateCollection, updateReady);
+      await this.handleNfts(params);
     } catch (e) {
       return 0;
     }

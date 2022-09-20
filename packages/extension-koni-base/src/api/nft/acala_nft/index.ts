@@ -1,16 +1,16 @@
-// Copyright 2019-2022 @polkadot/extension-koni authors & contributors
+// Copyright 2019-2022 @subwallet/extension-koni authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { ApiProps, NftCollection, NftItem } from '@subwallet/extension-base/background/KoniTypes';
+import { getRandomIpfsGateway, SUPPORTED_NFT_NETWORKS } from '@subwallet/extension-koni-base/api/nft/config';
+import { BaseNftApi, HandleNftParams } from '@subwallet/extension-koni-base/api/nft/nft';
+import { isUrl } from '@subwallet/extension-koni-base/utils';
 import fetch from 'cross-fetch';
-
-import { ApiProps, NftCollection, NftItem } from '@polkadot/extension-base/background/KoniTypes';
-import { CLOUDFLARE_SERVER, SUPPORTED_NFT_NETWORKS } from '@polkadot/extension-koni-base/api/nft/config';
-import { BaseNftApi } from '@polkadot/extension-koni-base/api/nft/nft';
-import { isUrl } from '@polkadot/extension-koni-base/utils/utils';
 
 interface AssetId {
   classId: string | number,
-  tokenId: string | number
+  tokenId: string | number,
+  owner: string
 }
 
 interface Collection {
@@ -32,8 +32,8 @@ const acalaExternalBaseUrl = 'https://apps.acala.network/portfolio/nft/';
 
 export class AcalaNftApi extends BaseNftApi {
   // eslint-disable-next-line no-useless-constructor
-  constructor (api: ApiProps | null, addresses: string[], chain?: string) {
-    super(api, addresses, chain);
+  constructor (api: ApiProps | null, addresses: string[], chain: string) {
+    super(chain, api, addresses);
   }
 
   override parseUrl (input: string): string | undefined {
@@ -46,10 +46,10 @@ export class AcalaNftApi extends BaseNftApi {
     }
 
     if (!input.includes('ipfs://')) {
-      return CLOUDFLARE_SERVER + input;
+      return getRandomIpfsGateway() + input;
     }
 
-    return CLOUDFLARE_SERVER + input.split('ipfs://')[1];
+    return getRandomIpfsGateway() + input.split('ipfs://')[1];
   }
 
   /**
@@ -63,23 +63,29 @@ export class AcalaNftApi extends BaseNftApi {
       return [];
     }
 
-    let accountAssets: any[] = [];
+    const accountAssets: Record<string, any[]> = {};
 
     await Promise.all(addresses.map(async (address) => {
       // @ts-ignore
       const resp = await this.dotSamaApi.api.query.ormlNFT.tokensByOwner.keys(address);
 
-      accountAssets = accountAssets.concat(resp);
+      if (address in accountAssets) {
+        accountAssets[address].concat(resp);
+      } else {
+        accountAssets[address] = resp;
+      }
     }));
 
     const assetIds: AssetId[] = [];
 
-    for (const key of accountAssets) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-      const data = key.toHuman() as string[];
+    Object.entries(accountAssets).forEach(([owner, rawData]) => {
+      for (const key of rawData) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+        const data = key.toHuman() as string[];
 
-      assetIds.push({ classId: data[1], tokenId: this.parseTokenId(data[2]) });
-    }
+        assetIds.push({ classId: data[1], tokenId: this.parseTokenId(data[2]), owner });
+      }
+    });
 
     return assetIds;
   }
@@ -108,20 +114,29 @@ export class AcalaNftApi extends BaseNftApi {
     return (await this.dotSamaApi.api.query.ormlNFT.tokens(assetId.classId, assetId.tokenId)).toHuman() as unknown as Token;
   }
 
-  public async handleNfts (updateItem: (data: NftItem) => void, updateCollection: (data: NftCollection) => void, updateReady: (ready: boolean) => void) {
+  public async handleNfts (params: HandleNftParams) {
     // const start = performance.now();
     const assetIds = await this.getNfts(this.addresses);
 
     try {
       if (!assetIds || assetIds.length === 0) {
-        updateReady(true);
+        params.updateReady(true);
+        params.updateNftIds(SUPPORTED_NFT_NETWORKS.acala);
 
         return;
       }
 
+      const collectionNftIds: Record<string, string[]> = {};
+
       await Promise.all(assetIds.map(async (assetId) => {
         const parsedClassId = this.parseTokenId(assetId.classId as string);
         const parsedTokenId = this.parseTokenId(assetId.tokenId as string);
+
+        if (collectionNftIds[parsedClassId]) {
+          collectionNftIds[parsedClassId].push(parsedTokenId);
+        } else {
+          collectionNftIds[parsedClassId] = [parsedTokenId];
+        }
 
         const [tokenInfo, collectionMeta] = await Promise.all([
           this.getTokenDetails(assetId),
@@ -137,7 +152,8 @@ export class AcalaNftApi extends BaseNftApi {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
           image: tokenInfo && tokenInfo.image ? this.parseUrl(tokenInfo?.image) : collectionMeta?.image,
           collectionId: parsedClassId,
-          chain: SUPPORTED_NFT_NETWORKS.acala
+          chain: SUPPORTED_NFT_NETWORKS.acala,
+          owner: assetId.owner
         } as NftItem;
 
         const parsedCollection = {
@@ -149,19 +165,22 @@ export class AcalaNftApi extends BaseNftApi {
           image: collectionMeta?.image
         } as NftCollection;
 
-        updateItem(parsedNft);
-        updateCollection(parsedCollection);
-        updateReady(true);
+        params.updateItem(parsedNft);
+        params.updateCollection(parsedCollection);
+        params.updateReady(true);
       }));
+
+      params.updateCollectionIds(SUPPORTED_NFT_NETWORKS.acala, Object.keys(collectionNftIds));
+      Object.entries(collectionNftIds).forEach(([collectionId, nftIds]) => params.updateNftIds(SUPPORTED_NFT_NETWORKS.acala, collectionId, nftIds));
     } catch (e) {
       console.error('Failed to fetch acala nft', e);
     }
   }
 
-  public async fetchNfts (updateItem: (data: NftItem) => void, updateCollection: (data: NftCollection) => void, updateReady: (ready: boolean) => void): Promise<number> {
+  public async fetchNfts (params: HandleNftParams): Promise<number> {
     try {
       await this.connect();
-      await this.handleNfts(updateItem, updateCollection, updateReady);
+      await this.handleNfts(params);
     } catch (e) {
       return 0;
     }
@@ -181,7 +200,7 @@ const getMetadata = (metadataUrl: string) => {
     return null;
   }
 
-  url = CLOUDFLARE_SERVER + metadataUrl + '/metadata.json';
+  url = getRandomIpfsGateway() + metadataUrl + '/metadata.json';
 
   return fetch(url, {
     method: 'GET',

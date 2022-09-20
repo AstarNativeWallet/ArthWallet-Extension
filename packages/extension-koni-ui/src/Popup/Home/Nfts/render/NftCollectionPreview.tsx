@@ -1,15 +1,13 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { useCallback, useState } from 'react';
+import Spinner from '@subwallet/extension-koni-ui/components/Spinner';
+import { _NftCollection } from '@subwallet/extension-koni-ui/Popup/Home/Nfts/types';
+import { Theme, ThemeProps } from '@subwallet/extension-koni-ui/types';
+import React, { useCallback, useContext, useState } from 'react';
 // @ts-ignore
 import LazyLoad from 'react-lazyload';
-import styled from 'styled-components';
-
-import logo from '@polkadot/extension-koni-ui/assets/sub-wallet-logo.svg';
-import Spinner from '@polkadot/extension-koni-ui/components/Spinner';
-import { _NftCollection } from '@polkadot/extension-koni-ui/Popup/Home/Nfts/types';
-import { ThemeProps } from '@polkadot/extension-koni-ui/types';
+import styled, { ThemeContext } from 'styled-components';
 
 interface Props {
   className?: string;
@@ -19,6 +17,8 @@ interface Props {
 
 function NftCollectionPreview ({ className, data, onClick }: Props): React.ReactElement<Props> {
   const [loading, setLoading] = useState(true);
+  const [showDefaultImage, setShowDefaultImage] = useState(false);
+  const themeContext = useContext(ThemeContext as React.Context<Theme>);
 
   const handleOnLoad = useCallback(() => {
     setLoading(false);
@@ -28,26 +28,41 @@ function NftCollectionPreview ({ className, data, onClick }: Props): React.React
     onClick(data);
   }, [data, onClick]);
 
+  const handleImageError = useCallback(() => {
+    setLoading(false);
+    setShowDefaultImage(true);
+  }, []);
+
   return (
     <div className={className}>
       <div
         className={'nft-preview'}
         onClick={handleOnClick}
-        style={{ height: '164px' }}
       >
         <div className={'img-container'}>
           {
-            loading &&
-            <Spinner className={'img-spinner'} />
+            loading && <Spinner className={'img-spinner'} />
           }
-          <LazyLoad>
-            <img
-              alt={'collection-thumbnail'}
-              className={'collection-thumbnail'}
-              onLoad={handleOnLoad}
-              src={data.image ? data?.image : logo}
-              style={{ borderRadius: '5px 5px 0 0', opacity: loading ? '0.3' : '1' }}
-            />
+          <LazyLoad
+            scrollContainer={'.home-tab-contents'}
+          >
+            {
+              !showDefaultImage
+                ? <img
+                  alt={'collection-thumbnail'}
+                  className={'collection-thumbnail'}
+                  onError={handleImageError}
+                  onLoad={handleOnLoad}
+                  src={data.image ? data?.image : themeContext.logo}
+                  style={{ borderRadius: '5px 5px 0 0', opacity: loading ? '0.3' : '1' }}
+                />
+                : <img
+                  alt={'default-img'}
+                  className={'collection-thumbnail'}
+                  src={themeContext.logo}
+                  style={{ borderRadius: '5px 5px 0 0' }}
+                />
+            }
           </LazyLoad>
         </div>
 
@@ -68,12 +83,11 @@ function NftCollectionPreview ({ className, data, onClick }: Props): React.React
 }
 
 export default React.memo(styled(NftCollectionPreview)(({ theme }: ThemeProps) => `
+  height: 164px;
+  
   .img-container {
     position: relative;
-  }
-
-  .img-spinner {
-    position: absolute;
+    height: 124px;
   }
 
   .nft-preview {

@@ -1,20 +1,19 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import type { Theme, ThemeProps } from '../types';
 
+import cloneLogo from '@subwallet/extension-koni-ui/assets/clone.svg';
+import useToast from '@subwallet/extension-koni-ui/hooks/useToast';
+import Header from '@subwallet/extension-koni-ui/partials/Header';
+import { RootState } from '@subwallet/extension-koni-ui/stores';
+import { isAccountAll, toShort } from '@subwallet/extension-koni-ui/util';
 import { saveAs } from 'file-saver';
 import React, { useCallback, useContext, useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { useSelector } from 'react-redux';
 import { RouteComponentProps, withRouter } from 'react-router';
 import styled, { ThemeContext } from 'styled-components';
-
-import cloneLogo from '@polkadot/extension-koni-ui/assets/clone.svg';
-import useToast from '@polkadot/extension-koni-ui/hooks/useToast';
-import Header from '@polkadot/extension-koni-ui/partials/Header';
-import { RootState } from '@polkadot/extension-koni-ui/stores';
-import { isAccountAll, toShort } from '@polkadot/extension-koni-ui/util';
 
 import { AccountInfoEl, ActionBar, ActionContext, ActionText, Button, InputWithLabel, Label, Warning } from '../components';
 import useTranslation from '../hooks/useTranslation';
@@ -179,15 +178,16 @@ function ExportAccount ({ className, match: { params: { address } } }: Props): R
               >
                 <span>{t<string>('Cancel')}</span>
               </Button>
-              {!privateKey && <Button
-                className='export-button'
-                data-export-button
-                isBusy={isBusy && buttonId === 'exportPrivate'}
-                isDisabled={pass.length === 0 || !!error || isBusy}
-                onClick={_onExportPrivateButtonClick}
-              >
-                {t<string>('Private Key')}
-              </Button>}
+              {!privateKey &&
+                <Button
+                  className='export-button'
+                  data-export-button
+                  isBusy={isBusy && buttonId === 'exportPrivate'}
+                  isDisabled={pass.length === 0 || !!error || isBusy}
+                  onClick={_onExportPrivateButtonClick}
+                >
+                  {t<string>('Private Key')}
+                </Button>}
               <Button
                 className='export-button'
                 data-export-button

@@ -1,26 +1,16 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { TabHeaderItemType } from '@subwallet/extension-koni-ui/Popup/Home/types';
+import { ThemeProps } from '@subwallet/extension-koni-ui/types';
 import React from 'react';
 import styled from 'styled-components';
-
-import { TabHeaderItemType } from '@polkadot/extension-koni-ui/Popup/Home/types';
-import { ThemeProps } from '@polkadot/extension-koni-ui/types';
 
 interface Props extends ThemeProps {
   className?: string;
   item: TabHeaderItemType;
   isActivated: boolean;
-  isDarkTheme: boolean;
   onSelect: (tabId: number) => void;
-}
-
-function getImgSrc (item: TabHeaderItemType, isActivated: boolean, isDarkTheme: boolean): string {
-  if (isDarkTheme) {
-    return isActivated ? item.activatedDarkIcon : item.darkIcon;
-  } else {
-    return isActivated ? item.activatedLightIcon : item.lightIcon;
-  }
 }
 
 function getContainerClassName (isActivated: boolean, extraClassName = ''): string {
@@ -33,7 +23,7 @@ function getContainerClassName (isActivated: boolean, extraClassName = ''): stri
   return className;
 }
 
-function TabHeaderItem ({ className, isActivated, isDarkTheme, item, onSelect }: Props): React.ReactElement<Props> {
+function TabHeaderItem ({ className, isActivated, item, onSelect }: Props): React.ReactElement<Props> {
   const _onSelect = (tabId: number) => {
     return (e: React.MouseEvent<HTMLElement>) => {
       onSelect(tabId);
@@ -46,12 +36,9 @@ function TabHeaderItem ({ className, isActivated, isDarkTheme, item, onSelect }:
       onClick={_onSelect(item.tabId)}
     >
       <div className='tab-header-item__content-wrapper'>
-        <img
-          alt='Icon'
-          className={'tab-header-item__icon'}
-          src={getImgSrc(item, isActivated, isDarkTheme)}
-        />
-
+        <div className={'tab-header-item__icon'}>
+          {item.icon}
+        </div>
         <div className='tab-header-item__label'>{item.label}</div>
       </div>
     </div>
@@ -81,13 +68,10 @@ export default styled(TabHeaderItem)(({ theme }: Props) => `
     right: 0;
   }
 
-  &.-activated .tab-header-item__content-wrapper:before {
-    background: #42C59A;
-  }
-
   .tab-header-item__icon {
     height: 26px;
     width: auto;
+    color: ${theme.textColor2};
   }
 
   .tab-header-item__label {
@@ -96,5 +80,14 @@ export default styled(TabHeaderItem)(({ theme }: Props) => `
     color: ${theme.textColor2};
     font-weight: 400;
     padding-top: 3px;
+  }
+  
+  &.-activated {
+    .tab-header-item__icon {
+      color: ${theme.HomeNavHighlightColor};
+    }
+    .tab-header-item__content-wrapper:before {
+      background-color: ${theme.HomeNavHighlightColor};    
+    }
   }
 `);

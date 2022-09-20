@@ -1,5 +1,5 @@
 /* eslint-disable */
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import type { ThemeProps } from '../types';
@@ -8,15 +8,15 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import { canDerive } from '@polkadot/extension-base/utils';
-import check from '@polkadot/extension-koni-ui/assets/check.svg';
-import Link from '@polkadot/extension-koni-ui/components/Link';
-import Menu from '@polkadot/extension-koni-ui/components/Menu';
-import MenuDivider from '@polkadot/extension-koni-ui/components/MenuDivider';
-import useTranslation from '@polkadot/extension-koni-ui/hooks/useTranslation';
-import { EVM_ACCOUNT_TYPE } from '@polkadot/extension-koni-ui/Popup/CreateAccount';
-import { RootState } from '@polkadot/extension-koni-ui/stores';
-import { isAccountAll } from '@polkadot/extension-koni-ui/util';
+import { canDerive } from '@subwallet/extension-base/utils';
+import Link from '@subwallet/extension-koni-ui/components/Link';
+import Menu from '@subwallet/extension-koni-ui/components/Menu';
+import MenuDivider from '@subwallet/extension-koni-ui/components/MenuDivider';
+import useTranslation from '@subwallet/extension-koni-ui/hooks/useTranslation';
+import { EVM_ACCOUNT_TYPE } from '@subwallet/extension-koni-ui/Popup/CreateAccount';
+import { RootState } from '@subwallet/extension-koni-ui/stores';
+import { isAccountAll } from '@subwallet/extension-koni-ui/util';
+import { IconMaps } from '@subwallet/extension-koni-ui/assets/icon';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -93,11 +93,9 @@ function AccountAction ({ className, isShowZeroBalances, reference, setImgSelect
               <span>
                 {t<string>('Show Zero Balances')}
               </span>
-              <img
-                alt='check'
-                className='account-action__check-icon'
-                src={check}
-              />
+              <div className='account-action__check-icon'>
+                {IconMaps.check}
+              </div>
             </Link>
           </div>
         </>
@@ -137,6 +135,7 @@ export default React.memo(styled(AccountAction)(({ theme }: Props) => `
   .account-action__check-icon {
     margin-left: 4px;
     opacity: 0;
+    color: ${theme.primaryColor}
   }
 
   .account-action__show-zero-balance.-check .account-action__check-icon {

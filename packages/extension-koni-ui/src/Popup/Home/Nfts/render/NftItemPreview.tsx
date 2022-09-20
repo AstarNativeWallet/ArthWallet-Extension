@@ -1,13 +1,13 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { useCallback, useState } from 'react';
-import styled from 'styled-components';
-
-import logo from '@polkadot/extension-koni-ui/assets/sub-wallet-logo.svg';
-import Spinner from '@polkadot/extension-koni-ui/components/Spinner';
-import { _NftItem } from '@polkadot/extension-koni-ui/Popup/Home/Nfts/types';
-import { ThemeProps } from '@polkadot/extension-koni-ui/types';
+import Spinner from '@subwallet/extension-koni-ui/components/Spinner';
+import { _NftItem } from '@subwallet/extension-koni-ui/Popup/Home/Nfts/types';
+import { Theme, ThemeProps } from '@subwallet/extension-koni-ui/types';
+import React, { useCallback, useContext, useState } from 'react';
+// @ts-ignore
+import LazyLoad from 'react-lazyload';
+import styled, { ThemeContext } from 'styled-components';
 
 interface Props {
   className?: string;
@@ -20,6 +20,7 @@ function NftItemPreview ({ className, collectionImage, data, onClick }: Props): 
   const [loading, setLoading] = useState(true);
   const [showImage, setShowImage] = useState(true);
   const [imageError, setImageError] = useState(false);
+  const themeContext = useContext(ThemeContext as React.Context<Theme>);
 
   const handleOnLoad = useCallback(() => {
     setLoading(false);
@@ -36,7 +37,6 @@ function NftItemPreview ({ className, collectionImage, data, onClick }: Props): 
 
   const handleVideoError = useCallback(() => {
     setImageError(true);
-    setShowImage(true);
   }, []);
 
   const getItemImage = useCallback(() => {
@@ -46,8 +46,8 @@ function NftItemPreview ({ className, collectionImage, data, onClick }: Props): 
       return collectionImage;
     }
 
-    return logo;
-  }, [collectionImage, data.image, imageError]);
+    return themeContext.logo;
+  }, [collectionImage, data.image, imageError, themeContext.logo]);
 
   return (
     <div className={className}>
@@ -61,30 +61,41 @@ function NftItemPreview ({ className, collectionImage, data, onClick }: Props): 
             loading &&
             <Spinner className={'img-spinner'} />
           }
-          {
-            showImage
-              ? <img
-                alt={'collection-thumbnail'}
-                className={'collection-thumbnail'}
-                onError={handleImageError}
-                onLoad={handleOnLoad}
-                src={getItemImage()}
-                style={{ borderRadius: '5px 5px 0 0' }}
-              />
-              : <video
-                autoPlay
-                height='124'
-                loop={true}
-                muted
-                onError={handleVideoError}
-                width='124'
-              >
-                <source
+          <LazyLoad
+            scrollContainer={'.home-tab-contents'}
+          >
+            {
+              showImage
+                ? <img
+                  alt={'collection-thumbnail'}
+                  className={'collection-thumbnail'}
+                  onError={handleImageError}
+                  onLoad={handleOnLoad}
                   src={getItemImage()}
-                  type='video/mp4'
+                  style={{ borderRadius: '5px 5px 0 0' }}
                 />
-              </video>
-          }
+                : !imageError
+                  ? <video
+                    autoPlay
+                    height='124'
+                    loop={true}
+                    muted
+                    onError={handleVideoError}
+                    width='124'
+                  >
+                    <source
+                      src={getItemImage()}
+                      type='video/mp4'
+                    />
+                  </video>
+                  : <img
+                    alt={'default-img'}
+                    className={'collection-thumbnail'}
+                    src={themeContext.logo}
+                    style={{ borderRadius: '5px 5px 0 0' }}
+                  />
+            }
+          </LazyLoad>
         </div>
 
         <div className={'collection-title'}>
@@ -138,7 +149,7 @@ export default React.memo(styled(NftItemPreview)(({ theme }: ThemeProps) => `
       padding-right: 10px;
       display: flex;
       align-items: center;
-      background-color: #181E42;
+      background-color: ${theme.popupBackground};
       box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.13);
       border-radius: 0 0 5px 5px;
     }
@@ -147,7 +158,7 @@ export default React.memo(styled(NftItemPreview)(({ theme }: ThemeProps) => `
       font-size: 14px;
       margin-left: 5px;
       font-weight: normal;
-      color: #7B8098;
+      color: ${theme.iconNeutralColor};
     }
   }
 `));

@@ -1,52 +1,25 @@
-// Copyright 2019-2022 @polkadot/extension-koni authors & contributors
+// Copyright 2019-2022 @subwallet/extension-koni authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { BackgroundWindow } from '@polkadot/extension-base/background/KoniTypes';
-import { MessageTypes, TransportRequestMessage } from '@polkadot/extension-base/background/types';
-import { PORT_EXTENSION } from '@polkadot/extension-base/defaults';
-import connectDotSamaApis from '@polkadot/extension-koni-base/api/dotsama';
-import { initChainRegistrySubscription } from '@polkadot/extension-koni-base/api/dotsama/registry';
-import NETWORKS from '@polkadot/extension-koni-base/api/endpoints';
-import { NftHandler } from '@polkadot/extension-koni-base/api/nft';
-import KoniExtension from '@polkadot/extension-koni-base/background/handlers/Extension';
-import KoniState from '@polkadot/extension-koni-base/background/handlers/State';
-import KoniTabs from '@polkadot/extension-koni-base/background/handlers/Tabs';
+import { MessageTypes, TransportRequestMessage } from '@subwallet/extension-base/background/types';
+import { PORT_EXTENSION } from '@subwallet/extension-base/defaults';
+import { SubWalletProviderError } from '@subwallet/extension-base/errors/SubWalletProviderError';
+import { NftHandler } from '@subwallet/extension-koni-base/api/nft';
+import KoniExtension from '@subwallet/extension-koni-base/background/handlers/Extension';
+import KoniState from '@subwallet/extension-koni-base/background/handlers/State';
+import KoniTabs from '@subwallet/extension-koni-base/background/handlers/Tabs';
+
 import { assert } from '@polkadot/util';
 
 export const state = new KoniState();
+
+state.initNetworkStates();
+
 export const extension = new KoniExtension(state);
 export const tabs = new KoniTabs(state);
-export const dotSamaAPIMap = connectDotSamaApis();
-export const nftHandler = new NftHandler(dotSamaAPIMap);
+export const nftHandler = new NftHandler(state.getDotSamaApiMap(), [], state.getWeb3ApiMap());
 
-function getRpcsMap (): Record<string, string> {
-  const result: Record<string, string> = {};
-
-  Object.keys(NETWORKS).forEach((networkKey) => {
-    const networkInfo = NETWORKS[networkKey];
-
-    if (!networkInfo.genesisHash || networkInfo.genesisHash.toLowerCase() === 'unknown') {
-      return;
-    }
-
-    result[networkKey] = networkInfo.provider;
-  });
-
-  return result;
-}
-
-export const rpcsMap: Record<string, string> = getRpcsMap();
-
-// Load registry and fill to state
-initChainRegistrySubscription();
-
-export function initBackgroundWindow (keyring: any) {
-  (window as any as BackgroundWindow).pdotApi = {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    keyring,
-    apisMap: dotSamaAPIMap
-  };
-}
+state.updateServiceInfo();
 
 export default function handlers<TMessageType extends MessageTypes> ({ id, message, request }: TransportRequestMessage<TMessageType>, port: chrome.runtime.Port, extensionPortName = PORT_EXTENSION): void {
   const isExtension = port.name === extensionPortName;
@@ -72,12 +45,12 @@ export default function handlers<TMessageType extends MessageTypes> ({ id, messa
 
       port.postMessage({ id, response });
     })
-    .catch((error: Error): void => {
+    .catch((error: SubWalletProviderError): void => {
       console.log(`[err] ${source}:: ${error.message}`);
 
       // only send message back to port if it's still connected
       if (port) {
-        port.postMessage({ error: error.message, id });
+        port.postMessage({ error: error.message, errorCode: error.code, errorData: error.data, id });
       }
     });
 }

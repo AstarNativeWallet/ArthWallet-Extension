@@ -1,16 +1,15 @@
-// Copyright 2019-2022 @polkadot/extension-koni authors & contributors
+// Copyright 2019-2022 @subwallet/extension-koni authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import { gql } from '@apollo/client';
-
-import NETWORKS from '@polkadot/extension-koni-base/api/endpoints';
+import { PREDEFINED_NETWORKS } from '@subwallet/extension-koni-base/api/predefinedNetworks';
 // eslint-disable-next-line camelcase
-import { DotSamaCrowdloan, DotSamaCrowdloan_crowdloans_nodes, DotSamaCrowdloanVariables } from '@polkadot/extension-koni-base/api/subquery/__generated__/DotSamaCrowdloan';
-import { newApolloClient } from '@polkadot/extension-koni-base/api/subquery/subquery';
+import { DotSamaCrowdloan, DotSamaCrowdloan_crowdloans_nodes, DotSamaCrowdloanVariables } from '@subwallet/extension-koni-base/api/subquery/__generated__/DotSamaCrowdloan';
+import { newApolloClient } from '@subwallet/extension-koni-base/api/subquery/subquery';
 
 export const CrowdloanClientMap = {
-  polkadotCrowdloan: newApolloClient('https://api.subquery.network/sq/subvis-io/polkadot-auctions-and-crowdloans'),
-  kusamaCrowdloan: newApolloClient('https://api.subquery.network/sq/subvis-io/kusama-crowdloans-and-auctions-v2')
+  polkadotCrowdloan: newApolloClient('https://api.subquery.network/sq/interlay/polkadot-crowdloan-indexer'),
+  kusamaCrowdloan: newApolloClient('https://api.subquery.network/sq/interlay/kusama-crowdloan-indexer')
 };
 
 export const DOTSAMA_CROWDLOAN_QUERY = gql`
@@ -42,7 +41,7 @@ export const DOTSAMA_CROWDLOAN_QUERY = gql`
 export const fetchDotSamaCrowdloan = async () => {
   const paraMap: Record<string, string> = {};
 
-  Object.entries(NETWORKS).forEach(([networkKey, network]) => {
+  Object.entries(PREDEFINED_NETWORKS).forEach(([networkKey, network]) => {
     let prefix = '';
 
     if (network.groups.indexOf('POLKADOT_PARACHAIN') > -1) {

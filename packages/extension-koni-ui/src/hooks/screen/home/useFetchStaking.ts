@@ -1,23 +1,24 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { APIItemState, StakingItem } from '@subwallet/extension-base/background/KoniTypes';
+import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
+import { StakingDataType, StakingType } from '@subwallet/extension-koni-ui/hooks/screen/home/types';
+import { RootState } from '@subwallet/extension-koni-ui/stores';
 import { useSelector } from 'react-redux';
 
-import { APIItemState, StakingItem } from '@polkadot/extension-base/background/KoniTypes';
-import { ALL_ACCOUNT_KEY } from '@polkadot/extension-koni-base/constants';
-import { StakingDataType, StakingType } from '@polkadot/extension-koni-ui/hooks/screen/home/types';
-import { RootState } from '@polkadot/extension-koni-ui/stores';
-
 export default function useFetchStaking (networkKey: string): StakingType {
-  const { price: priceReducer, staking: stakingReducer, stakingReward: stakingRewardReducer } = useSelector((state: RootState) => state);
+  const { networkMap, price: priceReducer, stakeUnlockingInfo: stakeUnlockingInfoJson, staking: stakingReducer, stakingReward: stakingRewardReducer } = useSelector((state: RootState) => state);
 
   const { priceMap } = priceReducer;
   const parsedPriceMap: Record<string, number> = {};
   const stakingItemMap = stakingReducer.details;
   const stakingRewardList = stakingRewardReducer.details;
+  const stakeUnlockingInfo = stakeUnlockingInfoJson.details;
+  const stakeUnlockingTimestamp = stakeUnlockingInfoJson.timestamp;
   const readyStakingItems: StakingItem[] = [];
   const stakingData: StakingDataType[] = [];
-  let loading = true;
+  let loading = !stakingRewardReducer.ready;
 
   const showAll = networkKey.toLowerCase() === ALL_ACCOUNT_KEY.toLowerCase();
 
@@ -28,7 +29,7 @@ export default function useFetchStaking (networkKey: string): StakingType {
       loading = false;
 
       if (stakingItem.balance !== '0' && (Math.round(parseFloat(stakingItem.balance as string) * 100) / 100) !== 0) {
-        parsedPriceMap[stakingItem.chainId] = priceMap[stakingItem.chainId];
+        parsedPriceMap[stakingItem.chainId] = priceMap[networkMap[key]?.coinGeckoKey || stakingItem.chainId];
         readyStakingItems.push(stakingItem);
       }
     }
@@ -52,6 +53,15 @@ export default function useFetchStaking (networkKey: string): StakingType {
         }
       }
 
+      Object.entries(stakeUnlockingInfo).forEach(([key, info]) => {
+        if (key === stakingItem.chainId) {
+          stakingDataType.staking = {
+            ...stakingItem,
+            unlockingInfo: info
+          } as StakingItem;
+        }
+      });
+
       stakingData.push(stakingDataType);
     }
   } else {
@@ -64,6 +74,15 @@ export default function useFetchStaking (networkKey: string): StakingType {
         }
       }
 
+      Object.entries(stakeUnlockingInfo).forEach(([key, info]) => {
+        if (key === stakingItem.chainId) {
+          stakingDataType.staking = {
+            ...stakingItem,
+            unlockingInfo: info
+          } as StakingItem;
+        }
+      });
+
       stakingData.push(stakingDataType);
     }
   }
@@ -71,6 +90,7 @@ export default function useFetchStaking (networkKey: string): StakingType {
   return {
     loading,
     data: stakingData,
-    priceMap: parsedPriceMap
+    priceMap: parsedPriceMap,
+    stakeUnlockingTimestamp
   } as StakingType;
 }

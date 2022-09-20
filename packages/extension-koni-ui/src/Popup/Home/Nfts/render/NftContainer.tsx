@@ -1,20 +1,24 @@
-// Copyright 2019-2022 @polkadot/extension-koni authors & contributors
+// Copyright 2019-2022 @subwallet/extension-koni authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Link from '@subwallet/extension-koni-ui/components/Link';
+import useFetchNftExtra from '@subwallet/extension-koni-ui/hooks/screen/home/useFetchNftTransferExtra';
+import { _NftCollection, _NftItem } from '@subwallet/extension-koni-ui/Popup/Home/Nfts/types';
+import { RootState } from '@subwallet/extension-koni-ui/stores';
+import { ThemeProps } from '@subwallet/extension-koni-ui/types';
+import { NFT_PER_ROW } from '@subwallet/extension-koni-ui/util';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import Spinner from '@polkadot/extension-koni-ui/components/Spinner';
-import useFetchNftExtra from '@polkadot/extension-koni-ui/hooks/screen/home/useFetchNftTransferExtra';
-import EmptyList from '@polkadot/extension-koni-ui/Popup/Home/Nfts/render/EmptyList';
-import NftCollection from '@polkadot/extension-koni-ui/Popup/Home/Nfts/render/NftCollection';
-import { _NftCollection, _NftItem } from '@polkadot/extension-koni-ui/Popup/Home/Nfts/types';
-import { ThemeProps } from '@polkadot/extension-koni-ui/types';
-import { NFT_PER_ROW } from '@polkadot/extension-koni-ui/util';
+import { isEthereumAddress } from '@polkadot/util-crypto';
 
-import NftCollectionPreview from './NftCollectionPreview';
+const NftCollection = React.lazy(() => import('@subwallet/extension-koni-ui/Popup/Home/Nfts/render/NftCollection'));
+const NftCollectionPreview = React.lazy(() => import('./NftCollectionPreview'));
+const Spinner = React.lazy(() => import('@subwallet/extension-koni-ui/components/Spinner'));
+const EmptyList = React.lazy(() => import('@subwallet/extension-koni-ui/Popup/Home/Nfts/render/EmptyList'));
 
 interface Props extends ThemeProps {
   className?: string;
@@ -71,6 +75,10 @@ function NftContainer (
     setShowCollectionDetail(true);
     setChosenCollection(data);
   }, [setChosenCollection, setShowCollectionDetail]);
+
+  const { currentAccount: { account: currentAccount } } = useSelector((state: RootState) => state);
+
+  const isEthAccount = isEthereumAddress(currentAccount?.address);
 
   useEffect(() => {
     if (!showTransferredCollection && selectedNftCollection) { // show collection after transfer
@@ -131,10 +139,10 @@ function NftContainer (
 
       {/* @ts-ignore */}
       {!loading && !showCollectionDetail && totalItems > 0 &&
-      <div className={'total-title'}>
-        {/* @ts-ignore */}
-        {totalItems} NFT{totalItems > 1 && 's'} from {totalCollection} collection{totalCollection > 1 && 's'}
-      </div>
+        <div className={'total-title'}>
+          {/* @ts-ignore */}
+          {totalItems} NFT{totalItems > 1 && 's'} from {totalCollection} collection{totalCollection > 1 && 's'}
+        </div>
       }
 
       {
@@ -143,9 +151,9 @@ function NftContainer (
           {
             !loading && nftList.length > 0 &&
             // @ts-ignore
-            nftList.map((item: _NftCollection, index: React.Key | null | undefined) => {
+            nftList.map((item: _NftCollection, index: React.Key) => {
               // @ts-ignore
-              return <div key={index}>
+              return <div key={`${item.chain || index}/${item.collectionId}`}>
                 <NftCollectionPreview
                   data={item}
                   onClick={handleShowCollectionDetail}
@@ -199,17 +207,19 @@ function NftContainer (
         </div>
       }
 
-      {/* {!loading && */}
-      {/*  <div className={'footer'}> */}
-      {/*    <div>Don't see your tokens?</div> */}
-      {/*    <div> */}
-      {/*      <span */}
-      {/*        className={'link'} */}
-      {/*        onClick={() => _onChangeState()} */}
-      {/*      >Refresh list</span> or <span className={'link'}>import tokens</span> */}
-      {/*    </div> */}
-      {/*  </div> */}
-      {/* } */}
+      {!loading && !showCollectionDetail && !showItemDetail && isEthAccount &&
+        <div className={'footer'}>
+          <div>Don&apos;t see your NFTs?</div>
+          <div>
+            <Link
+              className={'link'}
+              to='/account/import-evm-nft'
+            >
+              Import NFTs
+            </Link>
+          </div>
+        </div>
+      }
     </div>
   );
 }
@@ -218,6 +228,8 @@ export default React.memo(styled(NftContainer)(({ theme }: Props) => `
   width: 100%;
   padding: 0 25px;
   padding-bottom: 20px;
+  position: relative;
+  min-height:100%;
 
   .loading-container {
     height: 100%;
@@ -261,7 +273,7 @@ export default React.memo(styled(NftContainer)(({ theme }: Props) => `
   }
 
   .footer {
-    margin-top: 20px;
+    margin-top: 10px;
     margin-bottom: 10px;
     width: 100%;
     color: #9196AB;
@@ -269,10 +281,11 @@ export default React.memo(styled(NftContainer)(({ theme }: Props) => `
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    font-size: 14px;
   }
 
   .link {
-    color: #42C59A;
+    color: ${theme.primaryColor};
   }
 
   .link:hover {

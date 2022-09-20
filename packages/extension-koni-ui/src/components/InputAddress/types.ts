@@ -1,13 +1,21 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import type { KeyringOption$Type, KeyringSectionOption } from '@polkadot/ui-keyring/options/types';
 
 import React from 'react';
 
+export interface AccountOption extends KeyringSectionOption {
+  text: string;
+}
+
+export interface DropdownOption {
+  label: string;
+  value: string;
+}
+
 export interface Option extends KeyringSectionOption {
   className?: string;
-  text: React.ReactNode;
 }
 
 export interface InputAddressProps {

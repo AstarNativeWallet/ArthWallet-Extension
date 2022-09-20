@@ -14,6 +14,7 @@ export function getChainTypes (_specName: string, chainName: string): Record<str
 
 export const moonbeamBaseChains = ['moonbase', 'moonbeam', 'moonriver'];
 
+// deprecated
 export const ethereumChains = [
   'moonbase',
   'moonbeam',
@@ -21,6 +22,7 @@ export const ethereumChains = [
   'moonshadow',
   'astarEvm',
   'shidenEvm',
+  'shibuyaEvm',
   'origintrail-parachain'
 ];
 

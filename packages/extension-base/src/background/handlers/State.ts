@@ -1,14 +1,14 @@
 // Copyright 2019-2022 @polkadot/extension-bg authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { MetadataDef, ProviderMeta } from '@polkadot/extension-inject/types';
+import type { MetadataDef, ProviderMeta } from '@subwallet/extension-inject/types';
 import type { JsonRpcResponse, ProviderInterface, ProviderInterfaceCallback } from '@polkadot/rpc-provider/types';
-import type { AccountJson, AuthorizeRequest, MetadataRequest, RequestAuthorizeTab, RequestRpcSend, RequestRpcSubscribe, RequestRpcUnsubscribe, RequestSign, ResponseRpcListProviders, ResponseSigning, SigningRequest } from '../types';
+import type { AccountAuthType, AccountJson, AuthorizeRequest, MetadataRequest, RequestAuthorizeTab, RequestRpcSend, RequestRpcSubscribe, RequestRpcUnsubscribe, RequestSign, ResponseRpcListProviders, ResponseSigning, SigningRequest } from '../types';
 
+import { getId } from '@subwallet/extension-base/utils/getId';
+import { addMetadata, knownMetadata } from '@subwallet/extension-chains';
 import { BehaviorSubject } from 'rxjs';
 
-import { getId } from '@polkadot/extension-base/utils/getId';
-import { addMetadata, knownMetadata } from '@polkadot/extension-chains';
 import { knownGenesis } from '@polkadot/networks/defaults';
 import settings from '@polkadot/ui-settings';
 import { assert } from '@polkadot/util';
@@ -16,7 +16,7 @@ import { assert } from '@polkadot/util';
 import { MetadataStore } from '../../stores';
 import { withErrorLog } from './helpers';
 
-export interface Resolver <T> {
+export interface Resolver<T> {
   reject: (error: Error) => void;
   resolve: (result: T) => void;
 }
@@ -36,7 +36,9 @@ export interface AuthUrlInfo {
   isAllowed: boolean;
   origin: string;
   url: string;
-  isAllowedMap: Record<string, boolean>
+  accountAuthType?: AccountAuthType;
+  isAllowedMap: Record<string, boolean>;
+  currentEvmNetworkKey?: string;
 }
 
 interface MetaRequest extends Resolver<boolean> {
@@ -66,8 +68,6 @@ const NOTIFICATION_URL = chrome.extension.getURL('notification.html');
 const POPUP_WINDOW_OPTS: chrome.windows.CreateData = {
   focused: true,
   height: 621,
-  left: 150,
-  top: 150,
   type: 'popup',
   url: NOTIFICATION_URL,
   width: 460
@@ -200,6 +200,10 @@ export default class State {
     return this.#authUrls;
   }
 
+  protected getPopup () {
+    return this.#windows;
+  }
+
   protected popupClose (): void {
     this.#windows.forEach((id: number) =>
       withErrorLog(() => chrome.windows.remove(id))
@@ -208,16 +212,32 @@ export default class State {
   }
 
   protected popupOpen (): void {
-    this.#notification !== 'extension' &&
-      chrome.windows.create(
-        this.#notification === 'window'
-          ? NORMAL_WINDOW_OPTS
-          : POPUP_WINDOW_OPTS,
-        (window): void => {
+    if (this.#notification !== 'extension') {
+      if (this.#notification === 'window') {
+        chrome.windows.create(NORMAL_WINDOW_OPTS, (window): void => {
           if (window) {
             this.#windows.push(window.id || 0);
           }
         });
+      }
+
+      chrome.windows.getCurrent((win) => {
+        const popupOptions = { ...POPUP_WINDOW_OPTS };
+
+        if (win) {
+          popupOptions.left = (win.left || 0) + (win.width || 0) - (POPUP_WINDOW_OPTS.width || 0) - 20;
+          popupOptions.top = (win.top || 0) + 80;
+        }
+
+        chrome.windows.create(popupOptions
+          , (window): void => {
+            if (window) {
+              this.#windows.push(window.id || 0);
+            }
+          }
+        );
+      });
+    }
   }
 
   private authComplete = (id: string, resolve: (result: boolean) => void, reject: (error: Error) => void): Resolver<boolean> => {

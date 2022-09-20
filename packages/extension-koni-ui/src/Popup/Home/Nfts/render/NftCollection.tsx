@@ -1,16 +1,16 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { _NftCollection, _NftItem } from '@subwallet/extension-koni-ui/Popup/Home/Nfts/types';
+import { ThemeProps } from '@subwallet/extension-koni-ui/types';
+import { NFT_PER_ROW } from '@subwallet/extension-koni-ui/util';
 import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import NftItem from '@polkadot/extension-koni-ui/Popup/Home/Nfts/render/NftItem';
-import NftItemPreview from '@polkadot/extension-koni-ui/Popup/Home/Nfts/render/NftItemPreview';
-import { _NftCollection, _NftItem } from '@polkadot/extension-koni-ui/Popup/Home/Nfts/types';
-import { ThemeProps } from '@polkadot/extension-koni-ui/types';
-import { NFT_PER_ROW } from '@polkadot/extension-koni-ui/util';
+const NftItemPreview = React.lazy(() => import('@subwallet/extension-koni-ui/Popup/Home/Nfts/render/NftItemPreview'));
+const NftItem = React.lazy(() => import('@subwallet/extension-koni-ui/Popup/Home/Nfts/render/NftItem'));
 
 interface Props {
   className?: string;
@@ -86,8 +86,8 @@ function NftCollection ({ chosenItem, className, currentNetwork, data, onClickBa
               // @ts-ignore
               data?.nftItems.length > 0 &&
               // @ts-ignore
-              data?.nftItems.map((item: _NftItem, index: React.Key | null | undefined) => {
-                return <div key={index}>
+              data?.nftItems.map((item: _NftItem, index: React.Key) => {
+                return <div key={`${item.chain || index}/${item.collectionId || ''}/${item.id || ''}`}>
                   <NftItemPreview
                     collectionImage={data?.image}
                     data={item}

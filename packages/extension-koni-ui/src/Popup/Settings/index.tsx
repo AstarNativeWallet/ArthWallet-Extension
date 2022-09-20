@@ -1,23 +1,32 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { faCog, faExpand, faInfoCircle, faList, faLock, faQrcode } from '@fortawesome/free-solid-svg-icons';
+import { faCog } from '@fortawesome/free-solid-svg-icons/faCog';
+import { faCoins } from '@fortawesome/free-solid-svg-icons/faCoins';
+import { faExpand } from '@fortawesome/free-solid-svg-icons/faExpand';
+import { faInfoCircle } from '@fortawesome/free-solid-svg-icons/faInfoCircle';
+import { faList } from '@fortawesome/free-solid-svg-icons/faList';
+import { faLock } from '@fortawesome/free-solid-svg-icons/faLock';
+import { faPlug } from '@fortawesome/free-solid-svg-icons/faPlug';
+import { faQrcode } from '@fortawesome/free-solid-svg-icons/faQrcode';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { IconMaps } from '@subwallet/extension-koni-ui/assets/icon';
+import { Link } from '@subwallet/extension-koni-ui/components';
+import useIsPopup from '@subwallet/extension-koni-ui/hooks/useIsPopup';
+import useTranslation from '@subwallet/extension-koni-ui/hooks/useTranslation';
+import { windowOpen } from '@subwallet/extension-koni-ui/messaging';
+import Header from '@subwallet/extension-koni-ui/partials/Header';
+import { ThemeProps } from '@subwallet/extension-koni-ui/types';
 import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import check from '@polkadot/extension-koni-ui/assets/check.svg';
-import { Link } from '@polkadot/extension-koni-ui/components';
-import useIsPopup from '@polkadot/extension-koni-ui/hooks/useIsPopup';
-import useTranslation from '@polkadot/extension-koni-ui/hooks/useTranslation';
-import { windowOpen } from '@polkadot/extension-koni-ui/messaging';
-import Header from '@polkadot/extension-koni-ui/partials/Header';
-import { ThemeProps } from '@polkadot/extension-koni-ui/types';
 import settings from '@polkadot/ui-settings';
 
 interface Props extends ThemeProps {
   className?: string;
 }
+
+const SettingPath = '/account/settings';
 
 function Settings ({ className }: Props): React.ReactElement {
   const { t } = useTranslation();
@@ -34,7 +43,12 @@ function Settings ({ className }: Props): React.ReactElement {
 
   const onChangeCameraAccess = useCallback(() => {
     setCamera(!camera);
-  }, [camera]);
+
+    if (!camera && isPopup) {
+      window.localStorage.setItem('popupNavigation', SettingPath);
+      windowOpen(SettingPath).catch(console.error);
+    }
+  }, [camera, isPopup]);
 
   return (
     <div className={className}>
@@ -68,16 +82,15 @@ function Settings ({ className }: Props): React.ReactElement {
           <div className='menu-setting-item__toggle' />
         </Link>
 
-        {/* <Link */}
-        {/*  className='menu-setting-item' */}
-        {/*  isDisabled */}
-        {/*  to='/account/networks' */}
-        {/* > */}
-        {/*  /!* @ts-ignore *!/ */}
-        {/*  <FontAwesomeIcon icon={faPlug} /> */}
-        {/*  <div className='menu-setting-item__text'>{t<string>('Networks')}</div> */}
-        {/*  <div className='menu-setting-item__toggle' /> */}
-        {/* </Link> */}
+        <Link
+          className='menu-setting-item'
+          to='/account/networks'
+        >
+          {/* @ts-ignore */}
+          <FontAwesomeIcon icon={faPlug} />
+          <div className='menu-setting-item__text'>{t<string>('Networks')}</div>
+          <div className='menu-setting-item__toggle' />
+        </Link>
 
         <Link
           className='menu-setting-item'
@@ -86,6 +99,17 @@ function Settings ({ className }: Props): React.ReactElement {
           {/* @ts-ignore */}
           <FontAwesomeIcon icon={faList} />
           <div className='menu-setting-item__text'>{t<string>('Manage Website Access')}</div>
+          {/* @ts-ignore */}
+          <div className='menu-setting-item__toggle' />
+        </Link>
+
+        <Link
+          className='menu-setting-item'
+          to='/account/evm-token-setting'
+        >
+          {/* @ts-ignore */}
+          <FontAwesomeIcon icon={faCoins} />
+          <div className='menu-setting-item__text'>{t<string>('Manage EVM Tokens')}</div>
           {/* @ts-ignore */}
           <div className='menu-setting-item__toggle' />
         </Link>
@@ -112,11 +136,9 @@ function Settings ({ className }: Props): React.ReactElement {
           <div className='menu-setting-item__text'>{t<string>('Allow QR Camera Access')}</div>
           {camera
             ? (
-              <img
-                alt='check'
-                className='account-checked'
-                src={check}
-              />
+              <div className='account-checked'>
+                {IconMaps.check}
+              </div>
             )
             : (
               <div className='account-checked account-unchecked-item' />
@@ -191,6 +213,7 @@ export default styled(Settings)(({ theme }: Props) => `
     display: flex;
     align-items: center;
     padding: 11px;
+    opacity: 1;
 
     .svg-inline--fa {
       color: ${theme.iconNeutralColor};
@@ -234,5 +257,6 @@ export default styled(Settings)(({ theme }: Props) => `
   .account-checked {
     position: absolute;
     right: 25px;
+    color: ${theme.primaryColor}
   }
 `);

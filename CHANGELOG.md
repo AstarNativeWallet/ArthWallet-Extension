@@ -1,5 +1,249 @@
 # CHANGELOG
 
+## 0.6.2 (Koni)
+Build date: Sep 16, 2022.
+
+Update:
+- Support Single-chain mode feature customize for Parachain & Solo chains (#331)
+
+## 0.6.1 (Koni)
+Build date: Sep 13, 2022.
+
+Update:
+- Integrate Bit.Country Token and XCM (#621)
+- Update Gear Staging Testnet logo (#625)
+- Update ArthSwap logo (ARSW token on Astar-EVM) (#626)
+- Update default provider for Subspace Gemini 1 (#628)
+- Update endpoint list for GM Chain (#632)
+
+## 0.5.9 (Koni)
+Build date: Sep 7, 2022.
+
+Bug fixes:
+- Fix error of ipfs-gateway.cloud (#612)
+- Fix Transak logo (#616)
+
+## 0.5.8 (Koni)
+Build date: Sep 7, 2022.
+
+Update:
+- Add support Subspace Gemini 2a
+
+## 0.5.7 (Koni)
+Build date: Sep 6, 2022.
+
+Update:
+- Integrate on-ramp feature to buy crypto from fiat currencies (#245)
+- Improved decimal display UX (#585)
+- Integrate Gear testnet into SubWallet (#605)
+- Update the logo of xcINTR, xciBTC, xckBTC, xcCSM, xcSDN, xcKMA, xcLIT, xcCRAB, xcTEER#524
+
+Bug fixes:
+- Fix bug inject provider not auto remove (#591)
+- Fix bug still shows deleted NFTs (#497)
+- Fix issues related to QR Signer (#525)
+- Fix issue display lack of transaction history when user performs xcm transfer#586
+- Fix showing incorrect transferable balance for PRING token (#576)
+- Fix bug can't view transaction history of Moonbase Alpha network (#584)
+- Fix bug happens when user disconnect network or remove account that selected to buy cryptos (#609)
+- Fix support Xcm transfer on Kusama, Polkadot, Astar, Shiden chain for QR Account (#552)
+
+## 0.5.6 (Koni)
+Build date: Aug 24, 2022.
+
+Update:
+- Add new networks to SubWallet (#558)
+  - Amplitude
+  - GM Parachain
+  - Integritee Polkadot
+  - Integritee Kusama
+  - Tanganika Network
+  - Coinversation
+  - Ternoa Network
+- Add Suspace testnets into SubWallet (#553)
+- Add support for DOT on Astar Native and on Astar EVM (#450)
+- Integrate aUSD and USDT on Bifrost (#185)
+
+Bug fixes:
+- Fix bug not trigger accountChanged when changed account list and submit authList of DApp (#518)
+- Fix some issues related to "minimum stake" in cases stake more and unstake (#555)
+- Fix bug showing balance on very small balance (#556)
+- Fix bug happens when NFT image error (#557)
+- Fix bug can't XCM Transfer of the Bifrost Chain (#333)
+- Fix some bugs & feedback to improve UX-UI (#340)
+- Fix bug parsing Acala crowdloan data (#568)
+- Fix staking data UI error (#567)
+
+## 0.5.5 (Koni)
+Build date: Aug 12, 2022.
+
+Update:
+- Add feature to allow first-time users to import their Metamask private keys (#254)
+- Add support for transaction history on Astar EVM (#454)
+- Update XCM transfer support for Relaychain to Parachains (#411)
+
+Bug fixes:
+- Fix bug display wrong connection information with DApps (#498)
+- Fix bug some dApp can't connect to wallet when user close extension (#530)
+
+## 0.5.4 (Koni)
+Build date: Aug 05, 2022.
+
+Update:
+- Support interaction with other devices (Ledger and Parity Signer, Stylo...) for signature (#150)
+- Support cross chain transfer: aUSD (#472)
+- Update response information of EVM Provider (#489)
+- Add the checkbox "Auto connect to all EVM DApps after importing" in the Import Private Key screen (#358)
+- Add Moonpets NFT (#517)
+
+Bug fixes:
+- Fix balance showing incorrect in Send Fund screen in case create/forget acc successfully (#271)
+
+## 0.5.3 (Koni)
+Build date: Jul 29, 2022.
+
+Update:
+- Add Clover EVM Network (#223)
+- Improve data fetching for better performance and UX (#255)
+- Optimize NFT loading with https://nft.storage/ (#480)
+- Temporarily remove "Add custom network" (#464)
+- Support staking for more chains (#386)
+- Display connection information with DApps (#469)
+- Add taiKSM and 3USD on Karura and tDOT on Acala (#417)
+- Integrate tokens for dapps on Moonbeam/Moonriver (#485)
+
+Bug fixes:
+- Fix bug happens on Send Fund/Donate screen when Delete Custom Network (#310)
+- Fix bug displaying incorrect balance & load incorrect view when update configure network (#311)
+- Fixed incorrect number of connected accounts displayed on "Manage Website Access" screen in case of "Connect All Accounts" (#355)
+- Fixed bug do not display popup connect wallet in case upgrade version (#401)
+- Fix bug adding default EVM token after deleting it (#490)
+- Update logo & modal style (#499)
+
+## 0.5.2 (Koni)
+Build date: Jul 22, 2022.
+
+Update:
+- Improve the UX for contracts transaction with EVM provider (#393)
+- Add select acc screen when the user in All Account mode to show address (#425)
+
+Bug fixes:
+- Fix account balance still gets calculating from test net (#145)
+- Fix do not automatically connect account in case create both Substrate & EVM Account (#297)
+- Fix can't sign & can't turn off popup Signing with Ledger account (#327)
+- Fix copy account anytime user click on Manage Account icon (#336)
+- Fix do not show avatar account (#354, #457)
+- Fix error logs from koni-content (#438)
+- Fix the issues with EVM Provider by late initialized (#444)
+
+## 0.4.9 (Koni)
+Build date: Jul 02, 2022.
+
+Update:
+- Add new network, update endpoint: Tinkernet, Imbue, HydraDX,...(#387)
+
+Bug fixes:
+- Fix bug report by Moonbeam team (#392)
+- Fix bug can not scan QR (#394)
+- Fix some errors related to Network Settings (#408)
+
+## 0.4.8 (Koni)
+Build date: Jun 25, 2022.
+
+Update:
+- Update new way to interaction with chainId and accounts in EVM Provider (#357)
+
+Bug fixes:
+- Fix miscalculation of unstaking time (#382)
+- Fix bug not show transaction after transfer from astar app via EVM Provider
+
+## 0.4.7 (Koni)
+Build date: Jun 24, 2022.
+
+Update:
+- Staking Button in SubWallet (#42)
+- Support import EVM tokens (#357)
+- Support Shibuya Testnet (#357)
+- Improve request permission screen (#377)
+
+Bug fixes:
+- Some problems with connect with EVM DApp Interface (#359)
+- Not showing crowdloan data properly (#375)
+
+## 0.4.6 (Koni)
+Build date: Jun 18, 2022.
+
+Update:
+- Support EVM DApp, demo can be found at https://connect.subwallet.app/
+
+
+## 0.4.5 (Koni)
+Build date: Jun 09, 2022.
+
+Update:
+- Support Send / Receive cross-chain assets (update some label and variablea and xc logo) (#35)
+
+## 0.4.4 (Koni)
+Build date: Jun 08, 2022.
+
+Update:
+- Support Send / Receive cross-chain assets (#35)
+
+Bug Fixed:
+- Fix bug display incorrect transferable balance in the Send Fund/Donate/XCM Transfer screen (#303)
+- Fix bug happens when user delete all custom tokens & predefined tokens (#314)
+- Fix bug "Encountered an error, please try again" when Send NFT (#321)
+- Fix bug can not send fund/XCM transfer of the Kintsugi Chain (#332)
+
+## 0.4.3 (Koni)
+Build date: May 31, 2022.
+
+Update:
+- Custom network, Custom Endpoint (#36)
+- Integrate SubSpace Token (#301)
+
+Bug Fixed:
+- Display 2 popup connect when connect to https://portal.astar.network... (#285)
+- Bug happens when viewing Transaction History after Delete token (#296)
+- Other defects related to Import EVM Tokens (#266)
+- Bug Send NFT when balance is too low (#265)
+
+## 0.4.2 (Koni)
+Build date: May 20, 2022.
+
+Update:
+- Add Moonbeam and Moonriver staking data (#104)
+- Integrate Genshiro & Equilibrium (#174)
+- Integrate new cross-chain tokens on Karura (RMRK, ARIS, QTZ, ...) (#184)
+- Add more Astar EVM tokens (#186)
+- Improve import Private key feature (#208)
+
+Bug Fixed:
+- Fix when select aUSD (Acala) to transfer (#282)
+- Fix the balance display incorrect after transfer Sub-token successfully (#283)
+- Fix can't connect account in case user created account successfully while popup connect wallet is displaying (#231)
+- Fix some style bug in (#258)
+- Fix display multi popup connect wallet (#227)
+- Fix tooltip not showing on the popup view on firefox browser (#224)
+
+## 0.4.1 (Koni)
+Build date: May 11, 2022.
+
+Update:
+- Support import ERC20 and ERC721 for EVM Networks (#160)
+- Implement new Send Fund UI with support send tokens, send EVM assets (#32, #143, #118)
+- Add option allow accept all website on create account screen (#198)
+- Update Centrifuge Parachain info (#203)
+- Update logo of $CHRWNA, $CHAO (#193,#195)
+
+Bug Fixed:
+- Fix extension error when entering Substrate's seed phrase but selecting EVM account (#192)
+- Fix bug can not load NFT (#200)
+- Fix bug can not send EVM NFT (#209)
+- Fix bug display incorrect screen when connection is lost (#225)
+- Fix bug and improve some experience (#168)
+- Fix bug not update them when change them from popup view (#228)
+
 ## 0.3.6 (Koni)
 Build date: Apr 22, 2022.
 Update:
@@ -42,7 +286,7 @@ Bug Fixed:
 - Not have website list in website access screen
 
 ## 0.3.2 (Koni)
-Build date: Apr 07, 2022. 
+Build date: Apr 07, 2022.
 
 Update:
 - Improve the custom access screen (issue #91)
@@ -84,7 +328,7 @@ Update:
 
 Bug Fixed:
 - Display RMRK 2.0
-- Staking balance 
+- Staking balance
 
 ## 0.2.8 (Koni)
 Build date: Mar 18, 2022. Complete External Security Audit
@@ -94,7 +338,7 @@ Build date: Mar 18, 2022. Complete External Security Audit
 - Show Karura and Acala tokens balances: LCDOT, LDOT, DOT,aUSD, kUSD
 - Show Karura and Acala cross-chain assets: BNC, KINT, KSM, LKSM, PHA, TAI, kBTC, vsKSM, RMRK
 - Import Private key for EVM account from Metamask
-- Hide account balance 
+- Hide account balance
 - Customize avatar for All account
 
 **Bug Fixed:**
@@ -155,7 +399,7 @@ Build date: Feb 19, 2022. Complete internal security audit
 
 Update:
 - Added the feature to track the balances of multiple accounts in one wallet
-- Integration Quartz Network's NFT 
+- Integration Quartz Network's NFT
 - Integration Layer 1 blockchain built on Substrate Aleph Zero
 - Displays Staking information of some networks in the Polkadot and Kusama ecosystem
 
@@ -193,7 +437,7 @@ Bugs Fixed:
 
 ---
 
-## 0.0.3 (Koni) 
+## 0.0.3 (Koni)
 
 Build date: Jan 16, 2022. Complete internal security audi
 
@@ -231,7 +475,7 @@ Bugs Fixed
 
 ---
 
-## 0.0.1 (Koni) 
+## 0.0.1 (Koni)
 Build date: Jan 05, 2022 with basic features
 
 Update:
@@ -241,7 +485,7 @@ Update:
 - Manage an account balance
 - And much more
 
---- 
+---
 
 ## 0.42.5 Jan 10, 2022
 
@@ -263,7 +507,7 @@ Changes:
 
 Changes:
 
-- Ensure `@polkadot/extension-mocks` is correctly listed as devDependency
+- Ensure `@subwallet/extension-mocks` is correctly listed as devDependency
 
 
 ## 0.42.3 Dec 27, 2021

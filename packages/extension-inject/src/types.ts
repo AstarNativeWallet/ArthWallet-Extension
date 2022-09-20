@@ -97,6 +97,13 @@ export interface Injected {
   provider?: InjectedProvider;
   signer: InjectedSigner;
 }
+export interface EvmProvider {
+  provider?: EvmProvider,
+  isMetaMask: boolean,
+  isSubWallet: boolean,
+  version: string,
+  isConnected(): boolean,
+}
 
 export interface InjectedWindowProvider {
   enable: (origin: string) => Promise<Injected>;
@@ -105,6 +112,8 @@ export interface InjectedWindowProvider {
 
 export interface InjectedWindow extends This {
   injectedWeb3: Record<string, InjectedWindowProvider>;
+  ethereum: EvmProvider;
+  SubWallet: EvmProvider;
 }
 
 export type InjectedExtension = InjectedExtensionInfo & Injected;

@@ -1,25 +1,31 @@
-// Copyright 2019-2022 @polkadot/extension-koni authors & contributors
+// Copyright 2019-2022 @subwallet/extension-koni authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 export enum SUPPORTED_STAKING_CHAIN_NAMES {
   kusama = 'kusama',
   polkadot = 'polkadot',
   astar = 'astar',
-  hydradx = 'hydradx'
+  hydradx = 'hydradx',
+  moonbeam = 'moonbeam',
+  moonriver = 'moonriver'
 }
 
 export const SUBSQUID_ENDPOINTS: Record<string, string> = {
   [SUPPORTED_STAKING_CHAIN_NAMES.kusama]: 'https://app.gc.subsquid.io/beta/kusama-explorer/v1/graphql',
   [SUPPORTED_STAKING_CHAIN_NAMES.polkadot]: 'https://app.gc.subsquid.io/beta/polkadot-explorer/v1/graphql',
   [SUPPORTED_STAKING_CHAIN_NAMES.astar]: 'https://app.gc.subsquid.io/beta/astar-explorer/v1/graphql',
-  [SUPPORTED_STAKING_CHAIN_NAMES.hydradx]: 'https://app.gc.subsquid.io/beta/hydradx-explorer/v1/graphql'
+  [SUPPORTED_STAKING_CHAIN_NAMES.hydradx]: 'https://app.gc.subsquid.io/beta/hydradx-explorer/v1/graphql',
+  [SUPPORTED_STAKING_CHAIN_NAMES.moonriver]: 'https://app.gc.subsquid.io/beta/moonriver-explorer/v1/graphql',
+  [SUPPORTED_STAKING_CHAIN_NAMES.moonbeam]: 'https://app.gc.subsquid.io/beta/moonbeam-explorer/v1/graphql'
 };
 
 export const SUPPORTED_STAKING_CHAINS = [
-  SUPPORTED_STAKING_CHAIN_NAMES.polkadot,
-  SUPPORTED_STAKING_CHAIN_NAMES.kusama,
-  SUPPORTED_STAKING_CHAIN_NAMES.astar,
-  SUPPORTED_STAKING_CHAIN_NAMES.hydradx
+  SUPPORTED_STAKING_CHAIN_NAMES.polkadot as string,
+  SUPPORTED_STAKING_CHAIN_NAMES.kusama as string,
+  SUPPORTED_STAKING_CHAIN_NAMES.astar as string,
+  SUPPORTED_STAKING_CHAIN_NAMES.hydradx as string,
+  SUPPORTED_STAKING_CHAIN_NAMES.moonbeam as string,
+  SUPPORTED_STAKING_CHAIN_NAMES.moonriver as string
 ];
 
 export const SUBQUERY_ENDPOINTS: Record<string, string> = {

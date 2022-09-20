@@ -1,15 +1,14 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import type { ThemeProps } from '../../types';
 
+import Button from '@subwallet/extension-koni-ui/components/Button';
+import useIsPopup from '@subwallet/extension-koni-ui/hooks/useIsPopup';
+import { windowOpen } from '@subwallet/extension-koni-ui/messaging';
+import Header from '@subwallet/extension-koni-ui/partials/Header';
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
-
-import Button from '@polkadot/extension-koni-ui/components/Button';
-import useIsPopup from '@polkadot/extension-koni-ui/hooks/useIsPopup';
-import { windowOpen } from '@polkadot/extension-koni-ui/messaging';
-import Header from '@polkadot/extension-koni-ui/partials/Header';
 
 import { Link } from '../../components';
 import useTranslation from '../../hooks/useTranslation';
@@ -87,6 +86,18 @@ function AddAccount ({ className }: Props): React.ReactElement<Props> {
           >
             <Link
               className='add-account-link'
+              to='/account/import-metamask-private-key'
+            >
+              {t<string>('Import private key from MetaMask')}
+            </Link>
+          </Button>
+
+          <Button
+            className='add-account-btn'
+            data-export-button
+          >
+            <Link
+              className='add-account-link'
               onClick={isPopup && (isFirefox || isLinux) ? _openJson : undefined}
               to={isPopup && (isFirefox || isLinux) ? undefined : jsonPath}
             >
@@ -113,12 +124,12 @@ export default React.memo(styled(AddAccount)(({ theme }: Props) => `
 
   .create-account {
     background-color: ${theme.buttonBackground2};
-    color: ${theme.buttonTextColor3};
+    color: ${theme.buttonTextColor};
   }
 
   .add-account-link {
     justify-content: center;
-    color: ${theme.textColor};
+    color: ${theme.buttonTextColor};
     opacity: 1;
   }
 

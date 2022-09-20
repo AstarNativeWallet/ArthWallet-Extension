@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 // eslint-disable-next-line header/header
@@ -7,15 +7,15 @@ import type { KeypairType } from '@polkadot/util-crypto/types';
 import type { ThemeProps } from '../../types';
 import type { AccountInfo } from '.';
 
+import RadioStatus from '@subwallet/extension-koni-ui/components/RadioStatus';
+import { validateSeedV2 } from '@subwallet/extension-koni-ui/messaging';
+import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from '@subwallet/extension-koni-ui/Popup/CreateAccount';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import styled, { ThemeContext } from 'styled-components';
 
-import RadioStatus from '@polkadot/extension-koni-ui/components/RadioStatus';
-import { validateSeedV2 } from '@polkadot/extension-koni-ui/messaging';
-import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from '@polkadot/extension-koni-ui/Popup/CreateAccount';
 import { objectSpread } from '@polkadot/util';
 
-import { AccountInfoEl, ButtonArea, Dropdown, NextStepButton, TextAreaWithLabel, Warning } from '../../components';
+import { AccountInfoEl, ButtonArea, Checkbox, Dropdown, NextStepButton, TextAreaWithLabel, Warning } from '../../components';
 import useGenesisHashOptions from '../../hooks/useGenesisHashOptions';
 import useTranslation from '../../hooks/useTranslation';
 import { Theme } from '../../types';
@@ -30,12 +30,14 @@ interface Props {
   type: KeypairType;
   account: AccountInfo | null;
   evmAccount: AccountInfo | null;
+  isConnectWhenImport: boolean;
+  onConnectWhenImport: (isConnectWhenImport: boolean) => void;
   name: string | null;
   evmName: string | null;
   setSelectedGenesis: (genesis: string) => void;
 }
 
-function SeedAndPath ({ account, className, evmAccount, evmName, keyTypes, name, onAccountChange, onEvmAccountChange, onNextStep, onSelectAccountImported, setSelectedGenesis, type }: Props): React.ReactElement {
+function SeedAndPath ({ account, className, evmAccount, evmName, isConnectWhenImport, keyTypes, name, onAccountChange, onConnectWhenImport, onEvmAccountChange, onNextStep, onSelectAccountImported, setSelectedGenesis, type }: Props): React.ReactElement {
   const { t } = useTranslation();
   const [address, setAddress] = useState('');
   const [evmAddress, setEvmAddress] = useState<null | string>(null);
@@ -184,6 +186,15 @@ function SeedAndPath ({ account, className, evmAccount, evmName, keyTypes, name,
               {t<string>('Mnemonic needs to contain 12, 15, 18, 21, 24 words')}
             </Warning>
           )}
+
+          {!!error && !!seed && (
+            <Warning
+              className='seed-and-path__error'
+              isDanger
+            >
+              {error}
+            </Warning>
+          )}
           {selectedAccType === SUBSTRATE_ACCOUNT_TYPE && seed &&
             <Dropdown
               className='seed-and-path__genesis-selection'
@@ -206,14 +217,11 @@ function SeedAndPath ({ account, className, evmAccount, evmName, keyTypes, name,
             />
           }
 
-          {!!error && !!seed && (
-            <Warning
-              className='seed-and-path__error'
-              isDanger
-            >
-              {error}
-            </Warning>
-          )}
+          <Checkbox
+            checked={isConnectWhenImport}
+            label={t<string>('Auto connect to all DApps after importing')}
+            onChange={onConnectWhenImport}
+          />
         </div>
       </div>
       <ButtonArea>

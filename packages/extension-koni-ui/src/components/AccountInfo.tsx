@@ -1,34 +1,35 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { IconTheme } from '@polkadot/react-identicon/types';
 import type { KeypairType } from '@polkadot/util-crypto/types';
 import type { Recoded, ThemeProps } from '../types';
 
 import { faUsb } from '@fortawesome/free-brands-svg-icons';
 import { faCodeBranch, faQrcode } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
+import cloneLogo from '@subwallet/extension-koni-ui/assets/clone.svg';
+import Identicon from '@subwallet/extension-koni-ui/components/Identicon';
+import { RootState } from '@subwallet/extension-koni-ui/stores';
+import { accountAllRecoded, defaultRecoded, isAccountAll, recodeAddress } from '@subwallet/extension-koni-ui/util';
+import Avatar from 'boring-avatars';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import allAccountLogoDefault from '@polkadot/extension-koni-ui/assets/all-account-icon.svg';
-import cloneLogo from '@polkadot/extension-koni-ui/assets/clone.svg';
-import Identicon from '@polkadot/extension-koni-ui/components/Identicon';
-import { RootState } from '@polkadot/extension-koni-ui/stores';
-import { accountAllRecoded, defaultRecoded, isAccountAll, recodeAddress } from '@polkadot/extension-koni-ui/util';
-import getNetworkInfoByGenesisHash from '@polkadot/extension-koni-ui/util/getNetworkInfoByGenesisHash';
+import { isEthereumAddress } from '@polkadot/util-crypto';
 
+import { AccountContext } from '../contexts';
 import useToast from '../hooks/useToast';
 import useTranslation from '../hooks/useTranslation';
 import getParentNameSuri from '../util/getParentNameSuri';
-import { AccountContext } from './contexts';
 
 export interface Props {
   address?: string | null;
   className?: string;
   genesisHash?: string | null;
+  originGenesisHash?: string | null;
   isExternal?: boolean | null;
   isHardware?: boolean | null;
   name?: string | null;
@@ -39,23 +40,50 @@ export interface Props {
   isShowAddress?: boolean;
   isShowBanner?: boolean;
   iconSize?: number;
+  isEthereum?: boolean;
+  addressHalfLength?: number;
+  accountSplitPart?: 'both' | 'left' | 'right';
 }
 
-function AccountInfo ({ address, className, genesisHash, iconSize = 32, isExternal, isHardware, isShowAddress = true, isShowBanner = true, name, parentName, showCopyBtn = true, suri, type: givenType }: Props): React.ReactElement<Props> {
+function AccountInfo ({ accountSplitPart = 'both', address, addressHalfLength = 10, className, genesisHash, iconSize = 32, isEthereum, isExternal, isHardware, isShowAddress = true, isShowBanner = true, name, originGenesisHash, parentName, showCopyBtn = true, suri, type: givenType }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { accounts } = useContext(AccountContext);
   const [{ account,
     formatted,
     genesisHash: recodedGenesis,
-    isEthereum,
+    isEthereum: _isEthereum,
+    originGenesisHash: recodedOrigin,
     prefix }, setRecoded] = useState<Recoded>(defaultRecoded);
-  const networkInfo = getNetworkInfoByGenesisHash(genesisHash || recodedGenesis);
+  const networkMap = useSelector((state: RootState) => state.networkMap);
   const { show } = useToast();
   const accountName = name || account?.name;
   const displayName = accountName || t('<unknown>');
-  const allAccountLogo = useSelector((state: RootState) => state.allAccount.allAccountLogo);
-
+  const { settings: { accountAllLogo } } = useSelector((state: RootState) => state);
+  const randomVariant = window.localStorage.getItem('randomVariant') as 'beam' | 'marble' | 'pixel' | 'sunset' | 'ring';
+  const randomNameForLogo = window.localStorage.getItem('randomNameForLogo') as string;
   const _isAccountAll = address && isAccountAll(address);
+
+  const getNetworkInfoByGenesisHash = useCallback((hash?: string | null): NetworkJson | null => {
+    if (!hash) {
+      return null;
+    }
+
+    for (const n in networkMap) {
+      if (!Object.prototype.hasOwnProperty.call(networkMap, n)) {
+        continue;
+      }
+
+      const networkInfo = networkMap[n];
+
+      if (networkInfo.genesisHash === hash) {
+        return networkInfo;
+      }
+    }
+
+    return null;
+  }, [networkMap]);
+
+  const networkInfo = getNetworkInfoByGenesisHash(originGenesisHash || genesisHash || recodedOrigin || recodedGenesis);
 
   useEffect((): void => {
     if (!address) {
@@ -73,11 +101,17 @@ function AccountInfo ({ address, className, genesisHash, iconSize = 32, isExtern
     setRecoded(recodeAddress(address, accounts, networkInfo, givenType));
   }, [accounts, _isAccountAll, address, networkInfo, givenType]);
 
-  const iconTheme = (
-    isEthereum
-      ? 'ethereum'
-      : (networkInfo?.icon || 'polkadot')
-  ) as IconTheme;
+  const iconTheme = useMemo((): 'polkadot'|'ethereum' => {
+    if (!address) {
+      return 'polkadot';
+    }
+
+    if (isEthereum || _isEthereum || isEthereumAddress(address)) {
+      return 'ethereum';
+    }
+
+    return 'polkadot';
+  }, [_isEthereum, address, isEthereum]);
 
   const _onCopy = useCallback(
     () => show(t('Copied')),
@@ -89,7 +123,17 @@ function AccountInfo ({ address, className, genesisHash, iconSize = 32, isExtern
 
     const addressLength = halfLength || 7;
 
-    return address.length > 13 ? `${address.slice(0, addressLength)}…${address.slice(-addressLength)}` : address;
+    if (address.length <= addressLength * 2) {
+      return address;
+    } else {
+      if (accountSplitPart === 'left') {
+        return `${address.slice(0, addressLength)}…`;
+      } else if (accountSplitPart === 'right') {
+        return `…${address.slice(-addressLength)}`;
+      } else {
+        return `${address.slice(0, addressLength)}…${address.slice(-addressLength)}`;
+      }
+    }
   };
 
   const Name = () => {
@@ -115,7 +159,7 @@ function AccountInfo ({ address, className, genesisHash, iconSize = 32, isExtern
               />
             )
         )}
-        <span title={displayName}>{_isAccountAll ? t<string>('All Accounts') : displayName}</span>
+        <span title={displayName}>{(_isAccountAll && (!name || name === 'All')) ? t<string>('All Accounts') : displayName}</span>
       </>);
   };
 
@@ -125,17 +169,20 @@ function AccountInfo ({ address, className, genesisHash, iconSize = 32, isExtern
     <div className={className}>
       <div className='account-info-row'>
         {_isAccountAll
-          ? allAccountLogo
+          ? accountAllLogo
             ? <img
               alt='all-account-icon'
               className='account-info__all-account-icon'
-              src={allAccountLogo}
+              src={accountAllLogo}
             />
-            : <img
-              alt='all-account-icon'
-              className='account-info__all-account-icon'
-              src={allAccountLogoDefault}
-            />
+            : <div className='account-info__all-account-icon'>
+              <Avatar
+                colors={['#5F545C', '#EB7072', '#F5BA90', '#F5E2B8', '#A2CAA5']}
+                name={randomNameForLogo}
+                size={34}
+                variant={randomVariant}
+              />
+            </div>
           : <Identicon
             className='account-info-identity-icon'
             iconTheme={iconTheme}
@@ -189,7 +236,7 @@ function AccountInfo ({ address, className, genesisHash, iconSize = 32, isExtern
               className='account-info-full-address'
               data-field='address'
             >
-              {_isAccountAll ? t<string>('All Accounts') : toShortAddress(formatted || address || t('<unknown>'), 10)}
+              {_isAccountAll ? t<string>('All Accounts') : toShortAddress(formatted || address || t('<unknown>'), addressHalfLength)}
             </div>}
             {showCopyBtn && <CopyToClipboard text={(formatted && formatted) || ''}>
               <img
@@ -252,6 +299,9 @@ export default styled(AccountInfo)(({ theme }: ThemeProps) => `
     margin-right: 10px;
     padding: 2px;
     border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .account-info-address-display .svg-inline--fa {

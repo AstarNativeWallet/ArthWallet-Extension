@@ -1,24 +1,24 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { BalanceVal } from '@subwallet/extension-koni-ui/components/Balance';
+import { ThemeProps } from '@subwallet/extension-koni-ui/types';
+import { getLogoByNetworkKey } from '@subwallet/extension-koni-ui/util';
+import { AccountInfoByNetwork, BalanceSubInfo } from '@subwallet/extension-koni-ui/util/types';
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 
-import { BalanceVal } from '@polkadot/extension-koni-ui/components/balance';
-import { ThemeProps } from '@polkadot/extension-koni-ui/types';
-import { getLogoByNetworkKey } from '@polkadot/extension-koni-ui/util';
-import { AccountInfoByNetwork, BalanceSubInfo } from '@polkadot/extension-koni-ui/util/types';
-
-import { Loading } from '../../../../components';
+import { CircleSpinner, Loading } from '../../../../components';
 
 interface Props extends ThemeProps {
   className?: string;
   accountInfo: AccountInfoByNetwork;
   balanceInfo: BalanceSubInfo;
+  isConnecting: boolean;
   isLoading: boolean;
 }
 
-function ChainBalanceChildrenItem ({ accountInfo, balanceInfo, className, isLoading }: Props): React.ReactElement<Props> {
+function ChainBalanceChildrenItem ({ accountInfo, balanceInfo, className, isConnecting, isLoading }: Props): React.ReactElement<Props> {
   const [toggleDetail, setToggleDetail] = useState(false);
 
   const _onToggleDetail = useCallback((e: React.MouseEvent<HTMLElement>) => {
@@ -64,6 +64,12 @@ function ChainBalanceChildrenItem ({ accountInfo, balanceInfo, className, isLoad
                 value={balanceInfo.convertedBalanceValue}
               />
             </div>
+
+            {isConnecting && (
+              <div className='chain-balance-item__spinner'>
+                <CircleSpinner className='chain-balance-item__spinner-image' />
+              </div>
+            )}
 
             {/* {(!!mockDetailData.length || !!mockDetailData.length) && ( */}
             {/*  <div className='chain-balance--children-item__toggle' /> */}
@@ -129,12 +135,10 @@ export default React.memo(styled(ChainBalanceChildrenItem)(({ theme }: Props) =>
 
   .chain-balance--children-item__logo {
     min-width: 32px;
-    height: 32px;
+    height: 36px;
     border-radius: 100%;
     overflow: hidden;
     margin-right: 12px;
-    background-color: #fff;
-    border: 1px solid #fff;
   }
 
   .chain-balance--children-item__meta-wrapper {
@@ -214,5 +218,18 @@ export default React.memo(styled(ChainBalanceChildrenItem)(({ theme }: Props) =>
   &.-show-detail .chain-balance--children-item__toggle {
     top: 9px;
     transform: rotate(-135deg);
+  }
+
+  .chain-balance-item__spinner {
+    position: absolute;
+    display: inline-block;
+    padding: 3.5px;
+    top: 10px;
+    right: 37px;
+  }
+
+  .chain-balance-item__spinner-image {
+    width: 28px;
+    height: 28px;
   }
 `));

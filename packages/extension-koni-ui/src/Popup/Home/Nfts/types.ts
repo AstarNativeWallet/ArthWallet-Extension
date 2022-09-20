@@ -1,9 +1,7 @@
-// Copyright 2019-2022 @polkadot/extension-koni authors & contributors
+// Copyright 2019-2022 @subwallet/extension-koni authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { SubmittableExtrinsic } from '@polkadot/api/types';
-import { RMRK_VER } from '@polkadot/extension-base/background/KoniTypes';
-import { RuntimeDispatchInfo } from '@polkadot/types/interfaces';
+import { RMRK_VER } from '@subwallet/extension-base/background/KoniTypes';
 
 // For rendering purposes only
 export interface _NftItem {
@@ -36,18 +34,23 @@ export interface _NftJson {
 export interface Web3TransferParams {
   rawTx: Record<string, any>;
   estimatedGas: string;
+  balanceError: boolean;
 }
 
 export interface SubstrateTransferParams {
-  extrinsic: SubmittableExtrinsic<'promise'>;
-  txInfo?: RuntimeDispatchInfo;
+  params: Record<string, any>;
+  estimatedFee?: string;
+  balanceError?: boolean;
 }
 
 export interface TransferResponse {
-  info?: RuntimeDispatchInfo;
-  extrinsic?: SubmittableExtrinsic<'promise'>;
+  // substrate
+  estimatedFee?: string;
+  // eth
   web3RawTx?: Record<string, any>;
   estimatedGas?: string
+  // common
+  balanceError?: boolean;
 }
 
 export enum SUPPORTED_TRANSFER_CHAIN_NAME {
@@ -55,17 +58,11 @@ export enum SUPPORTED_TRANSFER_CHAIN_NAME {
   acala = 'acala',
   karura = 'karura',
   kusama = 'kusama',
-  uniqueNft = 'uniqueNft',
+  unique_network = 'unique_network',
   quartz = 'quartz',
   opal = 'opal',
   statemint = 'statemint',
   bitcountry = 'bitcountry',
-  moonbeam = 'moonbeam',
-  moonbase = 'moonbase',
-  astarEvm = 'astarEvm',
-  moonriver = 'moonriver',
-  shiden = 'shiden',
-  shibuya = 'shibuya'
 }
 
 export const SUPPORTED_TRANSFER_SUBSTRATE_CHAIN = [
@@ -73,18 +70,9 @@ export const SUPPORTED_TRANSFER_SUBSTRATE_CHAIN = [
   SUPPORTED_TRANSFER_CHAIN_NAME.acala as string,
   SUPPORTED_TRANSFER_CHAIN_NAME.karura as string,
   SUPPORTED_TRANSFER_CHAIN_NAME.kusama as string,
-  SUPPORTED_TRANSFER_CHAIN_NAME.uniqueNft as string,
+  SUPPORTED_TRANSFER_CHAIN_NAME.unique_network as string,
   SUPPORTED_TRANSFER_CHAIN_NAME.quartz as string,
   SUPPORTED_TRANSFER_CHAIN_NAME.opal as string,
   SUPPORTED_TRANSFER_CHAIN_NAME.statemint as string,
   SUPPORTED_TRANSFER_CHAIN_NAME.bitcountry as string
-];
-
-export const SUPPORTED_TRANSFER_EVM_CHAIN = [
-  SUPPORTED_TRANSFER_CHAIN_NAME.moonbase as string,
-  SUPPORTED_TRANSFER_CHAIN_NAME.moonbeam as string,
-  SUPPORTED_TRANSFER_CHAIN_NAME.moonriver as string,
-  SUPPORTED_TRANSFER_CHAIN_NAME.astarEvm as string,
-  SUPPORTED_TRANSFER_CHAIN_NAME.shiden as string,
-  SUPPORTED_TRANSFER_CHAIN_NAME.shibuya as string
 ];

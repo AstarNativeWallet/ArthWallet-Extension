@@ -1,24 +1,24 @@
-// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
+// Copyright 2019-2022 @subwallet/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import { faSync } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useGetSupportedLedger } from '@subwallet/extension-koni-ui/util/ledgerChains';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import settings from '@polkadot/ui-settings';
 
-import { AccountInfoEl, ActionContext, Button, ButtonArea, Dropdown, Warning } from '../components';
+import { AccountInfoEl, ActionContext, Button, ButtonArea, Checkbox, Dropdown, Warning } from '../components';
 import { useLedger } from '../hooks/useLedger';
 import useTranslation from '../hooks/useTranslation';
-import { createAccountHardware } from '../messaging';
+import { createAccountHardwareV2 } from '../messaging';
 import { Header, Name } from '../partials';
 import { ThemeProps } from '../types';
-import ledgerChains from '../util/legerChains';
 
 interface AccOption {
   text: string;
-  value: number;
+  value: string;
 }
 
 interface NetworkOption {
@@ -39,9 +39,11 @@ function ImportLedger ({ className }: Props): React.ReactElement {
   const [error, setError] = useState<string | null>(null);
   const [isBusy, setIsBusy] = useState(false);
   const [genesis, setGenesis] = useState<string | null>(null);
+  const [isAllowed, setIsAllowed] = useState<boolean>(true);
   const onAction = useContext(ActionContext);
   const [name, setName] = useState<string | null>(null);
   const { address, error: ledgerError, isLoading: ledgerLoading, isLocked: ledgerLocked, refresh, warning: ledgerWarning } = useLedger(genesis, accountIndex, addressOffset);
+  const ledgerChains = useGetSupportedLedger();
 
   useEffect(() => {
     if (address) {
@@ -51,23 +53,23 @@ function ImportLedger ({ className }: Props): React.ReactElement {
 
   const accOps = useRef(AVAIL.map((value): AccOption => ({
     text: t('Account type {{index}}', { replace: { index: value } }),
-    value
+    value: value.toString()
   })));
 
   const addOps = useRef(AVAIL.map((value): AccOption => ({
     text: t('Address index {{index}}', { replace: { index: value } }),
-    value
+    value: value.toString()
   })));
 
   const networkOps = useRef(
     [{
-      text: t('Select network'),
+      text: ledgerChains.length > 0 ? t('Select network') : t('Please enable at least 1 network that supports Ledger'),
       value: ''
     },
     ...ledgerChains.map(({ displayName, genesisHash }): NetworkOption => ({
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       text: displayName,
-      value: genesisHash[0]
+      value: genesisHash
     }))]
   );
 
@@ -76,7 +78,15 @@ function ImportLedger ({ className }: Props): React.ReactElement {
       if (address && genesis && name) {
         setIsBusy(true);
 
-        createAccountHardware(address, 'ledger', accountIndex, addressOffset, name, genesis)
+        createAccountHardwareV2({
+          address: address,
+          hardwareType: 'ledger',
+          accountIndex: accountIndex,
+          addressOffset: addressOffset,
+          name: name,
+          genesisHash: genesis,
+          isAllowed: isAllowed
+        })
           .then(() => onAction('/'))
           .catch((error: Error) => {
             console.error(error);
@@ -86,7 +96,7 @@ function ImportLedger ({ className }: Props): React.ReactElement {
           });
       }
     },
-    [accountIndex, address, addressOffset, genesis, name, onAction]
+    [accountIndex, address, addressOffset, genesis, isAllowed, name, onAction]
   );
 
   // select element is returning a string
@@ -155,6 +165,16 @@ function ImportLedger ({ className }: Props): React.ReactElement {
             {error || ledgerError}
           </Warning>
         )}
+
+        {!!name &&
+          (
+            <Checkbox
+              checked={isAllowed}
+              label={t<string>('Auto connect to all DApps after importing')}
+              onChange={setIsAllowed}
+            />
+          )
+        }
         <ButtonArea className={'import-ledger-button-area'}>
           {ledgerLocked
             ? (

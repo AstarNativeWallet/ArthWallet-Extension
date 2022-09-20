@@ -1,10 +1,10 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { NetworkJson, TokenInfo } from '@subwallet/extension-base/background/KoniTypes';
+import { isEmptyArray } from '@subwallet/extension-koni-ui/util/common';
 import axios from 'axios';
 import BigN from 'bignumber.js';
-
-import { isEmptyArray } from '@polkadot/extension-koni-ui/util/common';
 
 import { AccountInfoItem, BalanceInfo, BalanceSubInfo } from './types';
 
@@ -116,7 +116,7 @@ export const getBalances = ({ balance,
   decimals,
   price,
   symbol }: BalanceType): BalanceValueType => {
-  const stable = symbol.toLowerCase().includes('usd') ? 1 : 0;
+  const stable = price !== undefined ? price : (symbol.toLowerCase().includes('usd') ? 1 : 0);
 
   const balanceValue = getBalanceWithDecimals({ balance, decimals });
 
@@ -133,20 +133,21 @@ export const getBalances = ({ balance,
 
 function getTokenPrice (tokenPriceMap: Record<string, number>, token: string): number {
   if (token === 'LCDOT') {
-    return (tokenPriceMap.dot || 0) * 0.6925;
+    return 0;
   }
 
   return tokenPriceMap[token.toLowerCase()] || 0;
 }
 
-export const parseBalancesInfo = (priceMap: Record<string, number>, tokenPriceMap: Record<string, number>, balanceInfo: AccountInfoItem): BalanceInfo => {
+export const parseBalancesInfo = (priceMap: Record<string, number>, tokenPriceMap: Record<string, number>, balanceInfo: AccountInfoItem, tokenMap: Record<string, TokenInfo>, networkJson: NetworkJson): BalanceInfo => {
   const { balanceItem, networkKey, tokenDecimals, tokenSymbols } = balanceInfo;
+  const ignoreTestnetPrice = networkJson.groups.includes('TEST_NET');
 
   const decimals = tokenDecimals && !isEmptyArray(tokenDecimals) ? tokenDecimals[0] : 0;
   const symbol = tokenSymbols && !isEmptyArray(tokenSymbols) ? tokenSymbols[0] : '';
 
-  const { children: balanceChildren, feeFrozen: frozenFee, free: freeBalance, miscFrozen: frozenMisc, reserved: reservedBalance } = balanceItem;
-  const transferableBalance = new BigN(freeBalance).minus(new BigN(frozenMisc)).toString();
+  const { children: balanceChildren, feeFrozen: frozenFee, free: freeBalance, miscFrozen: frozenMisc, reserved: reservedBalance, timestamp } = balanceItem;
+  const transferableBalance = new BigN(freeBalance || 0).minus(new BigN(frozenMisc || 0)).toString();
 
   const accountData = [
     { key: 'free', label: 'Transferable', value: transferableBalance },
@@ -160,12 +161,12 @@ export const parseBalancesInfo = (priceMap: Record<string, number>, tokenPriceMa
   let totalBalanceValue = BN_ZERO;
   let totalConvertedBalanceValue = BN_ZERO;
 
-  accountData.forEach(({ key, label, value }) => {
+  accountData.forEach(({ key, label, value = '0' }) => {
     const { balanceValue, convertedBalanceValue } = getBalances({
       balance: value,
       decimals,
       symbol,
-      price: priceMap[networkKey]
+      price: ignoreTestnetPrice ? 0 : priceMap[networkJson.coinGeckoKey || networkKey]
     });
 
     if (['free', 'reserved', 'locked'].includes(key)) {
@@ -187,17 +188,26 @@ export const parseBalancesInfo = (priceMap: Record<string, number>, tokenPriceMa
   if (balanceChildren) {
     Object.keys(balanceChildren).forEach((token) => {
       const item = balanceChildren[token];
+      const _token: string = tokenMap[token]?.symbolAlt || token;
+
+      let priceSymbol = token;
+
+      // Apply special case for xcToken of Moonbeam and Moonriver
+      if (['moonbeam', 'moonriver'].includes(networkKey) && token.toLowerCase().startsWith('xc')) {
+        priceSymbol = token.toLowerCase().replace('xc', '');
+      }
+
       const { balanceValue, convertedBalanceValue } = getBalances({
         balance: item.free,
         decimals: item.decimals,
-        symbol: token,
-        price: getTokenPrice(tokenPriceMap, token)
+        symbol: _token,
+        price: ignoreTestnetPrice ? 0 : getTokenPrice(tokenPriceMap, priceSymbol)
       });
 
       childrenBalances.push({
-        key: token,
+        key: _token,
         label: '',
-        symbol: token,
+        symbol: _token,
         convertedBalanceValue,
         balanceValue
       });
@@ -209,6 +219,7 @@ export const parseBalancesInfo = (priceMap: Record<string, number>, tokenPriceMa
     balanceValue: totalBalanceValue,
     convertedBalanceValue: totalConvertedBalanceValue,
     detailBalances,
-    childrenBalances
+    childrenBalances,
+    timestamp
   };
 };

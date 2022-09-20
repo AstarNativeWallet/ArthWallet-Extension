@@ -1,14 +1,12 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// eslint-disable-next-line header/header
+import { Header } from '@subwallet/extension-koni-ui/partials';
+import { EVM_ACCOUNT_TYPE } from '@subwallet/extension-koni-ui/Popup/CreateAccount';
+import { ThemeProps } from '@subwallet/extension-koni-ui/types';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import { Header } from '@polkadot/extension-koni-ui/partials';
-import { EVM_ACCOUNT_TYPE } from '@polkadot/extension-koni-ui/Popup/CreateAccount';
-import { ThemeProps } from '@polkadot/extension-koni-ui/types';
 import { KeypairType } from '@polkadot/util-crypto/types';
 
 import { AccountContext, ActionContext } from '../../components';
@@ -27,14 +25,15 @@ interface Props extends ThemeProps {
   className?: string;
 }
 
+const KEYTYPES: KeypairType[] = [EVM_ACCOUNT_TYPE];
+
 function ImportMetamaskPrivateKey ({ className = '' }: Props): React.ReactElement {
   const { t } = useTranslation();
   const { accounts } = useContext(AccountContext);
   const onAction = useContext(ActionContext);
   const [isBusy, setIsBusy] = useState(false);
   const [account, setAccount] = useState<AccountInfo | null>(null);
-  const keyTypes: KeypairType[] = [EVM_ACCOUNT_TYPE];
-  const dep = keyTypes.toString();
+  const [isConnectWhenImport, setIsConnectWhenImport] = useState<boolean>(true);
   const accountsWithoutAll = accounts.filter((acc: { address: string; }) => acc.address !== 'ALL');
   const name = `Account ${accountsWithoutAll.length + 1}`;
   const type = DEFAULT_TYPE;
@@ -44,11 +43,10 @@ function ImportMetamaskPrivateKey ({ className = '' }: Props): React.ReactElemen
   }, [accounts, onAction]);
 
   const _onCreate = useCallback((name: string, password: string): void => {
-    // this should always be the case
     if (name && password && account) {
       setIsBusy(true);
 
-      createAccountSuriV2(name, password, account.suri, keyTypes)
+      createAccountSuriV2(name, password, account.suri, isConnectWhenImport, KEYTYPES)
         .then(() => {
           window.localStorage.setItem('popupNavigation', '/');
           onAction('/');
@@ -58,7 +56,7 @@ function ImportMetamaskPrivateKey ({ className = '' }: Props): React.ReactElemen
           console.error(error);
         });
     }
-  }, [account, onAction, dep]);
+  }, [account, isConnectWhenImport, onAction]);
 
   return (
     <>
@@ -70,8 +68,11 @@ function ImportMetamaskPrivateKey ({ className = '' }: Props): React.ReactElemen
       />
       <MetamaskPrivateKeyImport
         account={account}
+        changeConnectWhenImport={setIsConnectWhenImport}
         className='import-seed-content-wrapper'
-        keyTypes={keyTypes}
+        isBusy={isBusy}
+        isConnectWhenImport={isConnectWhenImport}
+        keyTypes={KEYTYPES}
         name={name}
         onAccountChange={setAccount}
         onCreate={_onCreate}

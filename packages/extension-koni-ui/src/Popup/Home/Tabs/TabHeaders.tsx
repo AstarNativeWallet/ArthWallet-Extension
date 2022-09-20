@@ -1,12 +1,11 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { useContext } from 'react';
-import styled, { ThemeContext } from 'styled-components';
-
-import TabHeaderItem from '@polkadot/extension-koni-ui/Popup/Home/Tabs/TabHeaderItem';
-import { TabHeaderItemType } from '@polkadot/extension-koni-ui/Popup/Home/types';
-import { Theme, ThemeProps } from '@polkadot/extension-koni-ui/types';
+import TabHeaderItem from '@subwallet/extension-koni-ui/Popup/Home/Tabs/TabHeaderItem';
+import { TabHeaderItemType } from '@subwallet/extension-koni-ui/Popup/Home/types';
+import { ThemeProps } from '@subwallet/extension-koni-ui/types';
+import React from 'react';
+import styled from 'styled-components';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -16,14 +15,11 @@ interface Props extends ThemeProps {
 }
 
 function TabHeaders ({ activatedItem, className, items, onSelectItem }: Props): React.ReactElement<Props> {
-  const themeContext = useContext(ThemeContext as React.Context<Theme>);
-
   return (
     <div className={`tab-headers ${className || ''}`}>
       {items.map((item) => (
         <TabHeaderItem
           isActivated={activatedItem === item.tabId}
-          isDarkTheme={themeContext.id === 'dark'}
           item={item}
           key={item.tabId}
           onSelect={onSelectItem}

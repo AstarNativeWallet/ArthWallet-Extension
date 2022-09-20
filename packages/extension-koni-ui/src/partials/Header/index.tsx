@@ -1,76 +1,73 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import type { ThemeProps } from '../../types';
 
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import ExpandDarkIcon from '@subwallet/extension-koni-ui/assets/icon/expand-dark.svg';
+import ExpandLightIcon from '@subwallet/extension-koni-ui/assets/icon/expand-light.svg';
+import { AccountContext, Link } from '@subwallet/extension-koni-ui/components';
+import useGenesisHashOptions from '@subwallet/extension-koni-ui/hooks/useGenesisHashOptions';
+import useIsPopup from '@subwallet/extension-koni-ui/hooks/useIsPopup';
+import { showAccount, tieAccount, windowOpen } from '@subwallet/extension-koni-ui/messaging';
+import AccountMenuSettings from '@subwallet/extension-koni-ui/partials/AccountMenuSettings';
+import { RootState } from '@subwallet/extension-koni-ui/stores';
+import { updateCurrentNetwork } from '@subwallet/extension-koni-ui/stores/updater';
+import { accountAllRecoded, getGenesisOptionsByAddressType, isAccountAll } from '@subwallet/extension-koni-ui/util';
+import { getLogoByGenesisHash } from '@subwallet/extension-koni-ui/util/logoByGenesisHashMap';
+import reformatAddress from '@subwallet/extension-koni-ui/util/reformatAddress';
+import Avatar from 'boring-avatars';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled, { ThemeContext } from 'styled-components';
 
-import { CurrentNetworkInfo } from '@polkadot/extension-base/background/KoniTypes';
-import allAccountLogoDefault from '@polkadot/extension-koni-ui/assets/all-account-icon.svg';
-import ExpandDarkIcon from '@polkadot/extension-koni-ui/assets/icon/expand-dark.svg';
-import ExpandLightIcon from '@polkadot/extension-koni-ui/assets/icon/expand-light.svg';
-import { AccountContext, Link } from '@polkadot/extension-koni-ui/components';
-import ConfirmModal from '@polkadot/extension-koni-ui/components/ConfirmModal';
-import Identicon from '@polkadot/extension-koni-ui/components/Identicon';
-import NetworkMenu from '@polkadot/extension-koni-ui/components/NetworkMenu';
-import useGenesisHashOptions from '@polkadot/extension-koni-ui/hooks/useGenesisHashOptions';
-import useIsPopup from '@polkadot/extension-koni-ui/hooks/useIsPopup';
-import useMetadata from '@polkadot/extension-koni-ui/hooks/useMetadata';
-import { showAccount, tieAccount, windowOpen } from '@polkadot/extension-koni-ui/messaging';
-import AccountMenuSettings from '@polkadot/extension-koni-ui/partials/AccountMenuSettings';
-import DetailHeader from '@polkadot/extension-koni-ui/partials/Header/DetailHeader';
-import SubHeader from '@polkadot/extension-koni-ui/partials/Header/SubHeader';
-import { RootState, store } from '@polkadot/extension-koni-ui/stores';
-import { accountAllRecoded, getGenesisOptionsByAddressType, isAccountAll } from '@polkadot/extension-koni-ui/util';
-import { getLogoByGenesisHash } from '@polkadot/extension-koni-ui/util/logoByGenesisHashMap';
-import reformatAddress from '@polkadot/extension-koni-ui/util/reformatAddress';
 import { IconTheme } from '@polkadot/react-identicon/types';
 
 import defaultAvatar from '../../assets/default-avatar.svg';
-import logo from '../../assets/sub-wallet-logo.svg';
 import useOutsideClick from '../../hooks/useOutsideClick';
 import { Theme } from '../../types';
 
+const ConfirmModal = React.lazy(() => import('@subwallet/extension-koni-ui/components/ConfirmModal'));
+const Identicon = React.lazy(() => import('@subwallet/extension-koni-ui/components/Identicon'));
+const NetworkMenu = React.lazy(() => import('@subwallet/extension-koni-ui/components/NetworkMenu'));
+const DetailHeader = React.lazy(() => import('@subwallet/extension-koni-ui/partials/Header/DetailHeader'));
+const SubHeader = React.lazy(() => import('@subwallet/extension-koni-ui/partials/Header/SubHeader'));
+
 interface Props extends ThemeProps {
+  changeAccountCallback?: (address: string) => void;
   children?: React.ReactNode;
   className?: string;
+  isBusy?: boolean;
+  isContainDetailHeader: boolean;
+  isShowNetworkSelect?: boolean;
+  isShowZeroBalances?: boolean;
+  isWelcomeScreen?: boolean;
+  onBack?: () => void;
+  onCancel?: () => void;
+  setShowBalanceDetail?: (isShowBalanceDetail: boolean) => void;
   showAdd?: boolean;
   showBackArrow?: boolean;
+  showCancelButton?: boolean;
   showSearch?: boolean;
   showSettings?: boolean;
-  smallMargin?: boolean;
-  text?: React.ReactNode;
-  isContainDetailHeader: boolean;
   showSubHeader?: boolean;
+  smallMargin?: boolean;
   subHeaderName?: string;
-  showCancelButton?: boolean;
-  isWelcomeScreen?: boolean;
-  isShowZeroBalances?: boolean;
-  toggleZeroBalances?: () => void;
-  changeAccountCallback?: (address: string) => void;
-  isBusy?: boolean;
-  setShowBalanceDetail?: (isShowBalanceDetail: boolean) => void;
+  text?: React.ReactNode;
+  cancelButtonText?: string;
   to?: string;
+  toggleZeroBalances?: () => void;
 }
 
-function updateCurrentNetwork (currentNetwork: CurrentNetworkInfo): void {
-  store.dispatch({ type: 'currentNetwork/update', payload: currentNetwork });
-}
-
-function Header ({ changeAccountCallback, children, className = '', isBusy, isContainDetailHeader, isShowZeroBalances, isWelcomeScreen, setShowBalanceDetail, showBackArrow, showCancelButton, showSubHeader, smallMargin = false, subHeaderName, to, toggleZeroBalances }: Props): React.ReactElement<Props> {
+function Header ({ cancelButtonText, changeAccountCallback, children, className = '', isBusy, isContainDetailHeader, isShowNetworkSelect = true, isShowZeroBalances, isWelcomeScreen, onBack, onCancel, setShowBalanceDetail, showBackArrow, showCancelButton, showSubHeader, smallMargin = false, subHeaderName, to, toggleZeroBalances }: Props): React.ReactElement<Props> {
   const [isSettingsOpen, setShowSettings] = useState(false);
   const [isActionOpen, setShowAccountAction] = useState(false);
   const [isNetworkSelectOpen, setShowNetworkSelect] = useState(false);
   const [isShowModal, setShowModal] = useState(false);
-  const currentAccount = useSelector((state: RootState) => state.currentAccount.account);
-  const { isEthereum, networkPrefix } = useSelector((state: RootState) => state.currentNetwork);
-  const allAccountLogo = useSelector((state: RootState) => state.allAccount.allAccountLogo);
-  const [localGenesisHash, setLocalGenesisHash] = useState<string>('');
-  const chain = useMetadata(currentAccount?.genesisHash, true);
+  const { currentAccount: { account },
+    currentNetwork: { genesisHash, isEthereum, networkPrefix },
+    settings: { accountAllLogo } } = useSelector((state: RootState) => state);
   const [formattedAddress, setFormattedAddress] = useState<string | null>(null);
   const themeContext = useContext(ThemeContext as React.Context<Theme>);
   const { accounts } = useContext(AccountContext);
@@ -84,103 +81,38 @@ function Header ({ changeAccountCallback, children, className = '', isBusy, isCo
     []
   );
 
-  const genesisOptions = getGenesisOptionsByAddressType(currentAccount?.address, accounts, useGenesisHashOptions());
-  const _isAccountAll = currentAccount && isAccountAll(currentAccount.address);
+  const genesisOptions = getGenesisOptionsByAddressType(account?.address, accounts, useGenesisHashOptions());
+  const _isAccountAll = account && isAccountAll(account.address);
+  const randomVariant = window.localStorage.getItem('randomVariant') as 'beam' | 'marble' | 'pixel' | 'sunset' | 'ring';
+  const randomNameForLogo = window.localStorage.getItem('randomNameForLogo') as string;
 
   useEffect((): void => {
-    if (!currentAccount) {
+    if (!account) {
       return;
     }
 
-    if (!currentAccount.address) {
+    if (!account.address) {
       setFormattedAddress(null);
 
       return;
     }
 
-    if (isAccountAll(currentAccount.address)) {
+    if (isAccountAll(account.address)) {
       setFormattedAddress(accountAllRecoded.formatted);
 
       return;
     }
 
-    const formattedAddress = reformatAddress(currentAccount.address, networkPrefix, isEthereum);
+    const formattedAddress = reformatAddress(account.address, networkPrefix, isEthereum);
 
     setFormattedAddress(formattedAddress);
-  }, [currentAccount, currentAccount?.address, networkPrefix, isEthereum]);
-
-  useEffect(() => {
-    let isSync = true;
-
-    if (_isAccountAll) {
-      let networkSelected;
-      // console.log('genesisOption', genesisOptions);
-      const accountAllNetworkGenesisHash = window.localStorage.getItem('accountAllNetworkGenesisHash');
-
-      if (!accountAllNetworkGenesisHash) {
-        networkSelected = genesisOptions[0];
-      } else {
-        networkSelected = genesisOptions.find((opt) => opt.value === accountAllNetworkGenesisHash);
-
-        if (!networkSelected) {
-          window.localStorage.setItem('accountAllNetworkGenesisHash', '');
-          networkSelected = genesisOptions[0];
-        }
-      }
-
-      if (networkSelected) {
-        // console.log('networkSelected')
-        updateCurrentNetwork({
-          networkPrefix: networkSelected.networkPrefix,
-          icon: networkSelected.icon,
-          genesisHash: networkSelected.value,
-          networkKey: networkSelected.networkKey,
-          isEthereum: networkSelected.isEthereum
-        });
-
-        setLocalGenesisHash(networkSelected.value);
-      }
-
-      return;
-    }
-
-    (async () => {
-      let networkSelected;
-
-      if (!currentAccount || !currentAccount?.genesisHash) {
-        networkSelected = genesisOptions[0];
-      } else {
-        networkSelected = genesisOptions.find((opt) => opt.value === currentAccount.genesisHash);
-
-        if (!networkSelected) {
-          await tieAccount(currentAccount.address, null);
-          networkSelected = genesisOptions[0];
-        }
-      }
-
-      if (isSync && networkSelected) {
-        updateCurrentNetwork({
-          networkPrefix: networkSelected.networkPrefix,
-          icon: networkSelected.icon,
-          genesisHash: networkSelected.value,
-          networkKey: networkSelected.networkKey,
-          isEthereum: networkSelected.isEthereum
-        });
-
-        setLocalGenesisHash(networkSelected.value);
-      }
-    })().catch((e) => console.log('error is', e));
-
-    return () => {
-      isSync = false;
-    };
-  }, [currentAccount, currentAccount?.genesisHash, _isAccountAll, genesisOptions]);
+  }, [account, account?.address, networkPrefix, isEthereum]);
 
   const getNetworkKey = useCallback(
     (genesisHash: string) => {
       let networkKey = '';
 
-      if (currentAccount) {
+      if (account) {
         genesisHash = genesisHash || '';
         const currentNetwork = genesisOptions.find((opt) => opt.value === genesisHash);
 
@@ -188,7 +120,7 @@ function Header ({ changeAccountCallback, children, className = '', isBusy, isCo
       }
 
       return networkKey;
-    }, [currentAccount, genesisOptions]
+    }, [account, genesisOptions]
   );
 
   const _toggleZeroBalances = useCallback(
@@ -200,19 +132,15 @@ function Header ({ changeAccountCallback, children, className = '', isBusy, isCo
   );
 
   const theme = (
-    currentAccount?.type === 'ethereum'
+    account?.type === 'ethereum'
       ? 'ethereum'
-      : (chain?.icon || 'polkadot')
+      : 'polkadot'
   ) as IconTheme;
 
   const _onChangeGenesis = useCallback(
     async (genesisHash: string, networkPrefix: number, icon: string, networkKey: string, isEthereum: boolean): Promise<void> => {
-      if (currentAccount) {
-        if (!isAccountAll(currentAccount.address)) {
-          await tieAccount(currentAccount.address, genesisHash || null);
-        } else {
-          window.localStorage.setItem('accountAllNetworkGenesisHash', genesisHash);
-        }
+      if (account) {
+        await tieAccount(account.address, genesisHash || null);
 
         updateCurrentNetwork({
           networkPrefix,
@@ -221,14 +149,12 @@ function Header ({ changeAccountCallback, children, className = '', isBusy, isCo
           networkKey,
           isEthereum
         });
-
-        setLocalGenesisHash(genesisHash);
       }
 
       setShowBalanceDetail && setShowBalanceDetail(false);
       setShowNetworkSelect(false);
     },
-    [currentAccount, setShowBalanceDetail]
+    [account, setShowBalanceDetail]
   );
 
   useOutsideClick(setRef, (): void => {
@@ -264,21 +190,21 @@ function Header ({ changeAccountCallback, children, className = '', isBusy, isCo
 
   const confirmConnectAcc = useCallback(
     () => {
-      currentAccount && currentAccount.address && showAccount(currentAccount?.address, false).then(
+      account && account.address && showAccount(account?.address, false).then(
         () => setShowModal(false)).catch(console.error);
     },
-    [currentAccount]
+    [account]
   );
 
   const _toggleVisibility = useCallback(
     () => {
-      if (currentAccount && currentAccount.isHidden) {
-        currentAccount.address && showAccount(currentAccount?.address, true).catch(console.error);
+      if (account && account.isHidden) {
+        account.address && showAccount(account?.address, true).catch(console.error);
       } else {
         setShowModal(true);
       }
     },
-    [currentAccount]
+    [account]
   );
 
   return (
@@ -293,7 +219,7 @@ function Header ({ changeAccountCallback, children, className = '', isBusy, isCo
             >
               <img
                 className='logo'
-                src={logo}
+                src={themeContext.logo}
               />
             </Link>
           </div>
@@ -310,16 +236,16 @@ function Header ({ changeAccountCallback, children, className = '', isBusy, isCo
               />
             </div>)}
             <div
-              className={`network-select-item ${isNetworkSelectOpen ? 'pointer-events-none' : ''}`}
+              className={`network-select-item ${isNetworkSelectOpen ? 'pointer-events-none' : ''} ${isShowNetworkSelect ? '' : 'network-select-disabled'}`}
               onClick={_toggleNetwork}
             >
               <img
                 alt='logo'
                 className={'network-logo'}
-                src={getLogoByGenesisHash(localGenesisHash)}
+                src={getLogoByGenesisHash(genesisHash)}
               />
               <div className='network-select-item__text'>
-                {getNetworkKey(localGenesisHash) || genesisOptions[0].text}
+                {getNetworkKey(genesisHash) || genesisOptions[0].text}
               </div>
               <FontAwesomeIcon
                 className='network-select-item__icon'
@@ -334,28 +260,32 @@ function Header ({ changeAccountCallback, children, className = '', isBusy, isCo
                 className={`setting-icon-wrapper ${isSettingsOpen ? 'pointer-events-none' : ''}`}
                 onClick={_toggleSettings}
               >
-                {!!currentAccount && !!currentAccount.address
+                {!!account && !!account.address
                   ? _isAccountAll
-                    ? allAccountLogo
+                    ? accountAllLogo
                       ? <img
                         alt='all-account-icon'
                         className='header__all-account-icon'
-                        src={allAccountLogo}
+                        src={accountAllLogo}
                       />
-                      : <img
-                        alt='all-account-icon'
-                        className='header__all-account-icon'
-                        src={allAccountLogoDefault}
-                      />
+                      : <div className='header__all-account-icon'>
+                        <Avatar
+                          colors={['#5F545C', '#EB7072', '#F5BA90', '#F5E2B8', '#A2CAA5']}
+                          name={randomNameForLogo}
+                          size={46}
+                          variant={randomVariant}
+                        />
+                      </div>
+
                     : (
                       <Identicon
                         className='identityIcon'
-                        genesisHash={localGenesisHash}
+                        genesisHash={genesisHash}
                         iconTheme={theme}
                         prefix={networkPrefix}
                         showLogo
                         size={46}
-                        value={formattedAddress || currentAccount?.address}
+                        value={formattedAddress || account?.address}
                       />
                     )
                   : (
@@ -372,7 +302,7 @@ function Header ({ changeAccountCallback, children, className = '', isBusy, isCo
 
           {isNetworkSelectOpen && (
             <NetworkMenu
-              currentNetwork={localGenesisHash}
+              currentNetwork={genesisHash}
               genesisOptions={genesisOptions}
               reference={netRef}
               selectNetwork={_onChangeGenesis}
@@ -400,9 +330,9 @@ function Header ({ changeAccountCallback, children, className = '', isBusy, isCo
 
         />
         }
-        {isContainDetailHeader && currentAccount &&
+        {isContainDetailHeader && account &&
           <DetailHeader
-            currentAccount={currentAccount}
+            currentAccount={account}
             formatted={formattedAddress}
             isShowZeroBalances={isShowZeroBalances}
             popupTheme={popupTheme}
@@ -414,7 +344,10 @@ function Header ({ changeAccountCallback, children, className = '', isBusy, isCo
 
         {showSubHeader &&
           <SubHeader
+            cancelButtonText={cancelButtonText}
             isBusy={isBusy}
+            onBack={onBack}
+            onCancel={onCancel}
             showBackArrow={showBackArrow}
             showCancelButton={showCancelButton}
             subHeaderName={subHeaderName}
@@ -462,6 +395,12 @@ export default React.memo(styled(Header)(({ theme }: Props) => `
     pointer-events: none;
   }
 
+  .network-select-disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
   .container {
     background-color: ${theme.background};
     box-shadow: ${theme.headerBoxShadow};
@@ -480,7 +419,7 @@ export default React.memo(styled(Header)(({ theme }: Props) => `
       color: ${theme.labelColor};
       font-family: ${theme.fontFamily};
       text-align: center;
-      margin-left: 5px;
+      margin-left: ${['dark', 'light'].includes(theme.id) ? '5px' : '16px'};
 
       .logo {
         height: 48px;
@@ -572,6 +511,16 @@ export default React.memo(styled(Header)(({ theme }: Props) => `
     margin-left: 1rem;
     cursor: pointer;
     height: 56px;
+    position: relative;
+
+    &:after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+    }
   }
 
   .koni-subheader-btn {
@@ -599,7 +548,6 @@ export default React.memo(styled(Header)(({ theme }: Props) => `
     overflow: hidden;
     image-rendering: -webkit-optimize-contrast;
     image-rendering: crisp-edges;
-    border: 1px solid #fff;
     background: #fff;
   }
 
@@ -690,6 +638,9 @@ export default React.memo(styled(Header)(({ theme }: Props) => `
     width: 54px;
     min-width: 54px;
     height: 54px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border: 2px solid ${theme.checkDotColor};
     padding: 2px;
     border-radius: 50%;

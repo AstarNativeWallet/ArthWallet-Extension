@@ -1,40 +1,78 @@
-// Copyright 2019-2022 @polkadot/extension-koni authors & contributors
+// Copyright 2019-2022 @subwallet/extension-koni authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { useCallback, useContext, useState } from 'react';
-import CopyToClipboard from 'react-copy-to-clipboard';
-import styled, { ThemeContext } from 'styled-components';
+import { StakingRewardItem } from '@subwallet/extension-base/background/KoniTypes';
+import { ThemeProps } from '@subwallet/extension-koni-ui/types';
+import { formatLocaleNumber } from '@subwallet/extension-koni-ui/util/formatNumber';
+import React, { useCallback, useState } from 'react';
+import styled from 'styled-components';
 
-import { StakingRewardItem } from '@polkadot/extension-base/background/KoniTypes';
-import cloneIconLight from '@polkadot/extension-koni-ui/assets/clone--color-2.svg';
-import cloneIconDark from '@polkadot/extension-koni-ui/assets/clone--color-3.svg';
-import useToast from '@polkadot/extension-koni-ui/hooks/useToast';
-import useTranslation from '@polkadot/extension-koni-ui/hooks/useTranslation';
-import { Theme, ThemeProps } from '@polkadot/extension-koni-ui/types';
-import { formatLocaleNumber } from '@polkadot/extension-koni-ui/util/formatNumber';
+const StakingMenu = React.lazy(() => import('@subwallet/extension-koni-ui/Popup/Home/Staking/StakingMenu'));
 
 interface Props extends ThemeProps {
   className?: string;
   logo: string;
   chainName: string;
   symbol: string;
-  amount: string | undefined;
+  totalStake: string | undefined;
   unit: string | undefined;
   index: number;
   reward: StakingRewardItem;
   price: number;
+  networkKey: string;
+  activeStake: string | undefined;
+  unbondingStake: string | undefined;
+  isAccountAll: boolean;
+  isExternalAccount: boolean;
+  isHardwareAccount: boolean;
+
+  redeemable: number;
+  nextWithdrawal: number;
+  nextWithdrawalAmount: number;
+  nextWithdrawalAction: string | undefined;
+  targetValidator: string | undefined;
+  unlockingDataTimestamp: number;
+
+  setShowWithdrawalModal: (val: boolean) => void;
+  setShowClaimRewardModal: (val: boolean) => void;
+  setActionNetworkKey: (val: string) => void;
+  setTargetValidator: (val: string) => void;
+  setTargetNextWithdrawalAction: (val: string | undefined) => void;
+  setTargetRedeemable: (val: number) => void;
 }
 
-function StakingRow ({ amount, chainName, className, index, logo, price, reward, unit }: Props): React.ReactElement<Props> {
+function StakingRow ({ activeStake, chainName, className, index, isAccountAll, isExternalAccount, isHardwareAccount, logo, networkKey, nextWithdrawal, nextWithdrawalAction, nextWithdrawalAmount, price, redeemable, reward, setActionNetworkKey, setShowClaimRewardModal, setShowWithdrawalModal, setTargetNextWithdrawalAction, setTargetRedeemable, setTargetValidator, targetValidator, totalStake, unbondingStake, unit }: Props): React.ReactElement<Props> {
   const [showReward, setShowReward] = useState(false);
+  const [showStakingMenu, setShowStakingMenu] = useState(false);
 
   const handleToggleReward = useCallback(() => {
     setShowReward(!showReward);
   }, [showReward]);
 
+  const handleShowWithdrawalModal = useCallback(() => {
+    setActionNetworkKey(networkKey);
+    setTargetNextWithdrawalAction(nextWithdrawalAction);
+    setTargetRedeemable(redeemable);
+    setTargetValidator(targetValidator || '');
+    setShowWithdrawalModal(true);
+  }, [nextWithdrawalAction, redeemable, targetValidator, networkKey, setActionNetworkKey, setShowWithdrawalModal, setTargetNextWithdrawalAction, setTargetRedeemable, setTargetValidator]);
+
+  const handleShowClaimRewardModal = useCallback(() => {
+    setActionNetworkKey(networkKey);
+    setShowClaimRewardModal(true);
+  }, [networkKey, setActionNetworkKey, setShowClaimRewardModal]);
+
+  const handleToggleBondingMenu = useCallback(() => {
+    setShowStakingMenu(!showStakingMenu);
+  }, [showStakingMenu]);
+
   const editBalance = (balance: string) => {
     if (parseFloat(balance) === 0) {
       return <span className={'major-balance'}>{balance}</span>;
+    }
+
+    if (parseFloat(balance) <= 0.0001) { // in case the balance is too small
+      return <span className={'major-balance'}>0</span>;
     }
 
     const balanceSplit = balance.split('.');
@@ -65,18 +103,6 @@ function StakingRow ({ amount, chainName, className, index, logo, price, reward,
     return editBalance(balance.toString());
   };
 
-  const { show } = useToast();
-  const { t } = useTranslation();
-  const themeContext = useContext(ThemeContext as React.Context<Theme>);
-  const theme = themeContext.id;
-
-  const _onCopy = useCallback(
-    () => {
-      show(t('Copied'));
-    },
-    [show, t]
-  );
-
   return (
     <div className={`${className || ''} ${showReward ? '-show-detail' : ''}`}>
       <div
@@ -97,16 +123,32 @@ function StakingRow ({ amount, chainName, className, index, logo, price, reward,
           >
             <div className={'meta-container'}>
               <div className={'chain-name'}>{chainName}</div>
-              <div className={'balance-description'}>Staking balance</div>
+              <div className={'balance-description'}>
+                <div>Staking balance</div>
+                {
+                  !isAccountAll && <StakingMenu
+                    bondedAmount={activeStake as string}
+                    networkKey={networkKey}
+                    nextWithdrawal={nextWithdrawal}
+                    nextWithdrawalAmount={nextWithdrawalAmount}
+                    redeemable={redeemable}
+                    showClaimRewardModal={handleShowClaimRewardModal}
+                    showMenu={showStakingMenu}
+                    showWithdrawalModal={handleShowWithdrawalModal}
+                    toggleMenu={handleToggleBondingMenu}
+                    unbondingStake={unbondingStake}
+                  />
+                }
+              </div>
             </div>
 
             <div className={'balance-container'}>
               <div className={'meta-container'}>
                 <div className={'staking-amount'}>
-                  <span className={'staking-balance'}>{editBalance(amount || '')}</span>
+                  <span className={'staking-balance'}>{editBalance(totalStake || '')}</span>
                   {unit}
                 </div>
-                <div className={'price-container'}>${parsePrice(price, amount as string)}</div>
+                <div className={'price-container'}>${parsePrice(price, totalStake as string)}</div>
               </div>
 
               <div>
@@ -116,81 +158,76 @@ function StakingRow ({ amount, chainName, className, index, logo, price, reward,
               </div>
             </div>
           </div>
-
-          {
-            showReward &&
-            <div className={'extra-container'}>
-              <div className={'reward-container'}>
-                <div className={'reward-title'}>Total reward</div>
-                <div className={'reward-amount'}>
-                  <div>{editBalance(reward?.totalReward || '')}</div>
-                  <div className={'chain-unit'}>{unit}</div>
-                </div>
-              </div>
-
-              <div className={'reward-container'}>
-                <div className={'reward-title'}>Latest reward</div>
-                <div className={'reward-amount'}>
-                  <div>{editBalance(reward?.latestReward || '')}</div>
-                  <div className={'chain-unit'}>{unit}</div>
-                </div>
-              </div>
-
-              <div className={'reward-container'}>
-                <div className={'reward-title'}>Total slash</div>
-                <div className={'reward-amount'}>
-                  <div>{editBalance(reward?.totalSlash || '')}</div>
-                  <div className={'chain-unit'}>{unit}</div>
-                </div>
-              </div>
-
-              {
-                chainName === 'astar' &&
-                <div className={'reward-container'}>
-                  <div className={'reward-title'}>Smart contract</div>
-                  <div className={'smart-contract-field'}>
-                    <div className={'smart-contract-value'}>
-                      {reward?.smartContract?.slice(0, 6)}...{reward?.smartContract?.slice(-6)}
-                    </div>
-                    <CopyToClipboard text={(reward.smartContract && reward.smartContract) || ''}>
-                      <div
-                        className={'kn-copy-btn'}
-                        onClick={_onCopy}
-                      >
-                        {theme === 'dark'
-                          ? (
-                            <img
-                              alt='copy'
-                              src={cloneIconDark}
-                            />
-                          )
-                          : (
-                            <img
-                              alt='copy'
-                              src={cloneIconLight}
-                            />
-                          )
-                        }
-                      </div>
-                    </CopyToClipboard>
-                  </div>
-                </div>
-              }
-              {/* <div className={'reward-container'}> */}
-              {/*  <div className={'reward-title'}>APR</div> */}
-              {/*  <div className={'reward-amount'}> */}
-              {/*    14% */}
-              {/*  </div> */}
-              {/* </div> */}
-            </div>
-          }
         </div>
       </div>
+      {
+        showReward &&
+        <div className={'extra-info'}>
+          <div className={'filler-div'}></div>
+          <div className={'extra-container'}>
+            <div className={'reward-container'}>
+              <div className={'reward-title'}>Active stake</div>
+              <div className={'reward-amount'}>
+                <div>{editBalance(activeStake || '')}</div>
+                <div className={'chain-unit'}>{unit}</div>
+              </div>
+            </div>
+
+            <div className={'reward-container'}>
+              <div className={'reward-title'}>Unlocking stake</div>
+              <div className={'reward-amount'}>
+                <div>{editBalance(unbondingStake || '')}</div>
+                <div className={'chain-unit'}>{unit}</div>
+              </div>
+            </div>
+
+            <div className={'reward-container'}>
+              <div className={'reward-title'}>Total reward</div>
+              <div className={'reward-amount'}>
+                <div>{editBalance(reward?.totalReward || '')}</div>
+                <div className={'chain-unit'}>{unit}</div>
+              </div>
+            </div>
+
+            <div className={'reward-container'}>
+              <div className={'reward-title'}>Latest reward</div>
+              <div className={'reward-amount'}>
+                <div>{editBalance(reward?.latestReward || '')}</div>
+                <div className={'chain-unit'}>{unit}</div>
+              </div>
+            </div>
+
+            <div className={'reward-container'}>
+              <div className={'reward-title'}>Total slash</div>
+              <div className={'reward-amount'}>
+                <div>{editBalance(reward?.totalSlash || '')}</div>
+                <div className={'chain-unit'}>{unit}</div>
+              </div>
+            </div>
+
+            {/* <div className={'reward-container'}> */}
+            {/*  <div className={'reward-title'}>APR</div> */}
+            {/*  <div className={'reward-amount'}> */}
+            {/*    14% */}
+            {/*  </div> */}
+            {/* </div> */}
+          </div>
+        </div>
+      }
     </div>
   );
 }
 
 export default React.memo(styled(StakingRow)(({ theme }: Props) => `
+  .extra-info {
+    display: flex;
+    gap: 12px;
+  }
+
+  .filler-div {
+    min-width: 32px;
+  }
+
   .kn-copy-btn {
     width: 15px;
     height: 15px;
@@ -222,6 +259,9 @@ export default React.memo(styled(StakingRow)(({ theme }: Props) => `
   .balance-description {
     font-size: 14px;
     color: #7B8098;
+    display: flex;
+    gap: 5px;
+    align-items: center;
   }
 
   .staking-balance {
@@ -255,6 +295,7 @@ export default React.memo(styled(StakingRow)(({ theme }: Props) => `
     width: 100%;
     display: flex;
     gap: 12px;
+    align-items: center;
   }
 
   .toggle-container {
@@ -276,14 +317,11 @@ export default React.memo(styled(StakingRow)(({ theme }: Props) => `
 
   .network-logo {
     display: block;
-    min-width: 32px;
-    height: 32px;
+    min-width: 36px;
+    height: 36px;
     border-radius: 100%;
     overflow: hidden;
-    margin-right: 12px;
     background-color: #fff;
-    border: 1px solid #fff;
-    margin-top:10px;
     cursor: pointer;
   }
 
@@ -343,7 +381,8 @@ export default React.memo(styled(StakingRow)(({ theme }: Props) => `
   .major-balance {}
 
   .decimal-balance {
-    color: #7B8098;
+    color: ${theme.textColor2};
+    opacity: ${theme.textOpacity};
   }
 
   &.-show-detail .chain-balance-item__toggle {

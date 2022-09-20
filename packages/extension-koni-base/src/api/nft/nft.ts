@@ -1,18 +1,29 @@
-// Copyright 2019-2022 @polkadot/extension-koni authors & contributors
+// Copyright 2019-2022 @subwallet/extension-koni authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { ApiProps, NftCollection, NftItem } from '@polkadot/extension-base/background/KoniTypes';
-import { RMRK_PINATA_SERVER } from '@polkadot/extension-koni-base/api/nft/config';
-import { isUrl } from '@polkadot/extension-koni-base/utils/utils';
+import { ApiProps, NftCollection, NftItem } from '@subwallet/extension-base/background/KoniTypes';
+import { getRandomIpfsGateway } from '@subwallet/extension-koni-base/api/nft/config';
+import { isUrl } from '@subwallet/extension-koni-base/utils';
+import Web3 from 'web3';
+
+export interface HandleNftParams {
+  updateItem: (data: NftItem) => void,
+  updateCollection: (data: NftCollection) => void,
+  updateReady: (ready: boolean) => void,
+  updateNftIds: (networkKey: string, collectionId?: string, nftIds?: string[]) => void,
+  updateCollectionIds: (networkKey: string, collectionIds?: string[]) => void
+}
 
 export abstract class BaseNftApi {
-  chain: string | null = null;
+  chain = '';
   dotSamaApi: ApiProps | null = null;
+  web3: Web3 | null = null;
   data: NftCollection[] = [];
   total = 0;
   addresses: string[] = [];
+  isEthereum = false;
 
-  protected constructor (api?: ApiProps | null, addresses?: string[], chain?: string) {
+  protected constructor (chain: string, api?: ApiProps | null, addresses?: string[], web3?: Web3) {
     if (api) {
       this.dotSamaApi = api;
     }
@@ -21,8 +32,10 @@ export abstract class BaseNftApi {
       this.addresses = addresses;
     }
 
-    if (chain) {
-      this.chain = chain;
+    this.chain = chain;
+
+    if (web3) {
+      this.web3 = web3;
     }
   }
 
@@ -84,14 +97,14 @@ export abstract class BaseNftApi {
     }
 
     if (!input.includes('ipfs://')) {
-      return RMRK_PINATA_SERVER + input;
+      return getRandomIpfsGateway() + input;
     }
 
-    return RMRK_PINATA_SERVER + input.split('ipfs://ipfs/')[1];
+    return getRandomIpfsGateway() + input.split('ipfs://ipfs/')[1];
   }
 
   // Sub-class implements this function to parse data into prop result
-  abstract handleNfts(updateItem: (data: NftItem) => void, updateCollection: (data: NftCollection) => void, updateReady: (ready: boolean) => void): void;
+  abstract handleNfts(params: HandleNftParams): void;
 
-  abstract fetchNfts(updateItem: (data: NftItem) => void, updateCollection: (data: NftCollection) => void, updateReady: (ready: boolean) => void): Promise<number>;
+  abstract fetchNfts(params: HandleNftParams): Promise<number>;
 }

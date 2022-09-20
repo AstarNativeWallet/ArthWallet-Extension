@@ -3,7 +3,7 @@
 
 /* eslint-disable no-use-before-define */
 
-import type { InjectedAccount, InjectedMetadataKnown, MetadataDef, ProviderList, ProviderMeta } from '@polkadot/extension-inject/types';
+import type { InjectedAccount, InjectedMetadataKnown, MetadataDef, ProviderList, ProviderMeta } from '@subwallet/extension-inject/types';
 import type { KeyringPair, KeyringPair$Json, KeyringPair$Meta } from '@polkadot/keyring/types';
 import type { JsonRpcResponse } from '@polkadot/rpc-provider/types';
 import type { SignerPayloadJSON, SignerPayloadRaw } from '@polkadot/types/types';
@@ -11,7 +11,8 @@ import type { KeyringPairs$Json } from '@polkadot/ui-keyring/types';
 import type { HexString } from '@polkadot/util/types';
 import type { KeypairType } from '@polkadot/util-crypto/types';
 
-import { CurrentNetworkInfo, KoniRequestSignatures } from '@polkadot/extension-base/background/KoniTypes';
+import { CurrentNetworkInfo, KoniRequestSignatures, NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
+
 import { TypeRegistry } from '@polkadot/types';
 
 import { ALLOWED_PATH } from '../defaults';
@@ -34,6 +35,7 @@ export type SeedLengths = 12 | 24;
 export interface AccountJson extends KeyringPair$Meta {
   address: string;
   genesisHash?: string | null;
+  originGenesisHash?: string | null;
   isExternal?: boolean;
   isHardware?: boolean;
   isHidden?: boolean;
@@ -58,10 +60,15 @@ export type AccountWithChildren = AccountJson & {
   children?: AccountWithChildren[];
 }
 
+export interface FindAccountFunction{
+  (networkMap: Record<string, NetworkJson>, address: string, genesisHash?: string): AccountJson | undefined;
+}
+
 export type AccountsContext = {
   accounts: AccountJson[];
   hierarchy: AccountWithChildren[];
   master?: AccountJson;
+  getAccountByAddress: FindAccountFunction;
 }
 
 export type CurrentAccContext = {
@@ -168,8 +175,13 @@ export interface TransportRequestMessage<TMessageType extends MessageTypes> {
   request: RequestTypes[TMessageType];
 }
 
+export type AccountAuthType = 'substrate' | 'evm' | 'both';
+
 export interface RequestAuthorizeTab {
   origin: string;
+  accountAuthType?: AccountAuthType;
+  allowedAccounts?: string[]
+  reConfirm?: boolean
 }
 
 export interface RequestAuthorizeApprove {
@@ -177,6 +189,10 @@ export interface RequestAuthorizeApprove {
 }
 
 export interface RequestAuthorizeReject {
+  id: string;
+}
+
+export interface RequestAuthorizeCancel {
   id: string;
 }
 
@@ -188,8 +204,6 @@ export interface RequestMetadataApprove {
 
 export interface RequestCurrentAccountAddress {
   address: string;
-  isShowBalance?: boolean;
-  allAccountLogo?: string;
 }
 
 export interface RequestMetadataReject {
@@ -279,9 +293,12 @@ export interface RequestAccountBatchExport {
 
 export interface RequestAccountList {
   anyType?: boolean;
+  accountAuthType?: AccountAuthType
 }
 
-export type RequestAccountSubscribe = null;
+export interface RequestAccountSubscribe {
+  accountAuthType?: AccountAuthType
+}
 
 export interface RequestRpcSend {
   method: string;
@@ -335,6 +352,23 @@ export interface RequestSeedValidate {
   type?: KeypairType;
 }
 
+export interface RequestParseTransactionSubstrate {
+  genesisHash: string;
+  rawPayload: string;
+  specVersion: number;
+}
+
+export interface RequestQRIsLocked{
+  address: string;
+}
+
+export interface RequestQrSignSubstrate {
+  address: string;
+  message: string;
+  savePass: boolean;
+  password?: string;
+}
+
 // Responses
 
 export type ResponseTypes = {
@@ -345,6 +379,8 @@ export type ResponseType<TMessageType extends keyof RequestSignatures> = Request
 
 interface TransportResponseMessageSub<TMessageType extends MessageTypesWithSubscriptions> {
   error?: string;
+  errorCode?: number,
+  errorData?: unknown,
   id: string;
   response?: ResponseTypes[TMessageType];
   subscription?: SubscriptionMessageTypes[TMessageType];
@@ -352,6 +388,8 @@ interface TransportResponseMessageSub<TMessageType extends MessageTypesWithSubsc
 
 interface TransportResponseMessageNoSub<TMessageType extends MessageTypesWithNoSubscriptions> {
   error?: string;
+  errorCode?: number,
+  errorData?: unknown,
   id: string;
   response?: ResponseTypes[TMessageType];
 }
@@ -435,4 +473,36 @@ export interface ResponseJsonGetAccountInfo {
 
 export interface ResponseAuthorizeList {
   list: AuthUrls;
+}
+
+export interface FormattedMethod {
+  args?: ArgInfo[];
+  method: string;
+}
+
+export interface ArgInfo {
+  argName: string;
+  argValue: string | string[];
+}
+
+export interface EraInfo{
+  period: number;
+  phase: number;
+}
+
+export interface ResponseParseTransactionSubstrate {
+  era: EraInfo | string;
+  nonce: number;
+  method: string;
+  tip: number;
+  specVersion: number;
+}
+
+export interface ResponseQRIsLocked{
+  isLocked: boolean;
+  remainingTime: number;
+}
+
+export interface ResponseQrSignSubstrate {
+  signature: string;
 }

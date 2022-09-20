@@ -1,15 +1,14 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { CrowdloanParaState } from '@subwallet/extension-base/background/KoniTypes';
+import { BalanceVal } from '@subwallet/extension-koni-ui/components/Balance';
+import useTranslation from '@subwallet/extension-koni-ui/hooks/useTranslation';
+import { CrowdloanItemType } from '@subwallet/extension-koni-ui/Popup/Home/types';
+import { ThemeProps } from '@subwallet/extension-koni-ui/types';
 import React from 'react';
 import { TFunction } from 'react-i18next';
 import styled from 'styled-components';
-
-import { CrowdloanParaState } from '@polkadot/extension-base/background/KoniTypes';
-import { BalanceVal } from '@polkadot/extension-koni-ui/components/balance';
-import useTranslation from '@polkadot/extension-koni-ui/hooks/useTranslation';
-import { CrowdloanItemType } from '@polkadot/extension-koni-ui/Popup/Home/types';
-import { ThemeProps } from '@polkadot/extension-koni-ui/types';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -146,13 +145,11 @@ export default styled(CrowdloanItem)(({ theme }: Props) => `
 
   .crowdloan-item__logo {
     min-width: 32px;
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     border-radius: 100%;
     overflow: hidden;
     margin-right: 12px;
-    background-color: #fff;
-    border: 1px solid #fff;
   }
 
   .crowdloan-item__chain-top-area {

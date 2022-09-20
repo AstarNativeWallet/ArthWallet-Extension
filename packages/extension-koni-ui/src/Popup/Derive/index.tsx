@@ -1,12 +1,11 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import HeaderWithSteps from '@subwallet/extension-koni-ui/partials/HeaderWithSteps';
+import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from '@subwallet/extension-koni-ui/Popup/CreateAccount';
 import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import styled from 'styled-components';
-
-import HeaderWithSteps from '@polkadot/extension-koni-ui/partials/HeaderWithSteps';
-import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from '@polkadot/extension-koni-ui/Popup/CreateAccount';
 
 import { AccountContext, AccountNamePasswordCreation, ActionContext } from '../../components';
 import useTranslation from '../../hooks/useTranslation';
@@ -39,6 +38,7 @@ function Derive ({ className, isLocked }: Props): React.ReactElement<Props> {
   const [isBusy, setIsBusy] = useState(false);
   const [account, setAccount] = useState<null | PathState>(null);
   const [parentPassword, setParentPassword] = useState<string | null>(null);
+  const [isConnectWhenDerive, setConnectWhenDerive] = useState(true);
   const accountsWithoutAll = accounts.filter((acc: { address: string; }) => acc.address !== 'ALL');
   const accountsWithoutEtheriumType = accountsWithoutAll.filter((acc) => acc.type !== EVM_ACCOUNT_TYPE);
   const name = `Account ${accountsWithoutAll.length + 1}`;
@@ -62,7 +62,7 @@ function Derive ({ className, isLocked }: Props): React.ReactElement<Props> {
     }
 
     setIsBusy(true);
-    deriveAccountV2(parentAddress, account.suri, parentPassword, name, password, parentGenesis)
+    deriveAccountV2(parentAddress, account.suri, parentPassword, name, password, parentGenesis, isConnectWhenDerive)
       .then(() => {
         window.localStorage.setItem('popupNavigation', '/');
         onAction('/');
@@ -71,7 +71,7 @@ function Derive ({ className, isLocked }: Props): React.ReactElement<Props> {
         setIsBusy(false);
         console.error(error);
       });
-  }, [account, onAction, parentAddress, parentGenesis, parentPassword]);
+  }, [account, isConnectWhenDerive, onAction, parentAddress, parentGenesis, parentPassword]);
 
   const _onDerivationConfirmed = useCallback(({ account, parentPassword }: ConfirmState) => {
     setAccount(account);
@@ -93,7 +93,9 @@ function Derive ({ className, isLocked }: Props): React.ReactElement<Props> {
       {!account && (
         <SelectParent
           isBusy={isBusy}
+          isConnectWhenDerive={isConnectWhenDerive}
           isLocked={isLocked}
+          onConnectWhenDerive={setConnectWhenDerive}
           onDerivationConfirmed={_onDerivationConfirmed}
           parentAddress={parentAddress}
           parentGenesis={parentGenesis}

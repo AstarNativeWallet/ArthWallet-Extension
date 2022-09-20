@@ -1,13 +1,13 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { AccountInfoEl, ButtonArea, Checkbox, MnemonicSeed, NextStepButton } from '@subwallet/extension-koni-ui/components';
+import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from '@subwallet/extension-koni-ui/Popup/CreateAccount/index';
+import { Theme, ThemeProps } from '@subwallet/extension-koni-ui/types';
 import { saveAs } from 'file-saver';
 import React, { useCallback, useContext, useState } from 'react';
 import styled, { ThemeContext } from 'styled-components';
 
-import { AccountInfoEl, ButtonArea, Checkbox, MnemonicSeed, NextStepButton } from '@polkadot/extension-koni-ui/components';
-import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from '@polkadot/extension-koni-ui/Popup/CreateAccount/index';
-import { Theme, ThemeProps } from '@polkadot/extension-koni-ui/types';
 import { KeypairType } from '@polkadot/util-crypto/types';
 
 import useToast from '../../hooks/useToast';
@@ -19,6 +19,8 @@ interface Props extends ThemeProps {
   address?: string;
   evmAddress?: string,
   evmName?: string,
+  isConnectWhenCreate: boolean,
+  onConnectWhenCreate: (isConnectWhenCreate: boolean) => void;
   name?: string;
   className?: string;
   onSelectAccountCreated?: (keyTypes: KeypairType[]) => void
@@ -35,7 +37,7 @@ const onCopy = (): void => {
   document.execCommand('copy');
 };
 
-function Mnemonic ({ address, className, evmAddress, evmName, name, onNextStep, onSelectAccountCreated, seed }: Props): React.ReactElement<Props> {
+function Mnemonic ({ address, className, evmAddress, evmName, isConnectWhenCreate, name, onConnectWhenCreate, onNextStep, onSelectAccountCreated, seed }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const [isMnemonicSaved, setIsMnemonicSaved] = useState(false);
   const [isNormalAccountSelected, setNormalAccountSelected] = useState(false);
@@ -135,6 +137,12 @@ function Mnemonic ({ address, className, evmAddress, evmName, name, onNextStep, 
               checked={isMnemonicSaved}
               label={t<string>('I have saved my mnemonic seed safely.')}
               onChange={setIsMnemonicSaved}
+            />
+
+            <Checkbox
+              checked={isConnectWhenCreate}
+              label={t<string>('Auto connect to all DApp after creating')}
+              onChange={onConnectWhenCreate}
             />
           </div>
         </div>

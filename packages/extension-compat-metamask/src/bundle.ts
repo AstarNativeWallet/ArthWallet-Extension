@@ -1,7 +1,7 @@
 // Copyright 2019-2022 @polkadot/extension-compat-metamask authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { Injected, InjectedAccount, InjectedWindow } from '@polkadot/extension-inject/types';
+import type { Injected, InjectedAccount, InjectedWindow } from '@subwallet/extension-inject/types';
 import type { SignerPayloadRaw, SignerResult } from '@polkadot/types/types';
 import type { HexString } from '@polkadot/util/types';
 
@@ -27,10 +27,7 @@ interface EthereumProvider {
   on: (name: string, cb: (value: unknown) => void) => EthRpcSubscription;
 }
 
-interface Web3Window extends InjectedWindow {
-  // this is injected by metaMask
-  ethereum: unknown;
-}
+type Web3Window = InjectedWindow
 
 function isMetaMaskProvider (prov: unknown): EthereumProvider {
   assert(prov && (prov as EthereumProvider).isMetaMask, 'Injected provider is not MetaMask');

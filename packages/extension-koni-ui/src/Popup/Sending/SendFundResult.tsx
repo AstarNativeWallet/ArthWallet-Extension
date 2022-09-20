@@ -1,52 +1,49 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { TransferError } from '@subwallet/extension-base/background/KoniTypes';
+import failStatus from '@subwallet/extension-koni-ui/assets/fail-status.svg';
+import successStatus from '@subwallet/extension-koni-ui/assets/success-status.svg';
+import { ActionContext } from '@subwallet/extension-koni-ui/components';
+import Button from '@subwallet/extension-koni-ui/components/Button';
+import useScanExplorerTxUrl from '@subwallet/extension-koni-ui/hooks/screen/home/useScanExplorerTxUrl';
+import useSupportScanExplorer from '@subwallet/extension-koni-ui/hooks/screen/home/useSupportScanExplorer';
+import useTranslation from '@subwallet/extension-koni-ui/hooks/useTranslation';
+import { ThemeProps, TransferResultType } from '@subwallet/extension-koni-ui/types';
 import React, { useCallback, useContext } from 'react';
 import styled from 'styled-components';
 
-import failStatus from '@polkadot/extension-koni-ui/assets/fail-status.svg';
-import successStatus from '@polkadot/extension-koni-ui/assets/success-status.svg';
-import { ActionContext } from '@polkadot/extension-koni-ui/components';
-import Button from '@polkadot/extension-koni-ui/components/Button';
-import useTranslation from '@polkadot/extension-koni-ui/hooks/useTranslation';
-import { ThemeProps, TxResult } from '@polkadot/extension-koni-ui/types';
-import { getScanExplorerTransactionHistoryUrl, isSupportScanExplorer } from '@polkadot/extension-koni-ui/util';
-
 export interface Props extends ThemeProps {
   className?: string;
-  txResult: TxResult;
+  txResult: TransferResultType;
   networkKey: string;
-  onResend: () => void
+  onResend: () => void;
+  isXcmTransfer?: boolean;
 }
 
-function getErrorMessage (txError?: Error | null): string | null {
-  if (!txError) {
-    return null;
-  }
-
-  if (txError.message) {
-    return txError.message;
-  }
-
-  return null;
-}
-
-function SendFundResult ({ className = '', networkKey, onResend, txResult: { extrinsicHash, isTxSuccess, txError } }: Props): React.ReactElement<Props> {
+function SendFundResult ({ className = '', isXcmTransfer, networkKey, onResend, txResult: { extrinsicHash, isTxSuccess, txError } }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
-  const navigate = useContext(ActionContext);
+  const onAction = useContext(ActionContext);
+  const isSupportScanExplorer = useSupportScanExplorer(networkKey);
+  const isScanExplorerTxUrl = useScanExplorerTxUrl(networkKey, extrinsicHash, isXcmTransfer);
   const _backToHome = useCallback(
     () => {
-      navigate('/');
+      window.localStorage.setItem('popupNavigation', '/');
+      onAction('/');
     },
-    [navigate]
+    [onAction]
   );
 
-  const viewTransactionBtn = (networkKey: string, extrinsicHash: string) => {
-    if (isSupportScanExplorer(networkKey)) {
+  const viewTransactionBtn = (extrinsicHash?: string) => {
+    if (!extrinsicHash) {
+      return null;
+    }
+
+    if (isSupportScanExplorer && isScanExplorerTxUrl) {
       return (
         <a
           className='send-fund-result__stt-btn send-fund-result__view-history-btn'
-          href={getScanExplorerTransactionHistoryUrl(networkKey, extrinsicHash)}
+          href={isScanExplorerTxUrl}
           rel='noreferrer'
           target={'_blank'}
         >
@@ -62,7 +59,16 @@ function SendFundResult ({ className = '', networkKey, onResend, txResult: { ext
     );
   };
 
-  const errorMessage = getErrorMessage(txError);
+  const renderErrorMessage = (txError: Array<TransferError>) => {
+    return txError.map((err) => (
+      <div
+        className={'send-fund-result__text-danger'}
+        key={err.code}
+      >
+        {err.message}
+      </div>
+    ));
+  };
 
   return (
     <div className={`send-fund-result-wrapper ${className}`}>
@@ -73,7 +79,7 @@ function SendFundResult ({ className = '', networkKey, onResend, txResult: { ext
             className='send-fund-result__status-img'
             src={successStatus}
           />
-          <div className='send-fund-result__stt-text'>{t<string>('Send Fund Successful')}</div>
+          <div className='send-fund-result__stt-text'>{t<string>('Transaction Successful')}</div>
           <div
             className='send-fund-result__stt-subtext'
           >{t<string>('Your request has been confirmed. You can track its progress on the Transaction History page.')}</div>
@@ -84,7 +90,7 @@ function SendFundResult ({ className = '', networkKey, onResend, txResult: { ext
             {t<string>('Back To Home')}
           </Button>
 
-          {extrinsicHash && viewTransactionBtn(networkKey, extrinsicHash)}
+          {viewTransactionBtn(extrinsicHash)}
         </div>
         : <div className='send-fund-result'>
           <img
@@ -92,15 +98,15 @@ function SendFundResult ({ className = '', networkKey, onResend, txResult: { ext
             className='send-fund-result__status-img'
             src={failStatus}
           />
-          <div className='send-fund-result__stt-text'>{t<string>('Send Fund Fail')}</div>
+          <div className='send-fund-result__stt-text'>{t<string>('Transaction Fail')}</div>
           <div className='send-fund-result__stt-subtext'>
             {extrinsicHash
               ? (t<string>('There was a problem with your request. You can track its progress on the Transaction History page.'))
               : (t<string>('There was a problem with your request.'))
             }
 
-            {errorMessage && (
-              <div className={'send-fund-result__text-danger'}>{errorMessage}</div>
+            {!!(txError && txError.length) && (
+              renderErrorMessage(txError)
             )}
           </div>
 
@@ -111,7 +117,7 @@ function SendFundResult ({ className = '', networkKey, onResend, txResult: { ext
             {t<string>('Resend')}
           </Button>
 
-          {extrinsicHash && viewTransactionBtn(networkKey, extrinsicHash)}
+          {viewTransactionBtn(extrinsicHash)}
         </div>
       }
     </div>

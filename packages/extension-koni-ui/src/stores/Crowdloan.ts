@@ -1,9 +1,8 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit/dist';
-
-import { CrowdloanJson } from '@polkadot/extension-base/background/KoniTypes';
+import { CrowdloanJson } from '@subwallet/extension-base/background/KoniTypes';
 
 const initialState = {
   details: {}
@@ -16,7 +15,7 @@ const crowdloanSlice = createSlice({
     update (state, action: PayloadAction<CrowdloanJson>) {
       const payload = action.payload;
 
-      state.details = payload.details;
+      state.details = payload.reset ? payload.details : { ...state.details, ...payload.details };
     }
   }
 });

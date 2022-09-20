@@ -1,10 +1,11 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import '@polkadot/extension-mocks/chrome';
+import '@subwallet/extension-mocks/chrome';
 
-import type { AccountJson, ResponseDeriveValidate } from '@polkadot/extension-base/background/types';
+import type { AccountJson, ResponseDeriveValidate } from '@subwallet/extension-base/background/types';
 
+import { createFindAccountHandler } from '@subwallet/extension-koni-ui/util/findAccount';
 import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 import { configure, mount, ReactWrapper } from 'enzyme';
 import React from 'react';
@@ -53,7 +54,8 @@ describe('Derive', () => {
           <AccountContext.Provider
             value={{
               accounts: accounts,
-              hierarchy: buildHierarchy(accounts)
+              hierarchy: buildHierarchy(accounts),
+              getAccountByAddress: createFindAccountHandler(accounts)
             }}
           >
             <ThemeProvider theme={themes.dark}>

@@ -1,13 +1,14 @@
 // Copyright 2017-2022 @polkadot/ authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { Theme } from '@subwallet/extension-koni-ui/components/index';
+import { ThemeProps } from '@subwallet/extension-koni-ui/types';
 import React, { useContext, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import ReactTooltip from 'react-tooltip';
 import styled, { ThemeContext } from 'styled-components';
 
-import { Theme } from '@polkadot/extension-koni-ui/components';
-import { ThemeProps } from '@polkadot/extension-koni-ui/types';
+import { convertHexColorToRGBA } from '../util/color';
 
 function rootElement () {
   return typeof document === 'undefined'
@@ -78,7 +79,7 @@ export default React.memo(styled(Tooltip)(({ theme }: Props) => `
     max-width: 300px;
     text-align: center;
     border: 1px solid #2D365C;
-    box-shadow: 0px 10px 40px rgba(0, 75, 255, 0.4);
+    box-shadow: 0px 10px 40px ${convertHexColorToRGBA(theme.secondaryColor, 0.4)};
     border-radius: 5px;
   }
 

@@ -1,10 +1,21 @@
-// Copyright 2019-2022 @polkadot/extension-koni authors & contributors
+// Copyright 2019-2022 @subwallet/extension-koni authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { NetWorkInfo } from '@polkadot/extension-base/background/KoniTypes';
-import { ethereumChains } from '@polkadot/extension-koni-base/api/dotsama/api-helper';
+import { NetWorkInfo } from '@subwallet/extension-base/background/KoniTypes';
+import { ethereumChains } from '@subwallet/extension-koni-base/api/dotsama/api-helper';
 
+// deprecated
 const NETWORKS: Record<string, NetWorkInfo> = {
+  acala_testnet: {
+    chain: 'Acala Mandala TC7',
+    genesisHash: '0x5c562e6300954998233c9a40b6b86f3028977e6d32d0da1af207738d19f98c1b',
+    icon: 'polkadot',
+    ss58Format: 42,
+    provider: 'wss://node-6870830370282213376.rz.onfinality.io/ws?apikey=0f273197-e4d5-45e2-b23e-03b015cb7000',
+    groups: ['TEST_NET'],
+    nativeToken: 'ACA',
+    decimals: 12
+  },
   polkadot: {
     chain: 'Polkadot Relay Chain',
     genesisHash: '0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3',
@@ -124,6 +135,15 @@ const NETWORKS: Record<string, NetWorkInfo> = {
     nativeToken: 'CLV',
     crowdloanUrl: 'https://lucky.clover.finance/?type=support'
   },
+  sakura: {
+    chain: 'Sakura',
+    genesisHash: '0x7b0f142a9299b0886595992f8cac58814c8956de6a31c77caca95db01370fc2c',
+    ss58Format: 42,
+    provider: 'wss://rpc.sakura.clover.finance',
+    groups: ['KUSAMA_PARACHAIN'],
+    paraId: 2016,
+    nativeToken: 'SKU'
+  },
   hydradx: {
     chain: 'HydraDX',
     genesisHash: '0xd2a620c27ec5cbc5621ff9a522689895074f7cca0d08e7134a7804e1a3ba86fc',
@@ -145,9 +165,9 @@ const NETWORKS: Record<string, NetWorkInfo> = {
   },
   centrifuge: {
     chain: 'Centrifuge',
-    genesisHash: '0x67dddf2673b69e5f875f6f25277495834398eafd67f492e09f3f3345e003d1b5',
+    genesisHash: '0xb3db41421702df9a7fcac62b53ffeac85f7853cc4e689e0b93aeb3db18c09d82',
     ss58Format: 36,
-    provider: 'wss://fullnode.centrifuge.io',
+    provider: 'wss://fullnode.parachain.centrifuge.io/',
     groups: ['POLKADOT_PARACHAIN'],
     paraId: 2031,
     nativeToken: 'CFG',
@@ -163,11 +183,11 @@ const NETWORKS: Record<string, NetWorkInfo> = {
     nativeToken: 'DOT',
     crowdloanUrl: 'https://crowdloan.interlay.io/'
   },
-  equilibrium: {
-    chain: 'Equilibrium',
+  equilibrium_parachain: {
+    chain: 'Equilibrium Parachain',
     genesisHash: '0x89d3ec46d2fb43ef5a9713833373d5ea666b092fa8fd68fbc34596036571b907',
     ss58Format: 67,
-    provider: 'wss://node.pol.equilibrium.io/',
+    provider: 'wss://node.pol.equilibrium.io',
     groups: ['POLKADOT_PARACHAIN'],
     paraId: 2011,
     nativeToken: 'TOKEN',
@@ -256,7 +276,8 @@ const NETWORKS: Record<string, NetWorkInfo> = {
     ss58Format: 42,
     provider: 'wss://ws.azero.dev/',
     groups: ['MAIN_NET'],
-    nativeToken: 'AZERO'
+    nativeToken: 'AZERO',
+    decimals: 12
   },
   alephTest: {
     chain: 'Aleph Zero Testnet',
@@ -289,7 +310,8 @@ const NETWORKS: Record<string, NetWorkInfo> = {
     provider: 'wss://wss.api.moonbase.moonbeam.network',
     groups: ['TEST_NET'],
     nativeToken: 'DEV',
-    isEthereum: true
+    isEthereum: true,
+    decimals: 18
   },
   efinity: {
     chain: 'Efinity',
@@ -380,7 +402,8 @@ const NETWORKS: Record<string, NetWorkInfo> = {
     paraId: 2023,
     isEthereum: true,
     nativeToken: 'MOVR',
-    crowdloanUrl: 'https://polkadot.js.org/apps/#/parachains/crowdloan'
+    crowdloanUrl: 'https://polkadot.js.org/apps/#/parachains/crowdloan',
+    decimals: 18
   },
   shiden: {
     chain: 'Shiden',
@@ -546,6 +569,13 @@ const NETWORKS: Record<string, NetWorkInfo> = {
     nativeToken: 'GENS',
     crowdloanUrl: 'https://genshiro.equilibrium.io/en'
   },
+  genshiro_testnet: {
+    chain: 'Genshiro Testnet',
+    genesisHash: '0xdec164ef73b27c5b7e404114305102018a2b5a4ddda665bb510ce896ad5ba78d',
+    ss58Format: 67,
+    provider: 'wss://testnet.genshiro.io',
+    groups: ['TEST_NET']
+  },
   subsocial_x: {
     chain: 'SubsocialX',
     genesisHash: '0x4a12be580bb959937a1c7a61d5cf24428ed67fa571974b4007645d1886e7c89f',
@@ -573,16 +603,6 @@ const NETWORKS: Record<string, NetWorkInfo> = {
     paraId: 2101,
     nativeToken: 'ZTG',
     crowdloanUrl: 'https://crowdloan.zeitgeist.pm/'
-  },
-  sakura: {
-    chain: 'Sakura',
-    genesisHash: 'UNKNOWN',
-    ss58Format: -1,
-    provider: 'PROVIDER',
-    groups: ['KUSAMA_PARACHAIN'],
-    paraId: 2016,
-    nativeToken: 'SKU',
-    crowdloanUrl: 'https://polkadot.js.org/apps/#/parachains/crowdloan'
   },
   shadow: {
     chain: 'Crust Shadow',
@@ -695,6 +715,22 @@ const NETWORKS: Record<string, NetWorkInfo> = {
     paraId: 2106,
     nativeToken: 'LIT',
     crowdloanUrl: 'https://kusama-crowdloan.litentry.com/'
+  },
+  subspace: {
+    chain: 'Subspace',
+    genesisHash: '0x332ef6e751e25426e38996c51299dfc53bcd56f40b53dce2b2fc8442ae9c4a74',
+    ss58Format: 2254,
+    provider: 'wss://farm-rpc.subspace.network/ws',
+    groups: ['MAIN_NET'],
+    nativeToken: 'tSSC'
+  },
+  subspace_test: {
+    chain: 'Subspace Testnet',
+    genesisHash: '0x332ef6e751e25426e38996c51299dfc53bcd56f40b53dce2b2fc8442ae9c4a74_2',
+    ss58Format: 2254,
+    provider: 'wss://test-rpc.subspace.network/ws',
+    groups: ['TEST_NET'],
+    nativeToken: 'tSSC'
   }
 };
 

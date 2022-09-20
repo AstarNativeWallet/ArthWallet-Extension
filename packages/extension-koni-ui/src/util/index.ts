@@ -1,14 +1,15 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { NetWorkInfo } from '@polkadot/extension-base/background/KoniTypes';
-import { AccountJson, AccountWithChildren } from '@polkadot/extension-base/background/types';
-import { ALL_ACCOUNT_KEY } from '@polkadot/extension-koni-base/constants';
-import LogosMap from '@polkadot/extension-koni-ui/assets/logo';
-import { networkSelectOption } from '@polkadot/extension-koni-ui/hooks/useGenesisHashOptions';
-import { Recoded } from '@polkadot/extension-koni-ui/types';
-import { isAccountAll } from '@polkadot/extension-koni-ui/util/accountAll';
-import reformatAddress from '@polkadot/extension-koni-ui/util/reformatAddress';
+import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
+import { AccountJson, AccountWithChildren } from '@subwallet/extension-base/background/types';
+import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
+import LogosMap from '@subwallet/extension-koni-ui/assets/logo';
+import { NetworkSelectOption } from '@subwallet/extension-koni-ui/hooks/useGenesisHashOptions';
+import { Recoded } from '@subwallet/extension-koni-ui/types';
+import { isAccountAll } from '@subwallet/extension-koni-ui/util/accountAll';
+import reformatAddress from '@subwallet/extension-koni-ui/util/reformatAddress';
+
 import { decodeAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { KeypairType } from '@polkadot/util-crypto/types';
 
@@ -32,7 +33,19 @@ export function findAccountByAddress (accounts: AccountJson[], _address: string)
   ) || null;
 }
 
-export function recodeAddress (address: string, accounts: AccountWithChildren[], networkInfo: NetWorkInfo | null, type?: KeypairType): Recoded {
+export function getEthereumChains (networkMap: Record<string, NetworkJson>): string[] {
+  const result: string[] = [];
+
+  Object.keys(networkMap).forEach((k) => {
+    if (networkMap[k].isEthereum) {
+      result.push(k);
+    }
+  });
+
+  return result;
+}
+
+export function recodeAddress (address: string, accounts: AccountWithChildren[], networkInfo: NetworkJson | null, type?: KeypairType): Recoded {
   const publicKey = decodeAddress(address);
   const account = findAccountByAddress(accounts, address) || findSubstrateAccount(accounts, publicKey);
   const prefix = networkInfo ? networkInfo.ss58Format : 42;
@@ -42,6 +55,7 @@ export function recodeAddress (address: string, accounts: AccountWithChildren[],
     account,
     formatted: reformatAddress(address, prefix, isEthereum),
     genesisHash: account?.genesisHash,
+    originGenesisHash: account?.originGenesisHash,
     prefix,
     isEthereum
   };
@@ -73,12 +87,12 @@ function analysisAccounts (accounts: AccountJson[]): [boolean, boolean] {
   ];
 }
 
-export function getGenesisOptionsByAddressType (address: string | null | undefined, accounts: AccountJson[], genesisOptions: networkSelectOption[]): networkSelectOption[] {
+export function getGenesisOptionsByAddressType (address: string | null | undefined, accounts: AccountJson[], genesisOptions: NetworkSelectOption[]): NetworkSelectOption[] {
   if (!address || !accounts.length) {
     return genesisOptions.filter((o) => !o.isEthereum);
   }
 
-  const result: networkSelectOption[] = [];
+  const result: NetworkSelectOption[] = [];
 
   if (isAccountAll(address)) {
     const [isContainOnlySubstrate, isContainOnlyEtherum] = analysisAccounts(accounts);
@@ -144,8 +158,10 @@ export const subscanByNetworkKey: Record<string, string> = {
   acala: 'https://acala.subscan.io',
   // 'altair': 'https://altair.subscan.io',
   astar: 'https://astar.subscan.io',
+  astarEvm: 'https://astar.subscan.io',
   // 'basilisk': 'https://basilisk.subscan.io',
-  bifrost: 'https://bifrost.subscan.io',
+  bifrost_dot: 'https://bifrost.subscan.io',
+  bifrost: 'https://bifrost-kusama.subscan.io',
   calamari: 'https://calamari.subscan.io',
   centrifuge: 'https://centrifuge.subscan.io',
   clover: 'https://clover.subscan.io',
@@ -154,7 +170,7 @@ export const subscanByNetworkKey: Record<string, string> = {
   crust: 'https://crust.subscan.io',
   darwinia: 'https://darwinia.subscan.io',
   edgeware: 'https://edgeware.subscan.io',
-  // 'efinity': 'https://efinity.subscan.io/',
+  // 'efinity': 'https://efinity.subscan.io',
   equilibrium: 'https://equilibrium.subscan.io',
   // 'genshiro': 'https://genshiro.subscan.io',
   heiko: 'https://parallel-heiko.subscan.io',
@@ -163,6 +179,7 @@ export const subscanByNetworkKey: Record<string, string> = {
   karura: 'https://karura.subscan.io',
   khala: 'https://khala.subscan.io',
   kilt: 'https://spiritnet.subscan.io',
+  interlay: 'https://interlay.subscan.io',
   kintsugi: 'https://kintsugi.subscan.io',
   kusama: 'https://kusama.subscan.io',
   // 'litentry': 'https://litentry.subscan.io',
@@ -174,7 +191,7 @@ export const subscanByNetworkKey: Record<string, string> = {
   // 'phala': 'https://phala.subscan.io',
   picasso: 'https://picasso.subscan.io',
   pichiu: 'https://pichiu.subscan.io',
-  // 'pioneer': 'https://pioneer.subscan.io',
+  pioneer: 'https://pioneer.subscan.io',
   polkadot: 'https://polkadot.subscan.io',
   quartz: 'https://quartz.subscan.io',
   sakura: 'https://sakura.subscan.io',
@@ -189,32 +206,50 @@ export const subscanByNetworkKey: Record<string, string> = {
   westend: 'https://westend.subscan.io',
   rococo: 'https://rococo.subscan.io',
   robonomics: 'https://robonomics.subscan.io',
-  moonbase: 'https://moonbase.subscan.io',
-  dolphin: 'https://dolphin.subscan.io/',
-  encointer: 'https://encointer.subscan.io/',
-  chainx: 'https://chainx.subscan.io/',
-  litmus: 'https://litmus.subscan.io/'
+  // moonbase: 'https://moonbase.subscan.io',
+  dolphin: 'https://dolphin.subscan.io',
+  encointer: 'https://encointer.subscan.io',
+  chainx: 'https://chainx.subscan.io',
+  litmus: 'https://litmus.subscan.io',
+  crab: 'https://crab.subscan.io',
+  mangatax_para: 'https://mangatax.subscan.io',
+  mangatax: 'https://mangata-testnet.subscan.io',
+  shibuya: 'https://shibuya.subscan.io'
 };
 
 export const moonbeamScanUrl = 'https://moonbeam.moonscan.io';
 
 export const moonriverScanUrl = 'https://moonriver.moonscan.io';
 
+export const moonbaseScanUrl = 'https://moonbase.moonscan.io';
+
 export function isSupportSubscan (networkKey: string): boolean {
   return !!subscanByNetworkKey[networkKey];
 }
 
 export function isSupportScanExplorer (networkKey: string): boolean {
-  return ['moonbeam', 'moonriver'].includes(networkKey) || isSupportSubscan(networkKey);
+  return ['moonbeam', 'moonriver', 'moonbase'].includes(networkKey) || isSupportSubscan(networkKey);
 }
 
-export function getScanExplorerTransactionHistoryUrl (networkKey: string, hash: string): string {
+export function getScanExplorerTransactionHistoryUrl (networkKey: string, hash: string, useSubscan?: boolean): string {
+  if (useSubscan && subscanByNetworkKey[networkKey]) {
+    return `${subscanByNetworkKey[networkKey]}/extrinsic/${hash}`;
+  }
+
   if (networkKey === 'moonbeam') {
     return `${moonbeamScanUrl}/tx/${hash}`;
   }
 
   if (networkKey === 'moonriver') {
     return `${moonriverScanUrl}/tx/${hash}`;
+  }
+
+  if (networkKey === 'moonbase') {
+    return `${moonbaseScanUrl}/tx/${hash}`;
+  }
+
+  if (!subscanByNetworkKey[networkKey]) {
+    return '';
   }
 
   return `${subscanByNetworkKey[networkKey]}/extrinsic/${hash}`;
@@ -227,6 +262,14 @@ export function getScanExplorerAddressInfoUrl (networkKey: string, address: stri
 
   if (networkKey === 'moonriver') {
     return `${moonriverScanUrl}/address/${address}`;
+  }
+
+  if (networkKey === 'moonbase') {
+    return `${moonbaseScanUrl}/address/${address}`;
+  }
+
+  if (!subscanByNetworkKey[networkKey]) {
+    return '';
   }
 
   return `${subscanByNetworkKey[networkKey]}/account/${address}`;

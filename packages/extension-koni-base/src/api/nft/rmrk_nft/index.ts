@@ -1,13 +1,12 @@
-// Copyright 2019-2022 @polkadot/extension-koni authors & contributors
+// Copyright 2019-2022 @subwallet/extension-koni authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { NftCollection, NftItem, RMRK_VER } from '@subwallet/extension-base/background/KoniTypes';
+import { BaseNftApi, HandleNftParams } from '@subwallet/extension-koni-base/api/nft/nft';
+import { isUrl, reformatAddress } from '@subwallet/extension-koni-base/utils';
 import fetch from 'cross-fetch';
 
-import { NftCollection, NftItem, RMRK_VER } from '@polkadot/extension-base/background/KoniTypes';
-import { BaseNftApi } from '@polkadot/extension-koni-base/api/nft/nft';
-import { isUrl, reformatAddress } from '@polkadot/extension-koni-base/utils/utils';
-
-import { KANARIA_ENDPOINT, KANARIA_EXTERNAL_SERVER, RMRK_PINATA_SERVER, SINGULAR_V1_COLLECTION_ENDPOINT, SINGULAR_V1_ENDPOINT, SINGULAR_V1_EXTERNAL_SERVER, SINGULAR_V2_COLLECTION_ENDPOINT, SINGULAR_V2_ENDPOINT, SINGULAR_V2_EXTERNAL_SERVER } from '../config';
+import { getRandomIpfsGateway, KANARIA_ENDPOINT, KANARIA_EXTERNAL_SERVER, SINGULAR_V1_COLLECTION_ENDPOINT, SINGULAR_V1_ENDPOINT, SINGULAR_V1_EXTERNAL_SERVER, SINGULAR_V2_COLLECTION_ENDPOINT, SINGULAR_V2_ENDPOINT, SINGULAR_V2_EXTERNAL_SERVER, SUPPORTED_NFT_NETWORKS } from '../config';
 
 enum RMRK_SOURCE {
   BIRD_KANARIA = 'bird_kanaria',
@@ -37,7 +36,7 @@ interface NFTResource {
 export class RmrkNftApi extends BaseNftApi {
   // eslint-disable-next-line no-useless-constructor
   constructor () {
-    super();
+    super('');
   }
 
   override setAddresses (addresses: string[]) {
@@ -63,10 +62,10 @@ export class RmrkNftApi extends BaseNftApi {
     }
 
     if (!input.includes('ipfs://ipfs/')) {
-      return RMRK_PINATA_SERVER + input;
+      return getRandomIpfsGateway() + input;
     }
 
-    return RMRK_PINATA_SERVER + input.split('ipfs://ipfs/')[1];
+    return getRandomIpfsGateway() + input.split('ipfs://ipfs/')[1];
   }
 
   private async getMetadata (metadataUrl: string): Promise<NFTMetadata | undefined> {
@@ -120,7 +119,8 @@ export class RmrkNftApi extends BaseNftApi {
         nfts.push({
           ...item,
           metadata: result,
-          external_url: KANARIA_EXTERNAL_SERVER + item.id.toString()
+          external_url: KANARIA_EXTERNAL_SERVER + item.id.toString(),
+          owner: account
         });
       } else if (item.source === RMRK_SOURCE.KANARIA) {
         nfts.push({
@@ -129,7 +129,8 @@ export class RmrkNftApi extends BaseNftApi {
             ...result,
             image: this.parseUrl(result?.image as string)
           },
-          external_url: KANARIA_EXTERNAL_SERVER + item.id.toString()
+          external_url: KANARIA_EXTERNAL_SERVER + item.id.toString(),
+          owner: account
         });
       } else if (item.source === RMRK_SOURCE.SINGULAR_V1) {
         nfts.push({
@@ -141,7 +142,8 @@ export class RmrkNftApi extends BaseNftApi {
             animation_url: this.parseUrl(result?.animation_url as string),
             image: this.parseUrl(result?.image as string)
           },
-          external_url: SINGULAR_V1_EXTERNAL_SERVER + item.id.toString()
+          external_url: SINGULAR_V1_EXTERNAL_SERVER + item.id.toString(),
+          owner: account
         });
       } else if (item.source === RMRK_SOURCE.SINGULAR_V2) {
         const id = item.id as string;
@@ -157,7 +159,8 @@ export class RmrkNftApi extends BaseNftApi {
               animation_url: this.parseUrl(result?.animation_url as string),
               image: this.parseUrl(result?.mediaUri as string)
             },
-            external_url: SINGULAR_V2_EXTERNAL_SERVER + item.id.toString()
+            external_url: SINGULAR_V2_EXTERNAL_SERVER + item.id.toString(),
+            owner: account
           });
         }
       }
@@ -166,7 +169,7 @@ export class RmrkNftApi extends BaseNftApi {
     return nfts;
   }
 
-  public async handleNfts (updateItem: (data: NftItem) => void, updateCollection: (data: NftCollection) => void, updateReady: (ready: boolean) => void) {
+  public async handleNfts (params: HandleNftParams) {
     // const start = performance.now();
 
     let allNfts: Record<string | number, any>[] = [];
@@ -180,7 +183,10 @@ export class RmrkNftApi extends BaseNftApi {
       }));
 
       if (allNfts.length <= 0) {
-        updateReady(true);
+        params.updateReady(true);
+        params.updateNftIds(SUPPORTED_NFT_NETWORKS.kusama);
+
+        return;
       }
 
       const collectionInfoUrl: string[] = [];
@@ -200,11 +206,12 @@ export class RmrkNftApi extends BaseNftApi {
           collectionId: item?.collectionId as string,
           // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
           properties: item?.metadata?.properties as Record<any, any>,
-          chain: 'kusama',
-          rmrk_ver: item.source && item.source === RMRK_SOURCE.SINGULAR_V1 ? RMRK_VER.VER_1 : RMRK_VER.VER_2
+          chain: SUPPORTED_NFT_NETWORKS.kusama,
+          rmrk_ver: item.source && item.source === RMRK_SOURCE.SINGULAR_V1 ? RMRK_VER.VER_1 : RMRK_VER.VER_2,
+          owner: item.owner as string
         } as NftItem;
 
-        updateItem(parsedItem);
+        params.updateItem(parsedItem);
 
         let url = '';
 
@@ -221,25 +228,38 @@ export class RmrkNftApi extends BaseNftApi {
         }
       }
 
+      params.updateCollectionIds(SUPPORTED_NFT_NETWORKS.kusama, allCollections.map((o) => o.collectionId));
+
+      allCollections.forEach((collection) => {
+        params.updateNftIds(SUPPORTED_NFT_NETWORKS.kusama, collection.collectionId, (allNfts as NftItem[])
+          .filter((o) => o?.id && o?.collectionId === collection.collectionId).map((nft) => nft?.id || ''));
+      });
+
       const allCollectionMetaUrl: Record<string, any>[] = [];
 
       await Promise.all(collectionInfoUrl.map(async (url) => {
-        const data = await fetch(url, {
-          method: 'GET'
-        })
-          .then((resp) => resp.json()) as Record<string | number, string | number>[];
-        const result = data[0];
+        try {
+          const data = await fetch(url, {
+            method: 'GET'
+          })
+            .then((resp) => resp.json()) as Record<string | number, string | number>[];
+          const result = data[0];
 
-        if (result && 'metadata' in result) {
-          allCollectionMetaUrl.push({
-            url: this.parseUrl(result?.metadata as string),
-            id: result?.id
-          });
-        }
+          if (result && 'metadata' in result) {
+            allCollectionMetaUrl.push({
+              url: this.parseUrl(result?.metadata as string),
+              id: result?.id
+            });
+          }
 
-        if (data.length > 0) {
-          return result;
-        } else {
+          if (data.length > 0) {
+            return result;
+          } else {
+            return {};
+          }
+        } catch (e) {
+          console.error('error fetching collection info', url);
+
           return {};
         }
       }));
@@ -249,19 +269,23 @@ export class RmrkNftApi extends BaseNftApi {
       await Promise.all(allCollectionMetaUrl.map(async (item) => {
         let data: Record<string, any> = {};
 
-        if (item.url) {
-          data = await fetch(item?.url as string, {
-            method: 'GET'
-          })
-            .then((resp) => resp.json()) as Record<string, any>;
-        }
+        try {
+          if (item.url) {
+            data = await fetch(item?.url as string, {
+              method: 'GET'
+            })
+              .then((resp) => resp.json()) as Record<string, any>;
+          }
 
-        if ('mediaUri' in data) { // rmrk v2.0
-          // @ts-ignore
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          allCollectionMeta[item?.id as string] = { ...data, image: data.mediaUri };
-        } else {
-          allCollectionMeta[item?.id as string] = { ...data };
+          if ('mediaUri' in data) { // rmrk v2.0
+            // @ts-ignore
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            allCollectionMeta[item?.id as string] = { ...data, image: data.mediaUri };
+          } else {
+            allCollectionMeta[item?.id as string] = { ...data };
+          }
+        } catch (e) {
+          console.error('error parsing JSON for RMRK ', item.url, e);
         }
       }));
 
@@ -272,20 +296,20 @@ export class RmrkNftApi extends BaseNftApi {
           collectionName: allCollectionMeta[item.collectionId] ? allCollectionMeta[item.collectionId].name as string : null,
           // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
           image: allCollectionMeta[item.collectionId] ? this.parseUrl(allCollectionMeta[item.collectionId].image as string) : null,
-          chain: 'kusama'
+          chain: SUPPORTED_NFT_NETWORKS.kusama
         } as NftCollection;
 
-        updateCollection(parsedCollection);
-        updateReady(true);
+        params.updateCollection(parsedCollection);
+        params.updateReady(true);
       });
     } catch (e) {
       console.error('Failed to fetch rmrk nft', e);
     }
   }
 
-  public async fetchNfts (updateItem: (data: NftItem) => void, updateCollection: (data: NftCollection) => void, updateReady: (ready: boolean) => void): Promise<number> {
+  public async fetchNfts (params: HandleNftParams): Promise<number> {
     try {
-      await this.handleNfts(updateItem, updateCollection, updateReady);
+      await this.handleNfts(params);
     } catch (e) {
       return 0;
     }

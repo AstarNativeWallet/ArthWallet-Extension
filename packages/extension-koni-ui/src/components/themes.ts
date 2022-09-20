@@ -1,12 +1,18 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-const colors = {
+import subspaceLogo from '@subwallet/extension-koni-ui/assets/logo/46.Subspace.png';
+import subWalletLogo from '@subwallet/extension-koni-ui/assets/sub-wallet-logo.svg';
+
+const basicThemeColors = {
   primary1: '#004BFF',
   primary2: '#42C59A'
 };
 
 const darkTheme = {
+  logo: subWalletLogo,
+  primaryColor: basicThemeColors.primary2,
+  secondaryColor: basicThemeColors.primary1,
   accountBackground: '#1A1B20',
   accountDotsIconColor: '#8E8E8E',
   addAccountImageBackground: '#1A1B20',
@@ -16,24 +22,26 @@ const darkTheme = {
   backDropColor: 'rgba(255, 255, 255, 0.5)',
   background: '#010414',
   backgroundAccountAddress: '#262C4A',
-  backgroundDropdownSeclection: 'rgba(0, 7, 45, .7)',
+  backgroundDropdownSelection: 'rgba(0, 7, 45, .7)',
   bodyColor: '#20222A',
   borderRadius: '3px',
   boxBorderColor: '#212845',
   borderColor: '#EEEEEE',
+  borderQr: '#FFF',
   borderColor2: '#212845',
   boxMargin: '0.75rem 0',
   boxPadding: '0 0.25rem',
   boxShadow: 'rgba(0, 0, 0, 0.86)',
   boxShadow2: '0px 0px 7px rgba(4, 193, 183, 0.4)',
-  buttonBackground: colors.primary1,
-  buttonBackground2: colors.primary2,
+  buttonBackground: basicThemeColors.primary1,
+  buttonBackground2: basicThemeColors.primary2,
+  buttonBorderColor: 'rgb(66, 197, 154, 0.2)',
   buttonBackgroundDanger: '#AF1111',
   buttonBackground1: '#181E42',
   buttonBackgroundDangerHover: '#D93B3B',
   buttonBackgroundHover: '#ED9329',
   buttonTextColor: '#FFFFFF',
-  buttonTextColor2: colors.primary2,
+  buttonTextColor2: basicThemeColors.primary2,
   buttonTextColor3: '#00072D',
   tabContentBorderBottomColor: '#343849',
   errorBorderColor: '#7E3530',
@@ -48,6 +56,9 @@ const darkTheme = {
   iconNeutralColor: '#7B8098',
   iconWarningColor: '#FF7D01',
   id: 'dark',
+  name: 'Dark',
+  group: 'dark',
+  HomeNavHighlightColor: basicThemeColors.primary2,
   identiconBackground: '#F4F5F8',
   inputBackground: '#111218',
   inputBorderColor: '#2D365C',
@@ -65,17 +76,19 @@ const darkTheme = {
   overlayBackground: '#00072D',
   popupBackground: '#181E42',
   accountHoverBackground: 'rgba(255, 255, 255, 0.05)',
-  primaryColor: colors.primary2,
-  readonlyInputBackground: '#1A1B20',
+  readonlyInputBackground: 'rgba(38, 44, 74, 0.4)',
   warningBackgroundColor: 'rgba(231, 185, 23, 0.2)',
   dangerBackgroundColor: 'rgba(175, 17, 17, 0.25)',
   subTextColor: '#DDD',
   textColor: '#FFFFFF',
   textColor2: '#7B8098',
-  textColor3: colors.primary2,
+  textColor3: basicThemeColors.primary2,
   textColorDanger: '#FF8686',
-  checkDotColor: colors.primary1,
-  iconHoverColor: colors.primary2,
+  textColorFilter2: 'invert(55%) sepia(15%) saturate(461%) hue-rotate(192deg) brightness(89%) contrast(88%)',
+  textDark: '#000000',
+  textOpacity: 0.6,
+  checkDotColor: basicThemeColors.primary1,
+  iconHoverColor: basicThemeColors.primary2,
   chainTextColor: '#ED843D',
   chainBackgroundColor: 'rgba(237, 132, 61, 0.2)',
   checkboxColor: '#262C4A',
@@ -84,7 +97,7 @@ const darkTheme = {
   labelDarkThemeColor: '#FFFFFF',
   manageWebsiteAccessColor: '#9196AB',
   loadingBackground1: '#181E42',
-  loadingBackground2: colors.primary2,
+  loadingBackground2: basicThemeColors.primary2,
   toggleInactiveBgc: '#262C4A',
   toggleInactiveThumbColor: '#9196AB',
   toggleInactiveThumbBoxShadow: '0px 0px 4px rgba(0, 0, 0, 0.25)',
@@ -95,7 +108,13 @@ const darkTheme = {
   crowdloanActiveStatus: '#F7A21B',
   crowdloanFailStatus: '#F5000E',
   extensionBorder: '#030E45',
-  accountAuthorizeRequest: '#151A30'
+  accountAuthorizeRequest: '#151A30',
+  dropdownBackground: '#020412',
+  buyServiceOpacity: 0.6,
+  filterDefault: 'invert(51%) sepia(13%) saturate(545%) hue-rotate(192deg) brightness(96%) contrast(85%)', // #7B8098
+  filterError: 'invert(22%) sepia(85%) saturate(4711%) hue-rotate(351deg) brightness(98%) contrast(82%)', // #FF8686
+  filterSuccess: 'invert(71%) sepia(58%) saturate(424%) hue-rotate(107deg) brightness(85%) contrast(90%)', // #42C59A
+  filterWarning: 'invert(77%) sepia(67%) saturate(6392%) hue-rotate(0deg) brightness(103%) contrast(105%)' // #FF7D01
 };
 
 export declare type Theme = typeof darkTheme;
@@ -110,7 +129,7 @@ const lightTheme: Theme = {
   backDropColor: 'rgba(0, 0, 0, 0.5)',
   background: '#FFFFFF',
   backgroundAccountAddress: '#F5F5F5',
-  backgroundDropdownSeclection: 'rgba(0,0,0,.03)',
+  backgroundDropdownSelection: 'rgba(0,0,0,.03)',
   bodyColor: '#FFFFFF',
   borderColor2: '#EEEEEE',
   boxBorderColor: '#EEEEEE',
@@ -118,7 +137,7 @@ const lightTheme: Theme = {
   boxShadow2: '0px 0px 5px rgba(0, 0, 0, 0.05), 0px 20px 60px rgba(0, 0, 0, 0.15)',
   buttonBackground1: '#F0F4FF',
   buttonBackgroundDanger: '#B5131C',
-  // buttonTextColor2: colors.primary1,
+  // buttonTextColor2: basicThemeColors.color1,
   tabContentBorderBottomColor: 'transparent',
   checkboxColor: '#F5F5F5',
   checkboxBorderColor: '#DDDDDD',
@@ -129,6 +148,9 @@ const lightTheme: Theme = {
   iconDangerColor: '#DC2222',
   iconNeutralColor: '#939CB1',
   id: 'light',
+  name: 'Light',
+  group: 'light',
+  HomeNavHighlightColor: basicThemeColors.primary2,
   inputBackground: '#FFFFFF',
   inputBorderColor: '#EDEDED',
   labelColor: '#333333',
@@ -138,11 +160,11 @@ const lightTheme: Theme = {
   parentLabelColor: '#215B4F',
   popupBackground: '#FFFFFF',
   accountHoverBackground: '#f2f3f4',
-  readonlyInputBackground: '#FFF',
+  readonlyInputBackground: '#DDD',
   subTextColor: '#454545',
   textColor: '#00072D',
   textColor2: '#888888',
-  textColor3: colors.primary1,
+  textColor3: basicThemeColors.primary1,
   textColorDanger: '#F24A4A',
   labelLightThemeColor: '#00072D',
   labelDarkThemeColor: '#666666',
@@ -150,34 +172,63 @@ const lightTheme: Theme = {
   warningBackgroundColor: 'rgba(231, 185, 23, 0.1)',
   dangerBackgroundColor: 'rgba(175, 17, 17, 0.1)',
   loadingBackground1: '#F0F4FF',
-  loadingBackground2: colors.primary1,
+  loadingBackground2: basicThemeColors.primary1,
   toggleInactiveBgc: '#ddd',
   toggleInactiveThumbColor: '#fff',
   toggleInactiveThumbBoxShadow: '0px 0px 4px rgba(0, 0, 0, 0.25)',
   scrollBarThumb: 'rgba(0, 0, 0, .25)',
   extensionBorder: '#EDEDED',
-  accountAuthorizeRequest: '#F5F5F5'
+  accountAuthorizeRequest: '#F5F5F5',
+  dropdownBackground: '#020412'
 };
 
-export const themes = {
+interface GenerateOptions extends Partial<Theme> {
+  primaryColor: string,
+  secondaryColor: string
+}
+
+export const themes: Record<string, Theme> = {
   dark: darkTheme,
   light: lightTheme
 };
 
+function generateTheme (id: string, name: string, baseTheme: 'dark' | 'light', options: GenerateOptions) {
+  themes[id] = {
+    ...themes[baseTheme],
+    id,
+    name,
+    buttonBackground: options.primaryColor,
+    buttonBackground2: options.secondaryColor,
+    buttonTextColor2: options.secondaryColor,
+    textColor3: baseTheme === 'dark' ? options.secondaryColor : options.primaryColor,
+    checkDotColor: options.primaryColor,
+    iconHoverColor: options.secondaryColor,
+    loadingBackground2: baseTheme === 'dark' ? options.secondaryColor : options.primaryColor,
+    HomeNavHighlightColor: baseTheme === 'dark' ? options.secondaryColor : options.primaryColor,
+    ...options
+  };
+}
+
+// Generate Subspace theme
+generateTheme('subspace', 'Subspace', 'light', {
+  primaryColor: '#562B8E',
+  secondaryColor: '#562B8E',
+  buttonTextColor3: '#FFFFFF',
+  logo: subspaceLogo
+});
+
 export declare type AvailableThemes = keyof typeof themes;
 
 export function chooseTheme (): AvailableThemes {
-  const preferredTheme = localStorage.getItem('theme');
+  const preferredTheme = localStorage.getItem('theme') as string;
 
-  if (preferredTheme) {
-    return preferredTheme === 'dark'
-      ? 'dark'
-      : 'light';
+  if (themes[preferredTheme]) {
+    return preferredTheme;
   }
 
-  // return window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches
-  //   ? 'light'
-  //   : 'dark';
-
   return 'dark';
+}
+
+export function getThemeOptions (): Array<{ value: string, text: string }> {
+  return Object.values(themes).map((v) => ({ text: v.name, value: v.id }));
 }

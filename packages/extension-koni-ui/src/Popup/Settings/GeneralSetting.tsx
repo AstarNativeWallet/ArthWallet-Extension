@@ -1,17 +1,18 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import type { ThemeProps } from '../../types';
 
+import { ThemeTypes } from '@subwallet/extension-base/background/KoniTypes';
+import { saveTheme, setNotification } from '@subwallet/extension-koni-ui/messaging';
+import Header from '@subwallet/extension-koni-ui/partials/Header';
+import getLanguageOptions from '@subwallet/extension-koni-ui/util/getLanguageOptions';
 import React, { useCallback, useContext, useMemo, useState } from 'react';
 import styled, { ThemeContext } from 'styled-components';
 
-import { setNotification } from '@polkadot/extension-koni-ui/messaging';
-import Header from '@polkadot/extension-koni-ui/partials/Header';
-import getLanguageOptions from '@polkadot/extension-koni-ui/util/getLanguageOptions';
 import settings from '@polkadot/ui-settings';
 
-import { Dropdown, HorizontalLabelToggle, MenuItem, themes, ThemeSwitchContext } from '../../components';
+import { Dropdown, getThemeOptions, MenuItem, ThemeSwitchContext } from '../../components';
 import useTranslation from '../../hooks/useTranslation';
 import { Theme } from '../../types';
 
@@ -29,6 +30,7 @@ function GeneralSetting ({ className }: Props): React.ReactElement {
   const themeContext = useContext(ThemeContext as React.Context<Theme>);
   const setTheme = useContext(ThemeSwitchContext);
   const languageOptions = useMemo(() => getLanguageOptions(), []);
+  const themeOptions = useMemo(() => getThemeOptions(), []);
 
   const _onChangeNotification = useCallback(
     (value: string): void => {
@@ -41,7 +43,11 @@ function GeneralSetting ({ className }: Props): React.ReactElement {
   );
 
   const _onChangeTheme = useCallback(
-    (checked: boolean): void => setTheme(checked ? 'dark' : 'light'),
+    (theme: string): void => {
+      saveTheme(theme as ThemeTypes, () => {
+        setTheme(theme);
+      }).catch((e) => console.log('There is problem when saveTheme', e));
+    },
     [setTheme]
   );
 
@@ -66,12 +72,12 @@ function GeneralSetting ({ className }: Props): React.ReactElement {
           className='setting'
           title='Theme'
         >
-          <HorizontalLabelToggle
-            checkedLabel={t<string>('Dark')}
-            className='settings__theme-setting'
-            toggleFunc={_onChangeTheme}
-            uncheckedLabel={t<string>('Light')}
-            value={themeContext.id === themes.dark.id}
+          <Dropdown
+            className='dropdown'
+            label=''
+            onChange={_onChangeTheme}
+            options={themeOptions}
+            value={themeContext.id}
           />
         </MenuItem>
         <MenuItem

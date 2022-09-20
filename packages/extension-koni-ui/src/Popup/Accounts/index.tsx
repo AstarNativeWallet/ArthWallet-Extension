@@ -1,14 +1,13 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import type { ThemeProps } from '../../types';
 
+import { AccountWithChildren } from '@subwallet/extension-base/background/types';
+import Link from '@subwallet/extension-koni-ui/components/Link';
+import getNetworkMap from '@subwallet/extension-koni-ui/util/getNetworkMap';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
-
-import { AccountWithChildren } from '@polkadot/extension-base/background/types';
-import Link from '@polkadot/extension-koni-ui/components/Link';
-import getNetworkMap from '@polkadot/extension-koni-ui/util/getNetworkMap';
 
 import { AccountContext } from '../../components';
 import useTranslation from '../../hooks/useTranslation';
@@ -25,6 +24,7 @@ function Accounts ({ className }: Props): React.ReactElement {
   const [filter, setFilter] = useState('');
   const [filteredAccount, setFilteredAccount] = useState<AccountWithChildren[]>([]);
   const { hierarchy } = useContext(AccountContext);
+  // TODO: write a new hook
   const networkMap = useMemo(() => getNetworkMap(), []);
 
   useEffect(() => {

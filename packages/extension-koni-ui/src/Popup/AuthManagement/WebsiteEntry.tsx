@@ -1,16 +1,16 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import type { ThemeProps } from '../../types';
 
+import { AuthUrlInfo, AuthUrls } from '@subwallet/extension-base/background/handlers/State';
+import { filterAndSortingAccountByAuthType } from '@subwallet/extension-koni-base/utils';
+import { AccountContext } from '@subwallet/extension-koni-ui/components';
+import { forgetSite, toggleAuthorization } from '@subwallet/extension-koni-ui/messaging';
+import WebsiteEntryAccount from '@subwallet/extension-koni-ui/Popup/AuthManagement/WebsiteEntryAccount';
+import { waitForElement } from '@subwallet/extension-koni-ui/util/dom';
 import React, { useCallback, useContext, useState } from 'react';
 import styled from 'styled-components';
-
-import { AuthUrlInfo, AuthUrls } from '@polkadot/extension-base/background/handlers/State';
-import { AccountContext } from '@polkadot/extension-koni-ui/components';
-import { forgetSite } from '@polkadot/extension-koni-ui/messaging';
-import WebsiteEntryAccount from '@polkadot/extension-koni-ui/Popup/AuthManagement/WebsiteEntryAccount';
-import { waitForElement } from '@polkadot/extension-koni-ui/util/dom';
 
 import useTranslation from '../../hooks/useTranslation';
 
@@ -27,7 +27,9 @@ function WebsiteEntry ({ changeConnectSite, className = '', info, setList, url }
   const [isShowDetail, setShowDetail] = useState<boolean>(false);
   const { hostname } = new URL(info.url);
   const { accounts } = useContext(AccountContext);
-  const accountsWithoutAllAndEth = accounts.filter((acc) => acc.address !== 'ALL' && acc.type !== 'ethereum');
+  const accountList = filterAndSortingAccountByAuthType(accounts, info?.accountAuthType || 'substrate', true);
+  const addressList = accountList.map((account) => account.address);
+
   const transformId = info.id.replace(/\./g, '-');
 
   const connectAll = useCallback(() => {
@@ -44,6 +46,15 @@ function WebsiteEntry ({ changeConnectSite, className = '', info, setList, url }
     }).catch(console.error);
   }, [setList, url]);
 
+  const onToggleAllow = useCallback(() => {
+    // @ts-ignore
+    toggleAuthorization(url).then(({ list }) => {
+      setList(list);
+    }).catch(console.error);
+  },
+  [setList, url]
+  );
+
   const _onToggleDetail = useCallback((e: React.MouseEvent<HTMLElement>) => {
     setShowDetail(!isShowDetail);
 
@@ -57,7 +68,7 @@ function WebsiteEntry ({ changeConnectSite, className = '', info, setList, url }
   }, [transformId, isShowDetail]);
 
   const accountSelectedLength = Object.keys(info.isAllowedMap)
-    .filter((acc) => info.isAllowedMap[acc]).length;
+    .filter((acc) => (info.isAllowedMap[acc] && addressList.includes(acc))).length;
 
   return (
     <div className={className}>
@@ -68,7 +79,7 @@ function WebsiteEntry ({ changeConnectSite, className = '', info, setList, url }
         <img
           alt={`${hostname}`}
           className='website-entry__connected-app-logo'
-          src={`https://icons.duckduckgo.com/ip2/${hostname}.ico`}
+          src={`https://icon.horse/icon/${hostname}`}
         />
         <div className='origin'>
           {info.origin}
@@ -88,24 +99,30 @@ function WebsiteEntry ({ changeConnectSite, className = '', info, setList, url }
           <div className='website-entry__top-action'>
             <div
               className='website-entry__btn'
+              onClick={onToggleAllow}
+            >
+              {info.isAllowed ? t<string>('Block') : t<string>('Unblock')}
+            </div>
+            <div
+              className='website-entry__btn'
               onClick={onForgetSite}
             >
               {t<string>('Forget Site')}
             </div>
-            <div
+            {info.isAllowed && <div
               className='website-entry__btn'
               onClick={disconnectAll}
             >
               {t<string>('Disconnect All')}
-            </div>
-            <div
+            </div>}
+            {info.isAllowed && <div
               className='website-entry__btn'
               onClick={connectAll}
             >
               {t<string>('Connect All')}
-            </div>
+            </div>}
           </div>
-          {accountsWithoutAllAndEth.map((acc) =>
+          {info.isAllowed && accountList.map((acc) =>
             <WebsiteEntryAccount
               address={acc.address}
               isConnected={info.isAllowedMap[acc.address]}
@@ -165,6 +182,7 @@ export default styled(WebsiteEntry)(({ theme }: Props) => `
     width: 28px;
     min-width: 28px;
     margin-right: 8px;
+    border-radius: 5px;
   }
 
   .website-entry__right-content {

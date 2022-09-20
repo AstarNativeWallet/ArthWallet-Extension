@@ -1,25 +1,35 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Link from '@subwallet/extension-koni-ui/components/Link';
+import useTranslation from '@subwallet/extension-koni-ui/hooks/useTranslation';
+import { ThemeProps } from '@subwallet/extension-koni-ui/types';
 import React from 'react';
 import styled from 'styled-components';
 
-import Link from '@polkadot/extension-koni-ui/components/Link';
-import useTranslation from '@polkadot/extension-koni-ui/hooks/useTranslation';
-import { ThemeProps } from '@polkadot/extension-koni-ui/types';
-
 interface Props extends ThemeProps {
-  className?: string,
-  showBackArrow?: boolean,
-  subHeaderName?: string,
-  showCancelButton?: boolean,
-  isBusy?: boolean,
-  to?: string
+  cancelButtonText?: string;
+  className?: string;
+  isBusy?: boolean;
+  onBack?: () => void;
+  onCancel?: () => void;
+  showBackArrow?: boolean;
+  showCancelButton?: boolean;
+  subHeaderName?: string;
+  to?: string;
 }
 
-function SubHeader ({ className = '', isBusy, showBackArrow, showCancelButton, subHeaderName, to = '/' }: Props): React.ReactElement {
+function SubHeader ({ cancelButtonText,
+  className = '',
+  isBusy,
+  onBack,
+  onCancel,
+  showBackArrow,
+  showCancelButton,
+  subHeaderName,
+  to = '/' }: Props): React.ReactElement {
   const { t } = useTranslation();
 
   return (
@@ -34,6 +44,7 @@ function SubHeader ({ className = '', isBusy, showBackArrow, showCancelButton, s
               className={`arrowLeftIcon ${isBusy ? 'disabled-btn' : ''}`}
               // @ts-ignore
               icon={faArrowLeft}
+              onClick={onBack}
             />
           </Link>
         )
@@ -50,7 +61,7 @@ function SubHeader ({ className = '', isBusy, showBackArrow, showCancelButton, s
             className='sub-header__cancel-btn'
             to='/'
           >
-            <span>{t<string>('Cancel')}</span>
+            <span onClick={onCancel}>{cancelButtonText ? t<string>(cancelButtonText) : t<string>('Cancel')}</span>
           </Link>
         )
         }

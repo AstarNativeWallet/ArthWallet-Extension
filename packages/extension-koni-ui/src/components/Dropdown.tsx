@@ -1,13 +1,12 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import type { ThemeProps } from '../types';
 
 import React, { useCallback, useState } from 'react';
 import Select, { ActionMeta, SingleValue } from 'react-select';
+import CreatableSelect from 'react-select/creatable';
 import styled from 'styled-components';
-
-import { networkSelectOption } from '@polkadot/extension-koni-ui/hooks/useGenesisHashOptions';
 
 import Label from './Label';
 
@@ -15,13 +14,19 @@ interface Props extends ThemeProps {
   className?: string;
   label: string;
   onChange?: any;
-  options: networkSelectOption[];
+  options: any[];
   value?: string;
+  allowAdd?: boolean;
+  handleCreate?: (createValue: string) => Promise<string>; // handle create logic, return new value prop after custom logic
+  isDisabled?: boolean
 }
 
-function Dropdown ({ className, label, onChange, options, value }: Props): React.ReactElement<Props> {
-  const transformOptions = options.map((t) => ({ label: t.text, value: t.value }));
+function Dropdown ({ allowAdd, className, handleCreate, isDisabled, label, onChange, options, value }: Props): React.ReactElement<Props> {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+  const transformOptions = options.map((t) => ({ label: t.text, value: t.value })); // will work as long as options has text and value field
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const [selectedValue, setSelectedValue] = useState(value || transformOptions[0].value);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = useCallback(
     (newValue: SingleValue<{ label: string; value: string; }>, actionMeta: ActionMeta<{ label: string; value: string; }>): void => {
@@ -33,6 +38,22 @@ function Dropdown ({ className, label, onChange, options, value }: Props): React
       setSelectedValue(value);
     }, [onChange]
   );
+
+  const onCreate = useCallback(async (val: string) => {
+    setLoading(true);
+
+    if (handleCreate) {
+      const value = await handleCreate(val);
+
+      if (value !== '') {
+        setSelectedValue(value);
+      }
+    } else {
+      setSelectedValue(val);
+    }
+
+    setLoading(false);
+  }, [handleCreate]);
 
   const customStyles = {
     option: (base: any) => {
@@ -56,19 +77,39 @@ function Dropdown ({ className, label, onChange, options, value }: Props): React
         className={className}
         label={label}
       >
-        <Select
-          className='dropdown-wrapper'
-          classNamePrefix='dropdown'
-          isSearchable
-          menuPlacement={'auto'}
-          menuPortalTarget={document.body}
-          menuPosition='fixed'
-          onChange={handleChange}
-          options={transformOptions}
-          placeholder=''
-          styles={customStyles}
-          value={transformOptions.filter((obj: { value: string }) => obj.value === selectedValue)}
-        />
+        {
+          allowAdd && allowAdd
+            ? <CreatableSelect
+              className='dropdown-wrapper'
+              classNamePrefix='dropdown'
+              isDisabled={loading}
+              isLoading={loading}
+              isSearchable
+              menuPlacement={'auto'}
+              menuPortalTarget={document.body}
+              menuPosition='fixed'
+              onChange={handleChange}
+              // eslint-disable-next-line @typescript-eslint/no-misused-promises
+              onCreateOption={onCreate}
+              options={transformOptions}
+              placeholder=''
+              styles={customStyles}
+              value={transformOptions.filter((obj: { value: string }) => obj.value === selectedValue)}
+            />
+            : <Select
+              className='dropdown-wrapper'
+              classNamePrefix='dropdown'
+              isDisabled={isDisabled}
+              isSearchable
+              menuPlacement={'auto'}
+              menuPosition='fixed'
+              onChange={handleChange}
+              options={transformOptions}
+              placeholder=''
+              styles={customStyles}
+              value={transformOptions.filter((obj: { value: string }) => obj.value === selectedValue)}
+            />
+        }
       </Label>
     </>
   );
@@ -115,6 +156,7 @@ export default React.memo(styled(Dropdown)(({ label, theme }: Props) => `
   .dropdown__menu-portal {
     text-align: left;
     font-size: 15px;
+    z-index: 99;
   }
 
   .dropdown__menu-notice--no-options {

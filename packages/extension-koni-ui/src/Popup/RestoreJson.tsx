@@ -1,18 +1,18 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { ResponseJsonGetAccountInfo } from '@polkadot/extension-base/background/types';
+import type { ResponseJsonGetAccountInfo } from '@subwallet/extension-base/background/types';
 import type { KeyringPair$Json } from '@polkadot/keyring/types';
 import type { KeyringPairs$Json } from '@polkadot/ui-keyring/types';
 
+import Header from '@subwallet/extension-koni-ui/partials/Header';
+import { ThemeProps } from '@subwallet/extension-koni-ui/types';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import styled, { ThemeContext } from 'styled-components';
 
-import Header from '@polkadot/extension-koni-ui/partials/Header';
-import { ThemeProps } from '@polkadot/extension-koni-ui/types';
 import { u8aToString } from '@polkadot/util';
 
-import { AccountContext, AccountInfoEl, ActionContext, Button, ButtonArea, InputFileWithLabel, InputWithLabel, Theme, Warning } from '../components';
+import { AccountContext, AccountInfoEl, ActionContext, Button, ButtonArea, Checkbox, InputFileWithLabel, InputWithLabel, Theme, Warning } from '../components';
 import useTranslation from '../hooks/useTranslation';
 import { batchRestoreV2, jsonGetAccountInfo, jsonRestoreV2 } from '../messaging';
 import { DEFAULT_TYPE } from '../util/defaultType';
@@ -30,6 +30,7 @@ function Upload ({ className }: Props): React.ReactElement {
   const onAction = useContext(ActionContext);
   const [isBusy, setIsBusy] = useState(false);
   const [accountsInfo, setAccountsInfo] = useState<ResponseJsonGetAccountInfo[]>([]);
+  const [isConnectWhenRestore, setConnectWhenRestore] = useState(true);
   const [password, setPassword] = useState<string>('');
   const [isFileError, setFileError] = useState(false);
   const [requirePassword, setRequirePassword] = useState(false);
@@ -114,7 +115,7 @@ function Upload ({ className }: Props): React.ReactElement {
 
       setIsBusy(true);
 
-      (isKeyringPairs$Json(file) ? batchRestoreV2(file, password, accountsInfo[0].address) : jsonRestoreV2(file, password, accountsInfo[0].address))
+      (isKeyringPairs$Json(file) ? batchRestoreV2(file, password, accountsInfo, isConnectWhenRestore) : jsonRestoreV2(file, password, accountsInfo[0].address, isConnectWhenRestore))
         .then(() => {
           window.localStorage.setItem('popupNavigation', '/');
           onAction('/');
@@ -125,7 +126,7 @@ function Upload ({ className }: Props): React.ReactElement {
             setIsPasswordError(true);
           });
     },
-    [accountsInfo, file, onAction, password, requirePassword]
+    [accountsInfo, file, isConnectWhenRestore, onAction, password, requirePassword]
   );
 
   return (
@@ -188,6 +189,12 @@ function Upload ({ className }: Props): React.ReactElement {
             </div>
           ))}
         </div>
+
+        <Checkbox
+          checked={isConnectWhenRestore}
+          label={t<string>('Auto connect to all DApp after restore')}
+          onChange={setConnectWhenRestore}
+        />
         <ButtonArea className='restore-json-button-area'>
           <Button
             className='restoreButton'

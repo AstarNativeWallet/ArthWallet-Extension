@@ -1,24 +1,21 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { AccountJson } from '@polkadot/extension-base/background/types';
+import type { AccountJson } from '@subwallet/extension-base/background/types';
 
+import { CurrentAccountInfo } from '@subwallet/extension-base/background/KoniTypes';
+import { IconMaps } from '@subwallet/extension-koni-ui/assets/icon';
+import { AccountContext, AccountInfoEl, ActionContext } from '@subwallet/extension-koni-ui/components';
+import useIsPopup from '@subwallet/extension-koni-ui/hooks/useIsPopup';
+import useToast from '@subwallet/extension-koni-ui/hooks/useToast';
+import useTranslation from '@subwallet/extension-koni-ui/hooks/useTranslation';
+import { saveAccountAllLogo, saveCurrentAccountAddress, triggerAccountsSubscription } from '@subwallet/extension-koni-ui/messaging';
+import { RootState } from '@subwallet/extension-koni-ui/stores';
+import { ThemeProps } from '@subwallet/extension-koni-ui/types';
+import { findAccountByAddress, isAccountAll } from '@subwallet/extension-koni-ui/util';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-
-import { CurrentAccountInfo } from '@polkadot/extension-base/background/KoniTypes';
-import check from '@polkadot/extension-koni-ui/assets/check.svg';
-import changeAvatar from '@polkadot/extension-koni-ui/assets/icon/camera.svg';
-import changeAvatarHover from '@polkadot/extension-koni-ui/assets/icon/camera-hover.svg';
-import { AccountContext, AccountInfoEl, ActionContext } from '@polkadot/extension-koni-ui/components';
-import useIsPopup from '@polkadot/extension-koni-ui/hooks/useIsPopup';
-import useToast from '@polkadot/extension-koni-ui/hooks/useToast';
-import useTranslation from '@polkadot/extension-koni-ui/hooks/useTranslation';
-import { saveCurrentAccountAddress, triggerAccountsSubscription } from '@polkadot/extension-koni-ui/messaging';
-import { RootState } from '@polkadot/extension-koni-ui/stores';
-import { ThemeProps } from '@polkadot/extension-koni-ui/types';
-import { findAccountByAddress, isAccountAll } from '@polkadot/extension-koni-ui/util';
 
 interface Props extends AccountJson {
   className?: string;
@@ -27,7 +24,7 @@ interface Props extends AccountJson {
   changeAccountCallback?: (address: string) => void;
 }
 
-function Account ({ address, changeAccountCallback, className, closeSetting, genesisHash, name, parentName, suri, type }: Props): React.ReactElement<Props> {
+function Account ({ address, changeAccountCallback, className, closeSetting, genesisHash, name, originGenesisHash, parentName, suri, type }: Props): React.ReactElement<Props> {
   const [isSelected, setSelected] = useState(false);
   const { accounts } = useContext(AccountContext);
   const onAction = useContext(ActionContext);
@@ -38,7 +35,7 @@ function Account ({ address, changeAccountCallback, className, closeSetting, gen
   const isPopup = useIsPopup();
   const isFirefox = window.localStorage.getItem('browserInfo') === 'Firefox';
   const isLinux = window.localStorage.getItem('osInfo') === 'Linux';
-  const { setToastError, show } = useToast();
+  const { show } = useToast();
 
   useEffect((): void => {
     if (currentAccount?.address === address) {
@@ -61,7 +58,7 @@ function Account ({ address, changeAccountCallback, className, closeSetting, gen
           } as CurrentAccountInfo;
 
           saveCurrentAccountAddress(accountInfo, () => {
-            window.localStorage.removeItem('accountAllNetworkGenesisHash');
+            // window.localStorage.removeItem('accountAllNetworkGenesisHash');
             triggerAccountsSubscription().catch((e) => {
               console.error('There is a problem when trigger Accounts Subscription', e);
             });
@@ -86,18 +83,12 @@ function Account ({ address, changeAccountCallback, className, closeSetting, gen
 
     reader.onload = function () {
       if (currentAccount) {
-        const accountInfo = {
-          address: currentAccount.address,
-          isShowBalance: false,
-          allAccountLogo: reader.result as string
-        } as CurrentAccountInfo;
+        const accountAllLogo = reader.result as string;
 
-        saveCurrentAccountAddress(accountInfo, () => {
-          triggerAccountsSubscription().catch((e: any) => {
-            console.error('There is a problem when trigger Accounts Subscription', e);
-          });
+        saveAccountAllLogo(accountAllLogo, () => {
+          console.log('Avatar has changed');
         }).catch((e) => {
-          console.error('There is a problem when set Current Account', e);
+          console.error('There is a problem when set Account All Logo', e);
         });
       }
     };
@@ -116,10 +107,9 @@ function Account ({ address, changeAccountCallback, className, closeSetting, gen
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
         updateAvatar(event.target.files[0]);
       } else {
-        setToastError(true);
-        show(t('File is too large (limited 500KB)'));
+        show(t('File is too large (limited 500KB)'), true);
       }
-    }, [updateAvatar, setToastError, show, t]);
+    }, [updateAvatar, show, t]);
 
   const onSelectImg = useCallback((e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
@@ -136,10 +126,9 @@ function Account ({ address, changeAccountCallback, className, closeSetting, gen
     >
       {isSelected
         ? (
-          <img
-            alt='check'
-            src={check}
-          />
+          <div className='account-checked-item'>
+            {IconMaps.check}
+          </div>
         )
         : (
           <div className='account-unchecked-item' />
@@ -149,7 +138,9 @@ function Account ({ address, changeAccountCallback, className, closeSetting, gen
         address={address}
         className='account__account-item'
         genesisHash={genesisHash}
+        isShowBanner={!_isAllAccount}
         name={name}
+        originGenesisHash={originGenesisHash}
         parentName={parentName}
         showCopyBtn={false}
         suri={suri}
@@ -170,17 +161,7 @@ function Account ({ address, changeAccountCallback, className, closeSetting, gen
           />
           <span className='account__change-avatar-text'>{t<string>('Change Avatar')}</span>
           <div className='account__change-avatar-icon-btn'>
-            <img
-              alt='change'
-              className='account__change-avatar-icon'
-              src={changeAvatar}
-            />
-
-            <img
-              alt='change'
-              className='account__change-avatar-icon-hover'
-              src={changeAvatarHover}
-            />
+            {IconMaps.camera}
           </div>
         </div>
       )}
@@ -201,6 +182,11 @@ export default styled(Account)(({ theme }: ThemeProps) => `
 
   .account__account-item {
     margin-left: 5px;
+  }
+  
+  .account-checked-item {
+    color: ${theme.primaryColor};
+    align-self: center;
   }
 
   .account-unchecked-item {
@@ -229,22 +215,14 @@ export default styled(Account)(({ theme }: ThemeProps) => `
   }
 
   .account__change-avatar {
-    .account__change-avatar-icon {
-      display: block;
-    }
-
-    .account__change-avatar-icon-hover {
-      display: none;
+    .account__change-avatar-icon-btn svg{
+      color: ${theme.iconNeutralColor}
     }
   }
 
   .account__change-avatar:hover {
-    .account__change-avatar-icon {
-      display: none;
-    }
-
-    .account__change-avatar-icon-hover {
-      display: block;
+    .account__change-avatar-icon-btn svg{
+      color: ${theme.primaryColor}
     }
   }
 

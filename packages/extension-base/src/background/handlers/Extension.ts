@@ -1,20 +1,22 @@
 // Copyright 2019-2022 @polkadot/extension authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { MetadataDef } from '@polkadot/extension-inject/types';
+import type { MetadataDef } from '@subwallet/extension-inject/types';
 import type { KeyringPair, KeyringPair$Json, KeyringPair$Meta } from '@polkadot/keyring/types';
 import type { SignerPayloadJSON, SignerPayloadRaw } from '@polkadot/types/types';
 import type { SubjectInfo } from '@polkadot/ui-keyring/observable/types';
 import type { KeypairType } from '@polkadot/util-crypto/types';
 import type { AccountJson, AllowedPath, AuthorizeRequest, MessageTypes, MetadataRequest, RequestAccountChangePassword, RequestAccountCreateExternal, RequestAccountCreateHardware, RequestAccountCreateSuri, RequestAccountEdit, RequestAccountExport, RequestAccountForget, RequestAccountShow, RequestAccountTie, RequestAccountValidate, RequestAuthorizeApprove, RequestAuthorizeReject, RequestBatchRestore, RequestDeriveCreate, RequestDeriveValidate, RequestJsonRestore, RequestMetadataApprove, RequestMetadataReject, RequestSeedCreate, RequestSeedValidate, RequestSigningApprovePassword, RequestSigningApproveSignature, RequestSigningCancel, RequestSigningIsLocked, RequestTypes, ResponseAccountExport, ResponseAuthorizeList, ResponseDeriveValidate, ResponseJsonGetAccountInfo, ResponseSeedCreate, ResponseSeedValidate, ResponseSigningIsLocked, ResponseType, SigningRequest } from '../types';
 
-import { ALLOWED_PATH, PASSWORD_EXPIRY_MS } from '@polkadot/extension-base/defaults';
+import { ALLOWED_PATH, PASSWORD_EXPIRY_MS } from '@subwallet/extension-base/defaults';
+
 import { TypeRegistry } from '@polkadot/types';
 import keyring from '@polkadot/ui-keyring';
 import { accounts as accountsObservable } from '@polkadot/ui-keyring/observable/accounts';
-import { assert, isHex } from '@polkadot/util';
+import { assert, isHex, u8aToHex } from '@polkadot/util';
 import { keyExtractSuri, mnemonicGenerate, mnemonicValidate } from '@polkadot/util-crypto';
 
+import { RequestQRIsLocked, RequestQrSignSubstrate, ResponseQRIsLocked, ResponseQrSignSubstrate } from '../types';
 import { withErrorLog } from './helpers';
 import State from './State';
 import { createSubscription, unsubscribe } from './subscriptions';
@@ -434,6 +436,51 @@ export default class Extension {
     };
   }
 
+  private qrIsLocked ({ address }: RequestQRIsLocked): ResponseQRIsLocked {
+    const pair = keyring.getPair(address);
+
+    assert(pair, 'Unable to find pair');
+
+    const remainingTime = this.refreshAccountPasswordCache(pair);
+
+    return {
+      isLocked: pair.isLocked,
+      remainingTime
+    };
+  }
+
+  private qrSignSubstrate ({ address, message, password, savePass }: RequestQrSignSubstrate): ResponseQrSignSubstrate {
+    const pair = keyring.getPair(address);
+
+    assert(pair, 'Unable to find pair');
+
+    if (pair.isLocked && !password) {
+      throw new Error('Password needed to unlock the account');
+    }
+
+    if (pair.isLocked) {
+      try {
+        pair.decodePkcs8(password);
+      } catch (e) {
+        throw new Error('invalid password');
+      }
+    }
+
+    const signed: string = u8aToHex(pair.sign(message));
+
+    const _address = pair.address;
+
+    if (savePass) {
+      this.#cachedUnlocks[_address] = Date.now() + PASSWORD_EXPIRY_MS;
+    } else {
+      pair.lock();
+    }
+
+    return {
+      signature: signed
+    };
+  }
+
   // FIXME This looks very much like what we have in authorization
   private signingSubscribe (id: string, port: chrome.runtime.Port): boolean {
     const cb = createSubscription<'pri(signing.requests)'>(id, port);
@@ -612,6 +659,12 @@ export default class Extension {
 
       case 'pri(signing.isLocked)':
         return this.signingIsLocked(request as RequestSigningIsLocked);
+
+      case 'pri(qr.isLocked)':
+        return this.qrIsLocked(request as RequestQRIsLocked);
+
+      case 'pri(qr.sign.substrate)':
+        return this.qrSignSubstrate(request as RequestQrSignSubstrate);
 
       case 'pri(signing.requests)':
         return this.signingSubscribe(id, port);

@@ -6,7 +6,7 @@
   "homepage": "https://github.com/Koniverse/Subwallet-V2/tree/master/packages/extension-mocks#readme",
   "license": "Apache-2.0",
   "maintainers": [],
-  "name": "@polkadot/extension-mocks",
+  "name": "@subwallet/extension-mocks",
   "repository": {
     "directory": "packages/extension-mocks",
     "type": "git",
@@ -14,10 +14,10 @@
   },
   "sideEffects": false,
   "type": "module",
-  "version": "0.3.6-0",
+  "version": "0.6.3-1",
   "main": "index.js",
   "dependencies": {
-    "@babel/runtime": "^7.16.7",
+    "@babel/runtime": "^7.18.6",
     "sinon-chrome": "^3.0.1"
   }
 }

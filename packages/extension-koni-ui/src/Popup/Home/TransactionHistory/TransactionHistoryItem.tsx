@@ -1,19 +1,18 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { ChainRegistry, TransactionHistoryItemType } from '@subwallet/extension-base/background/KoniTypes';
+import arrowReceived from '@subwallet/extension-koni-ui/assets/arrow-received.svg';
+import arrowSend from '@subwallet/extension-koni-ui/assets/arrow-send.svg';
+import arrowSendError from '@subwallet/extension-koni-ui/assets/arrow-send-error.svg';
+import { BalanceVal } from '@subwallet/extension-koni-ui/components/Balance';
+import Tooltip from '@subwallet/extension-koni-ui/components/Tooltip';
+import useTranslation from '@subwallet/extension-koni-ui/hooks/useTranslation';
+import { ThemeProps } from '@subwallet/extension-koni-ui/types';
+import { getBalances, toShort } from '@subwallet/extension-koni-ui/util';
+import { customFormatDate } from '@subwallet/extension-koni-ui/util/customFormatDate';
 import React, { useState } from 'react';
 import styled from 'styled-components';
-
-import { ChainRegistry, TransactionHistoryItemType } from '@polkadot/extension-base/background/KoniTypes';
-import arrowReceived from '@polkadot/extension-koni-ui/assets/arrow-received.svg';
-import arrowSend from '@polkadot/extension-koni-ui/assets/arrow-send.svg';
-import arrowSendError from '@polkadot/extension-koni-ui/assets/arrow-send-error.svg';
-import { BalanceVal } from '@polkadot/extension-koni-ui/components/balance';
-import Tooltip from '@polkadot/extension-koni-ui/components/Tooltip';
-import useTranslation from '@polkadot/extension-koni-ui/hooks/useTranslation';
-import { ThemeProps } from '@polkadot/extension-koni-ui/types';
-import { getBalances, toShort } from '@polkadot/extension-koni-ui/util';
-import { customFormatDate } from '@polkadot/extension-koni-ui/util/customFormatDate';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -40,22 +39,56 @@ function getContainerClassName (item: TransactionHistoryItemType, extraClass = '
   return className;
 }
 
+type DecimalsAndSymbolInfo = {
+  changeDecimals: number;
+  changeSymbol: string;
+  feeDecimals: number;
+  feeSymbol: string;
+}
+
+function getDecimalsAndSymbolInfo (item: TransactionHistoryItemType, registry: ChainRegistry): DecimalsAndSymbolInfo {
+  const result: DecimalsAndSymbolInfo = {} as DecimalsAndSymbolInfo;
+
+  if (item.changeSymbol) {
+    result.changeDecimals = registry.tokenMap[item.changeSymbol].decimals;
+    result.changeSymbol = item.changeSymbol;
+  } else {
+    result.changeDecimals = registry.chainDecimals[0];
+    result.changeSymbol = registry.chainTokens[0];
+  }
+
+  if (item.feeSymbol) {
+    result.feeDecimals = registry.tokenMap[item.feeSymbol].decimals;
+    result.feeSymbol = item.feeSymbol;
+  } else {
+    result.feeDecimals = registry.chainDecimals[0];
+    result.feeSymbol = registry.chainTokens[0];
+  }
+
+  return result;
+}
+
 function TransactionHistoryItem ({ className,
   isSupportScanExplorer = false,
   item,
   registry }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const [trigger] = useState(() => `transaction-history-item-${++tooltipId}`);
-  const transactionValue = getBalances({
+  const { changeDecimals,
+    changeSymbol,
+    feeDecimals,
+    feeSymbol } = getDecimalsAndSymbolInfo(item, registry);
+
+  const changeValue = getBalances({
     balance: item.change,
-    decimals: registry.chainDecimals[0],
-    symbol: registry.chainTokens[0]
+    decimals: changeDecimals,
+    symbol: changeSymbol
   });
 
-  const transactionFee = getBalances({
+  const feeValue = getBalances({
     balance: item.fee || '',
-    decimals: registry.chainDecimals[0],
-    symbol: registry.chainTokens[0]
+    decimals: feeDecimals,
+    symbol: feeSymbol
   });
 
   const containerClassName = getContainerClassName(item, className);
@@ -109,8 +142,8 @@ function TransactionHistoryItem ({ className,
             <span>{item.action === 'received' ? '+' : '-'}</span>
 
             <BalanceVal
-              symbol={registry.chainTokens[0]}
-              value={transactionValue.balanceValue}
+              symbol={changeSymbol}
+              value={changeValue.balanceValue}
             />
           </div>
 
@@ -118,8 +151,8 @@ function TransactionHistoryItem ({ className,
             !!item.fee && (<div className='history-item__fee'>
               <span className={'history-item__fee-label'}>{t<string>('Fee:')}</span>
               <BalanceVal
-                symbol={registry.chainTokens[0]}
-                value={transactionFee.balanceValue}
+                symbol={feeSymbol}
+                value={feeValue.balanceValue}
               />
             </div>)
           }

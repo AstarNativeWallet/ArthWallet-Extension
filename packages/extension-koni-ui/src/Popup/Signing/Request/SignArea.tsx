@@ -1,11 +1,11 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { PASSWORD_EXPIRY_MIN } from '@subwallet/extension-base/defaults';
+import { ThemeProps } from '@subwallet/extension-koni-ui/types';
+import CN from 'classnames';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
-
-import { PASSWORD_EXPIRY_MIN } from '@polkadot/extension-base/defaults';
-import { ThemeProps } from '@polkadot/extension-koni-ui/types';
 
 import { ActionContext, Button, Checkbox } from '../../../components';
 import useTranslation from '../../../hooks/useTranslation';
@@ -96,7 +96,7 @@ function SignArea ({ buttonText, children, className, error, isExternal, isFirst
   );
 
   return (
-    <div className={className}>
+    <div className={CN(className, { external: isExternal })}>
       {children}
       {isFirst && !isExternal && (
         <>
@@ -114,7 +114,7 @@ function SignArea ({ buttonText, children, className, error, isExternal, isFirst
 
           <div className='sign-button-container'>
             <Button
-              className='sign-button'
+              className='sign-button __cancel'
               onClick={_onCancel}
             >
               <span>
@@ -123,7 +123,7 @@ function SignArea ({ buttonText, children, className, error, isExternal, isFirst
 
             </Button>
             <Button
-              className='sign-button'
+              className='sign-button __sign'
               isBusy={isBusy}
               isDisabled={(!!isLocked && !password) || !!error}
               onClick={_onSign}
@@ -133,7 +133,21 @@ function SignArea ({ buttonText, children, className, error, isExternal, isFirst
           </div>
         </>
       )}
+      {
+        isExternal && (
+          <div className='sign-button-container'>
+            <Button
+              className='sign-button __cancel'
+              onClick={_onCancel}
+            >
+              <span>
+                {t<string>('Cancel')}
+              </span>
 
+            </Button>
+          </div>
+        )
+      }
     </div>
   );
 }
@@ -144,9 +158,18 @@ export default styled(SignArea)(({ theme }: Props) => `
   bottom: 0;
   margin-left: -15px;
   margin-right: -15px;
-  margin-bottom: -15px;
   padding: 0 15px 15px;
   background-color: ${theme.background};
+
+  &.external {
+    margin-bottom: 0;
+
+    .sign-button-container {
+      .sign-button{
+        margin: 0;
+      }
+    }
+  }
 
   .sign-button-container {
     display: flex;
@@ -154,18 +177,18 @@ export default styled(SignArea)(({ theme }: Props) => `
 
   .sign-button {
     flex: 1;
-  }
-
-  .sign-button:first-child {
-    background-color: #181E42;
-    margin-right: 8px;
-
-    span {
-      color: ${theme.buttonTextColor2};
+    
+    &.__cancel {
+      background-color: ${theme.buttonBackground1};
+  
+      span {
+        color: ${theme.buttonTextColor2};
+      }
+    }
+    
+    &.__sign {
+     margin-left: 15px;
     }
   }
-
-  .sign-button:last-child {
-    margin-left: 8px;
-  }
+  
 `);

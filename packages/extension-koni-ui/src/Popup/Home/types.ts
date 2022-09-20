@@ -1,9 +1,8 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { CrowdloanParaState } from '@subwallet/extension-base/background/KoniTypes';
 import BigN from 'bignumber.js';
-
-import { CrowdloanParaState } from '@polkadot/extension-base/background/KoniTypes';
 
 export type CrowdloanItemType = {
   networkKey: string;
@@ -20,8 +19,5 @@ export type CrowdloanItemType = {
 export type TabHeaderItemType = {
   tabId: number;
   label: string;
-  lightIcon: string;
-  darkIcon: string;
-  activatedLightIcon: string;
-  activatedDarkIcon: string;
+  icon: JSX.Element
 }

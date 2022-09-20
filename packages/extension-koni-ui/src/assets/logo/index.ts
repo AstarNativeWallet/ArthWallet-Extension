@@ -1,269 +1,397 @@
-// Copyright 2019-2022 @polkadot/extension-koni-base authors & contributors
+// Copyright 2019-2022 @subwallet/extension-koni-base authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 const LogosMap: Record<string, string> = {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  acala: require('./acala.svg'),
+  acala: require('./54.Acala.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  ausd: require('./ausd.svg'),
+  acala_testnet: require('./54.Acala.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  dot: require('./dot.svg'),
+  ausd: require('./58.aUSD.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  ldot: require('./ldot.svg'),
+  dot: require('./71.Polkadot.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  lcdot: require('./lcdot.svg'),
+  ldot: require('./71.Polkadot.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  altair: require('./altair.svg'),
+  lcdot: require('./71.Polkadot.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  astar: require('./astar.png'),
+  altair: require('./56.Altair.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  astarEvm: require('./astar.png'),
+  air: require('./56.Altair.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  basilisk: require('./basilisk.png'),
+  astar: require('./06.Astar.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  bifrost: require('./bifrost.svg'),
+  astarEvm: require('./06.Astar.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  bifrost_testnet: require('./bifrost.svg'),
+  shibuya: require('./06.Astar.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  calamari: require('./calamari.png'),
+  shibuyaEvm: require('./06.Astar.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  centrifuge: require('./centrifuge.png'),
+  basilisk: require('./07.Basilisk.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  clover: require('./clover.svg'),
+  bifrost: require('./59.Bifrost.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  coinversation: require('./coinversation.png'),
+  bifrost_dot: require('./59.Bifrost.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  composableFinance: require('./composableFinance.png'),
+  bifrost_testnet: require('./59.Bifrost.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  crab: require('./crab.svg'),
+  calamari: require('./09.Calamari.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  crust: require('./crust.svg'),
+  centrifuge: require('./10.Centrifuge.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  darwinia: require('./darwinia.png'),
+  clover: require('./67.Clover.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  edgeware: require('./edgeware.png'),
+  cloverEvm: require('./67.Clover.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  efinity: require('./efinity.svg'),
+  coinversation: require('./12.Coinversation.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  equilibrium: require('./equilibrium.svg'),
+  composableFinance: require('./13.Composable.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  genshiro: require('./genshiro.svg'),
+  crab: require('./68.Crab.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  heiko: require('./heiko.png'),
+  crabParachain: require('./68.Crab.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  hydradx: require('./hydradx.svg'),
+  crabEvm: require('./68.Crab.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  integritee: require('./integritee.svg'),
+  crust: require('./69.Crust.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  interlay: require('./interlay.svg'),
+  darwinia: require('./16.Darwinia.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  karura: require('./karura.svg'),
+  edgeware: require('./17.Edgeware.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  khala: require('./khala.svg'),
+  efinity: require('./75.Efinity.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  kilt: require('./kilt.png'),
+  equilibrium: require('./108.Equilibrium.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  kintsugi: require('./kintsugi.png'),
+  equilibrium_parachain: require('./108.Equilibrium.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  kintsugi_test: require('./kintsugi.png'),
+  genshiro_testnet: require('./78.Genshiro.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  kusama: require('./kusama.svg'),
+  genshiro: require('./78.Genshiro.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  litentry: require('./litentry.png'),
+  heiko: require('./20.Heiko.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  manta: require('./manta.svg'),
+  hydradx: require('./80.HydraDX.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  dolphin: require('./dolphin.svg'),
+  integritee: require('./81.Integritee.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  moonbeam: require('./moonbeam.png'),
+  interlay: require('./82.Interlay.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  moonriver: require('./moonriver.svg'),
+  karura: require('./83.Karura.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  nodle: require('./nodle.svg'),
+  khala: require('./84.Khala.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  parallel: require('./parallel.svg'),
+  kilt: require('./16.Kilt.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  phala: require('./phala.svg'),
+  kintsugi: require('./27.Kintsugi.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  picasso: require('./picasso.svg'),
+  kintsugi_test: require('./27.Kintsugi.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  pichiu: require('./pichiu.png'),
+  kusama: require('./72.Kusama.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  pioneer: require('./pioneer.png'),
+  litentry: require('./19.Litentry.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  polkadot: require('./polkadot.svg'),
+  manta: require('./31.Manta.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  quartz: require('./quartz.png'),
+  dolphin: require('./74.Dolphin.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  rmrk: require('./rmrk.jpg'),
+  moonbeam: require('./34.Moonbeam.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  sakura: require('./sakura.svg'),
+  moonriver: require('./86.Moonriver.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  shadow: require('./shadow.svg'),
+  nodle: require('./87.Nodle.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  shiden: require('./shiden.png'),
+  parallel: require('./90.Parallel.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  shidenEvm: require('./shiden.png'),
+  pangolin: require('./89.Pangolin.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  sora: require('./sora-substrate.svg'),
+  pangolinEvm: require('./89.Pangolin.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  statemine: require('./statemine.svg'),
+  phala: require('./91.Phala.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  subgame: require('./subgame.svg'),
+  pha: require('./91.Phala.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  statemint: require('./statemine.svg'),
+  picasso: require('./92.Picasso.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  subsocial_x: require('./subsocial.svg'),
+  pichiu: require('./38.Pichiu.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  subsocial: require('./subsocial.svg'),
+  pioneer: require('./39.Pioneer.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  zeitgeist: require('./zeitgeist.png'),
+  neer: require('./39.Pioneer.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  koni: require('./koni.svg'),
+  polkadot: require('./71.Polkadot.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  westend: require('./westend.svg'),
+  quartz: require('./41.Quartz.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  rococo: require('./rococo.svg'),
+  rmrk: require('./02.RMRK.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  robonomics: require('./robonomics.svg'),
+  sakura: require('./96.Sakura.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  odyssey: require('./odyssey.svg'),
+  shadow: require('./97.Shadow.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  polkadex: require('./polkadex.svg'),
+  shiden: require('./42.Shiden.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  aleph: require('./aleph.svg'),
+  shidenEvm: require('./42.Shiden.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  alephTest: require('./aleph.svg'),
+  sora: require('./99.Sora.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  opal: require('./opal.png'),
+  statemine: require('./100.Statemine.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  moonbase: require('./moonbase.png'),
+  subgame: require('./101.Subgame.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  ukraine: require('./ukraine.jpg'),
+  statemint: require('./100.Statemine.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  bitcountry: require('./bitcountry.svg'),
+  subsocial_x: require('./102.Subsocial.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  unique_network: require('./unique.network.svg'),
+  subsocial: require('./102.Subsocial.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  pha: require('./phala.svg'),
+  zeitgeist: require('./51.Zeitgeist.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  bnc: require('./bnc.svg'),
+  koni: require('./73.Default.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  kbtc: require('./kbtc.png'),
+  westend: require('./107.Westend.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  kint: require('./kint.png'),
+  rococo: require('./95.Rococo.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  kusd: require('./kusd.svg'),
+  robonomics: require('./94.Robonomics.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  lksm: require('./lksm.svg'),
+  odyssey: require('./88.Odyssey.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  tai: require('./tai.svg'),
+  polkadex: require('./93.Polkadex.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  vsksm: require('./vsksm.svg'),
+  aleph: require('./55.Aleph.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  ksm: require('./kusama.svg'),
+  alephTest: require('./55.Aleph.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  kar: require('./karura.svg'),
+  opal: require('./36.Opal.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  zlk: require('./zenlink.png'),
+  moonbase: require('./33.Moonbase.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  neumann: require('./oak_network.png'),
+  ukraine: require('./03.Ukraine.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  turing: require('./turing.png'),
+  bitcountry: require('./61.Bit.Country.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  mangatax: require('./mangatax.svg'),
+  unique_network: require('./104.UniqueNetwork.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  mangatax_para: require('./mangatax.svg'),
+  bnc: require('./63.BNC.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  chainx: require('./chainx.svg'),
+  kbtc: require('./23.kbtc.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  litmus: require('./litmus.png'),
+  kint: require('./27.Kintsugi.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  encointer: require('./encointer.svg'),
+  kusd: require('./58.aUSD.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  btc: require('./btc.svg'),
+  lksm: require('./72.Kusama.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  eth: require('./eth.svg'),
+  tai: require('./47.TaiKSM.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  bnb: require('./bnb.svg'),
+  vsksm: require('./72.Kusama.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  usdt: require('./usdt.svg'),
+  ksm: require('./72.Kusama.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  usdc: require('./usdc.svg'),
+  kar: require('./83.Karura.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  busd: require('./busd.svg'),
+  zlk: require('./52.Zenlink.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  pkex: require('./pkex.png'),
+  neumann: require('./35.OAK_Network.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  shib: require('./shib.svg'),
+  turing: require('./49.Turing.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  dai: require('./dai.svg'),
+  mangatax: require('./85.MangataX.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  sdn: require('./shiden.png'),
+  mangatax_para: require('./85.MangataX.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  wbtc: require('./wbtc.svg'),
+  chainx: require('./66.ChainX.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  weth: require('./eth.svg'),
+  litmus: require('./20.Litmus.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  jpyc: require('./jpyc.png'),
+  encointer: require('./76.Encointer.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  glint: require('./glint.svg'),
+  btc: require('./64.BTC.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  share: require('./glint.svg'),
+  eth: require('./77.Ethereum.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  beans: require('./beans.png'),
+  bnb: require('./62.BNB.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  stella: require('./stella.svg'),
+  usdt: require('./106.USDT.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  xstella: require('./xstella.png'),
+  usdc: require('./105.USDC.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  vesolar: require('./flare.png'),
+  busd: require('./65.BUSD.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  flare: require('./flare.png'),
+  pkex: require('./40.Pkex.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  mfam: require('./mfam.png'),
+  shib: require('./98.Shiba.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  solar: require('./solar.png'),
+  dai: require('./70.DAI.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  frax: require('./frax.png'),
+  sdn: require('./42.Shiden.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  fxs: require('./frax.png'),
+  wbtc: require('./64.BTC.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  cws: require('./cws.png'),
+  weth: require('./77.Ethereum.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  rib: require('./rib.png'),
+  jpyc: require('./22.JPYD.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  csg: require('./csg.png'),
+  glint: require('./79.Glint.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  movr: require('./moonriver.svg'),
+  share: require('./79.Glint.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  qtz: require('./quartz.png'),
+  beans: require('./08.Beans.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  csm: require('./csm.png'),
+  stella: require('./50.StellaSwap.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  aris: require('./aris.png'),
+  xstella: require('./50.StellaSwap.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  kico: require('./kico.png'),
+  vesolar: require('./110.solarflare.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  hko: require('./hko.png'),
+  flare: require('./110.solarflare.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  bill: require('./bill.svg'),
+  mfam: require('./32.Moonwell.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  chaos: require('./chaosdao.jpeg'),
+  solar: require('./17.Solarbeam.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  xcrmrk: require('./rmrk.jpg'),
+  frax: require('./19.Frax.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  xckint: require('./kintsugi.png'),
+  fxs: require('./19.Frax.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  xcksm: require('./kusama.svg'),
+  cws: require('./109.cws.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  xckar: require('./karura.svg'),
+  rib: require('./111.rib.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  xcbnc: require('./bifrost.svg'),
+  csg: require('./14.csg.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  xcausd: require('./ausd.svg'),
+  movr: require('./86.Moonriver.png'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  default: require('./default.svg')
+  qtz: require('./41.Quartz.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  csm: require('./15.CSM.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  aris: require('./04.Aris.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  kico: require('./25.Kico.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  hko: require('./21.HKO.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  bill: require('./60.Bill.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  chaos: require('./01.chaosdao.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  chrwna: require('./11.Chrwna.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  xcrmrk: require('./02.RMRK.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  xckint: require('./27.Kintsugi.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  xcksm: require('./72.Kusama.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  xckar: require('./83.Karura.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  xcbnc: require('./59.Bifrost.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  xcausd: require('./58.aUSD.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  kma: require('./18.KMA.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  taiKSM: require('./47.TaiKSM.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  bsx: require('./07.Basilisk.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  polarisdao: require('./40.PolarisDAO.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  arsw: require('./05.ArthSwap.svg'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  oru: require('./37.Oru.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  srs: require('./44.SiriusFinance.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  atid: require('./57.AdtrisDAO.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  lay: require('./45.Starlay.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  subspace: require('./46.Subspace.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  subspace_gemini: require('./46.Subspace.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  subspace_gemini_2a: require('./46.Subspace.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  subspace_test: require('./46.Subspace.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  xcpara: require('./90.Parallel.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  xcdot: require('./71.Polkadot.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  xcaca: require('./54.Acala.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  xchko: require('./20.Heiko.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  xcpha: require('./91.Phala.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  xcusdt: require('./106.USDT.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  xcintr: require('./82.Interlay.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  xcibtc: require('./123.iBTC.jpg'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  ibtc: require('./123.iBTC.jpg'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  xckbtc: require('./23.kbtc.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  xccsm: require('./15.CSM.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  xcsdn: require('./42.Shiden.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  xckma: require('./18.KMA.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  xclit: require('./19.Litentry.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  xccrab: require('./68.Crab.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  xcteer: require('./81.Integritee.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  imbue_network: require('./22.Imbue.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  tinkernet: require('./48.Tinker.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  hydradx_main: require('./80.HydraDX.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  origintrail: require('./113.origintrail.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  kapex: require('./114.kapex.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  dorafactory: require('./115.dorafactory.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  bajun: require('./116.bajun.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  listen: require('./117.listen.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  kabocha: require('./118.kabocha.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  tdot: require('./103.tDOT.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  taiksm: require('./47.TaiKSM.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  '3usd': require('./53.3USD.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  well: require('./112.moonwell-artemis.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  gmdie: require('./119.gmDie.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  amplitude: require('./120.amplitude.jpg'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  ternoa: require('./121.ternoa.svg'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  ternoa_alphanet: require('./121.ternoa.svg'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  integriteePolkadot: require('./81.Integritee.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  tanganika: require('./122.dataHighway.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  gear_testnet: require('./127.Gear.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  bit: require('./128.BIT.png'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  default: require('./73.Default.png')
 };
 
 export default LogosMap;

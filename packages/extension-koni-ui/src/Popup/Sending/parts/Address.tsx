@@ -1,13 +1,12 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import InputAddress from '@subwallet/extension-koni-ui/components/InputAddress';
+import Warning from '@subwallet/extension-koni-ui/components/Warning';
+import useTranslation from '@subwallet/extension-koni-ui/hooks/useTranslation';
+import { AddressProxy, ThemeProps } from '@subwallet/extension-koni-ui/types';
 import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
-
-import InputAddress from '@polkadot/extension-koni-ui/components/InputAddress';
-import Warning from '@polkadot/extension-koni-ui/components/Warning';
-import useTranslation from '@polkadot/extension-koni-ui/hooks/useTranslation';
-import { AddressProxy, ThemeProps } from '@polkadot/extension-koni-ui/types';
 
 import Password from './Password';
 
@@ -49,7 +48,7 @@ function Address ({ className, onChange, onEnter, passwordError, requestAddress 
   return (
     <div className={className}>
       <InputAddress
-        className='full'
+        className='auth-transaction-input-address'
         defaultValue={requestAddress}
         isDisabled
         isInput
@@ -79,12 +78,18 @@ function Address ({ className, onChange, onEnter, passwordError, requestAddress 
   );
 }
 
-export default React.memo(styled(Address)(() => `
+export default React.memo(styled(Address)(({ theme }: ThemeProps) => `
   .sending-address-password-wrapper {
     margin-top: 10px;
   }
 
   .sending-address-warning {
     margin-top: 10px;
+  }
+
+  .auth-transaction-input-address {
+    border-radius: 8px;
+    // border: 2px dashed ${theme.boxBorderColor};
+    height: 72px;
   }
 `));

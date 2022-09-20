@@ -1,9 +1,8 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
-import { CurrentNetworkInfo } from '@polkadot/extension-base/background/KoniTypes';
+import { CurrentNetworkInfo } from '@subwallet/extension-base/background/KoniTypes';
 
 const initialState: CurrentNetworkInfo = {
   networkPrefix: -1,
@@ -19,6 +18,10 @@ const currentNetworkSlice = createSlice({
   reducers: {
     update (state, action: PayloadAction<CurrentNetworkInfo>) {
       const payload = action.payload;
+
+      if (!state.isReady) {
+        state.isReady = true;
+      }
 
       state.networkPrefix = payload.networkPrefix;
       state.icon = payload.icon;

@@ -10,17 +10,18 @@
     "url": "https://github.com/AstarNativeWallet/ArthWallet-Extension.git"
   },
   "sideEffects": false,
-  "version": "0.3.6",
+  "version": "0.6.3-1",
   "workspaces": [
     "packages/*"
   ],
   "bin": {
     "koni-ci-build-dev": "./scripts/koni-ci-build-dev.mjs",
-    "koni-ci-ghact-build": "./scripts/koni-ci-ghact-build.mjs"
+    "koni-ci-ghact-build": "./scripts/koni-ci-ghact-build.mjs",
+    "koni-dev-build-ts": "./scripts/koni-dev-build-ts.mjs"
   },
   "scripts": {
-    "build": "polkadot-dev-build-ts && yarn build:zip && yarn build:rollup",
-    "build:extra": "yarn build:i18n && yarn build:ui",
+    "build": "koni-dev-build-ts && yarn build:zip && yarn build:rollup",
+    "build:extra": "yarn build:i18n && yarn build:ui && yarn web-runner:build",
     "build:i18n": "i18next-scanner --config i18next-scanner.config.js",
     "build:koni-dev": "koni-ci-build-dev",
     "build:release": "koni-ci-ghact-build",
@@ -30,12 +31,16 @@
     "build:zip:dst": "rm -rf ./master-build.zip && cd packages/extension-koni/build && zip -r -FS ../../../master-build.zip .",
     "build:zip:src": "rm -rf ./master-src.zip && zip -r -x '*build/*' -x '*node_modules*' -FS ./master-src.zip packages .editorconfig .eslintignore .eslintrc.js babel.config.cjs CHANGELOG.md CONTRIBUTING.md i18next-scanner.config.js jest.config.cjs LICENSE package.json README.md tsconfig.json yarn.lock",
     "clean": "polkadot-dev-clean-build",
+    "dev": "yarn watch-dev",
     "lint": "polkadot-dev-run-lint",
     "postinstall": "polkadot-dev-yarn-only && patch-package",
     "start": "yarn watch",
     "test": "polkadot-dev-run-test --detectOpenHandles --testPathIgnorePatterns='/node_modules/|.*/ignore-.*\\.(test|spec)\\..*'",
     "test:one": "polkadot-dev-run-test --detectOpenHandles",
-    "watch": "cd packages/extension-koni && yarn polkadot-exec-webpack --config webpack.watch.cjs --mode development --watch"
+    "watch": "cd packages/extension-koni && yarn polkadot-exec-webpack --config webpack.watch.cjs --mode development --watch",
+    "watch-dev": "cd packages/extension-koni && yarn polkadot-exec-webpack --config webpack.watch.cjs --mode development --watch -d inline-source-map",
+    "web-runner:build": "cd packages/web-runner && yarn webpack --config webpack.config.cjs --mode production",
+    "web-runner:watch": "cd packages/web-runner && yarn webpack-dev-server --config webpack.config.cjs --mode development"
   },
   "dependencies": {
     "@types/node": "^17.0.10",
@@ -43,9 +48,11 @@
     "typescript": "^4.5.4"
   },
   "devDependencies": {
-    "@babel/core": "^7.16.7",
+    "@babel/cli": "^7.18.6",
+    "@babel/core": "^7.18.6",
     "@polkadot/dev": "^0.65.23",
     "@types/jest": "^27.4.0",
+    "axios": "^0.27.2",
     "discord-webhook-node": "^1.1.8",
     "i18next-scanner": "^3.1.0",
     "patch-package": "^6.4.7",
@@ -53,14 +60,14 @@
     "sinon-chrome": "^3.0.1"
   },
   "resolutions": {
-    "@polkadot/api": "^7.11.2-1",
-    "@polkadot/api-contract": "^7.11.2-1",
-    "@polkadot/keyring": "^8.4.1",
-    "@polkadot/networks": "^8.4.1",
-    "@polkadot/types": "^7.11.2-1",
-    "@polkadot/util": "^8.4.1",
-    "@polkadot/util-crypto": "^8.4.1",
-    "@polkadot/x-fetch": "^8.4.1",
+    "@polkadot/api": "^8.11.3",
+    "@polkadot/api-contract": "^8.11.3",
+    "@polkadot/keyring": "^9.7.2",
+    "@polkadot/networks": "^9.7.2",
+    "@polkadot/types": "^8.11.3",
+    "@polkadot/util": "^9.7.2",
+    "@polkadot/util-crypto": "^9.7.2",
+    "@polkadot/x-fetch": "^9.7.2",
     "babel-core": "^7.0.0-bridge.0",
     "rxjs": "^7.5.4",
     "safe-buffer": "^5.2.1",

@@ -1,12 +1,11 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
+import { NftType } from '@subwallet/extension-koni-ui/hooks/screen/home/types';
+import { _NftCollection } from '@subwallet/extension-koni-ui/Popup/Home/Nfts/types';
+import { RootState } from '@subwallet/extension-koni-ui/stores';
 import { useSelector } from 'react-redux';
-
-import { ALL_ACCOUNT_KEY } from '@polkadot/extension-koni-base/constants';
-import { NftType } from '@polkadot/extension-koni-ui/hooks/screen/home/types';
-import { _NftCollection } from '@polkadot/extension-koni-ui/Popup/Home/Nfts/types';
-import { RootState } from '@polkadot/extension-koni-ui/stores';
 
 export default function useFetchNft (page: number, networkKey: string, gridSize: number): NftType {
   const { nft: nftReducer, nftCollection: nftCollectionReducer } = useSelector((state: RootState) => state);
@@ -21,6 +20,8 @@ export default function useFetchNft (page: number, networkKey: string, gridSize:
   const rawItems = nftReducer?.nftList;
   const rawCollections = nftCollectionReducer.nftCollectionList;
 
+  let totalItems = 0;
+
   for (const collection of rawCollections) {
     const parsedCollection: _NftCollection = {
       collectionId: collection.collectionId,
@@ -32,14 +33,15 @@ export default function useFetchNft (page: number, networkKey: string, gridSize:
 
     for (const item of rawItems) {
       if (item.collectionId === collection.collectionId && item.chain === collection.chain) {
+        totalItems += 1;
         parsedCollection.nftItems.push(item);
       }
     }
 
-    nftCollections.push(parsedCollection);
+    if (parsedCollection.nftItems.length) {
+      nftCollections.push(parsedCollection);
+    }
   }
-
-  let totalItems = rawItems.length;
 
   if (!showAll) {
     totalItems = 0;

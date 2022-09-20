@@ -1,13 +1,12 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import type { ThemeProps } from '../types';
 
+import danger from '@subwallet/extension-koni-ui/assets/danger.svg';
+import warning from '@subwallet/extension-koni-ui/assets/warning.svg';
 import React from 'react';
 import styled from 'styled-components';
-
-import danger from '@polkadot/extension-koni-ui/assets/danger.svg';
-import warning from '@polkadot/extension-koni-ui/assets/warning.svg';
 
 interface Props extends ThemeProps {
   children: React.ReactNode;
@@ -55,6 +54,7 @@ export default React.memo(styled(Warning)<Props>(({ isDanger, theme }: Props) =>
     align-items: center;
     font-weight: 400;
     color: ${theme.textColor};
+    word-break: break-word;
   }
 
   .warning-image {

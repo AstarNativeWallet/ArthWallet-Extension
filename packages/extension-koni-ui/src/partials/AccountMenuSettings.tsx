@@ -1,23 +1,21 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { ThemeProps } from '../types';
+import type { Theme, ThemeProps } from '../types';
 
 import { faUsb } from '@fortawesome/free-brands-svg-icons';
 import { faCog, faFileUpload, faKey, faPlusCircle, faQrcode, faSeedling } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import InputFilter from '@subwallet/extension-koni-ui/components/InputFilter';
+import Link from '@subwallet/extension-koni-ui/components/Link';
+import Menu from '@subwallet/extension-koni-ui/components/Menu';
+import MenuSettingItem from '@subwallet/extension-koni-ui/components/MenuSettingItem';
+import useIsPopup from '@subwallet/extension-koni-ui/hooks/useIsPopup';
+import { useLedger } from '@subwallet/extension-koni-ui/hooks/useLedger';
+import { windowOpen } from '@subwallet/extension-koni-ui/messaging';
+import AccountsTree from '@subwallet/extension-koni-ui/Popup/Accounts/AccountsTree';
 import React, { useCallback, useContext, useState } from 'react';
-import styled from 'styled-components';
-
-import logo from '@polkadot/extension-koni-ui/assets/sub-wallet-logo.svg';
-import InputFilter from '@polkadot/extension-koni-ui/components/InputFilter';
-import Link from '@polkadot/extension-koni-ui/components/Link';
-import Menu from '@polkadot/extension-koni-ui/components/Menu';
-import MenuSettingItem from '@polkadot/extension-koni-ui/components/MenuSettingItem';
-import useIsPopup from '@polkadot/extension-koni-ui/hooks/useIsPopup';
-import { useLedger } from '@polkadot/extension-koni-ui/hooks/useLedger';
-import { windowOpen } from '@polkadot/extension-koni-ui/messaging';
-import AccountsTree from '@polkadot/extension-koni-ui/Popup/Accounts/AccountsTree';
+import styled, { ThemeContext } from 'styled-components';
 
 import { AccountContext, MediaContext, Svg } from '../components';
 import useTranslation from '../hooks/useTranslation';
@@ -50,6 +48,7 @@ function AccountMenuSettings ({ changeAccountCallback, className, closeSetting, 
   const isPopup = useIsPopup();
   const isFirefox = window.localStorage.getItem('browserInfo') === 'Firefox';
   const isLinux = window.localStorage.getItem('osInfo') === 'Linux';
+  const themeContext = useContext(ThemeContext as React.Context<Theme>);
 
   const _openJson = useCallback(
     () => {
@@ -85,15 +84,16 @@ function AccountMenuSettings ({ changeAccountCallback, className, closeSetting, 
       <div className='account-menu-settings-header'>
         <div className='account-menu-settings__branding'>
           <img
+            alt={'logo'}
             className='logo'
-            src={logo}
+            src={themeContext.logo}
           />
           <span className='account-menu-settings__logo-text'>Accounts</span>
         </div>
         <InputFilter
           className='account-menu-settings__input-filter'
           onChange={_onChangeFilter}
-          placeholder={t<string>('Search by name or network...')}
+          placeholder={t<string>('Search by name...')}
           value={filter}
           withReset
         />
@@ -164,7 +164,7 @@ function AccountMenuSettings ({ changeAccountCallback, className, closeSetting, 
             >
               {/* @ts-ignore */}
               <FontAwesomeIcon icon={faKey} />
-              <span>{t<string>('Import private key from Metamask')}</span>
+              <span>{t<string>('Import private key from MetaMask')}</span>
             </Link>
           </MenuSettingItem>
           <MenuSettingItem className='account-menu-settings__menu-item'>
@@ -231,6 +231,7 @@ function AccountMenuSettings ({ changeAccountCallback, className, closeSetting, 
           </MenuSettingItem>
         </div>
       </div>
+
       <div className='koni-menu-items-container'>
         <MenuSettingItem className='account-menu-settings__menu-item'>
           <Link
@@ -367,10 +368,16 @@ export default React.memo(styled(AccountMenuSettings)(({ theme }: Props) => `
 
   .koni-menu-items-container {
     padding: 0 15px;
+    max-height: 260px;
+    overflow-y: auto;
 
     &:last-child {
       padding: 0 27px;
       margin: 8px 0
+    }
+
+    &::-webkit-scrollbar {
+      display: none;
     }
   }
 

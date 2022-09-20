@@ -1,25 +1,23 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { CurrentNetworkInfo, NetWorkMetadataDef } from '@subwallet/extension-base/background/KoniTypes';
+import { ActionContext, Theme } from '@subwallet/extension-koni-ui/components';
+import Spinner from '@subwallet/extension-koni-ui/components/Spinner';
+import useGetNetworkJson from '@subwallet/extension-koni-ui/hooks/screen/home/useGetNetworkJson';
+import useGetNetworkMetadata from '@subwallet/extension-koni-ui/hooks/screen/home/useGetNetworkMetadata';
+import useIsAccountAll from '@subwallet/extension-koni-ui/hooks/screen/home/useIsAccountAll';
+import useToast from '@subwallet/extension-koni-ui/hooks/useToast';
+import { tieAccount } from '@subwallet/extension-koni-ui/messaging';
+import { _NftItem, SUPPORTED_TRANSFER_SUBSTRATE_CHAIN } from '@subwallet/extension-koni-ui/Popup/Home/Nfts/types';
+import { RootState, store } from '@subwallet/extension-koni-ui/stores';
+import { TransferNftParams } from '@subwallet/extension-koni-ui/stores/types';
+import { ThemeProps } from '@subwallet/extension-koni-ui/types';
 import React, { useCallback, useContext, useState } from 'react';
 import { useSelector } from 'react-redux';
-import styled from 'styled-components';
-
-import { CurrentNetworkInfo, NetWorkMetadataDef } from '@polkadot/extension-base/background/KoniTypes';
-import { ALL_ACCOUNT_KEY } from '@polkadot/extension-koni-base/constants';
-import { ActionContext } from '@polkadot/extension-koni-ui/components';
-import Spinner from '@polkadot/extension-koni-ui/components/Spinner';
-import useToast from '@polkadot/extension-koni-ui/hooks/useToast';
-import { tieAccount } from '@polkadot/extension-koni-ui/messaging';
-import { _NftItem, SUPPORTED_TRANSFER_EVM_CHAIN, SUPPORTED_TRANSFER_SUBSTRATE_CHAIN } from '@polkadot/extension-koni-ui/Popup/Home/Nfts/types';
-import { RootState, store } from '@polkadot/extension-koni-ui/stores';
-import { TransferNftParams } from '@polkadot/extension-koni-ui/stores/types';
-import { ThemeProps } from '@polkadot/extension-koni-ui/types';
-import { isAccountAll } from '@polkadot/extension-koni-ui/util';
-
-import logo from '../../../../assets/sub-wallet-logo.svg';
+import styled, { ThemeContext } from 'styled-components';
 
 interface Props {
   className?: string;
@@ -49,7 +47,11 @@ function NftItem ({ className, collectionId, collectionImage, data, onClickBack 
   const [loading, setLoading] = useState(true);
   const [showImage, setShowImage] = useState(true);
   const [imageError, setImageError] = useState(false);
-  const { currentAccount: account, currentNetwork, networkMetadata } = useSelector((state: RootState) => state);
+  const { currentAccount: account, currentNetwork } = useSelector((state: RootState) => state);
+  const networkMetadata = useGetNetworkMetadata();
+  const networkJson = useGetNetworkJson(data.chain as string);
+  const themeContext = useContext(ThemeContext as React.Context<Theme>);
+  const _isAccountAll = useIsAccountAll();
 
   const navigate = useContext(ActionContext);
   const { show } = useToast();
@@ -82,13 +84,13 @@ function NftItem ({ className, collectionId, collectionImage, data, onClickBack 
   };
 
   const handleClickTransfer = useCallback(async () => {
-    if (!account.account || account.account.address.toLowerCase() === ALL_ACCOUNT_KEY.toLowerCase() || !data.chain) {
+    if (!account.account || _isAccountAll || !data.chain) {
       show('An error has occurred.');
 
       return;
     }
 
-    if (SUPPORTED_TRANSFER_SUBSTRATE_CHAIN.indexOf(data.chain) <= -1 && SUPPORTED_TRANSFER_EVM_CHAIN.indexOf(data.chain) <= -1) {
+    if (SUPPORTED_TRANSFER_SUBSTRATE_CHAIN.indexOf(data.chain) <= -1 && !networkJson.isEthereum) {
       show(`Transferring is not supported for ${data.chain.toUpperCase()} network`);
 
       return;
@@ -97,18 +99,20 @@ function NftItem ({ className, collectionId, collectionImage, data, onClickBack 
     if (data.chain !== currentNetwork.networkKey) {
       const targetNetwork = networkMetadata[data?.chain];
 
-      if (!isAccountAll(account.account.address)) {
+      if (!_isAccountAll) {
         await tieAccount(account.account.address, targetNetwork.genesisHash);
       } else {
         window.localStorage.setItem('accountAllNetworkGenesisHash', targetNetwork.genesisHash);
       }
+
+      await tieAccount(account.account.address, targetNetwork.genesisHash);
 
       updateCurrentNetwork(targetNetwork);
     }
 
     updateTransferNftParams(data, collectionImage, collectionId);
     navigate('/account/send-nft');
-  }, [account.account, collectionId, collectionImage, currentNetwork.networkKey, data, navigate, networkMetadata, show]);
+  }, [_isAccountAll, account.account, collectionId, collectionImage, currentNetwork.networkKey, data, navigate, networkJson.isEthereum, networkMetadata, show]);
 
   const handleClickBack = useCallback(() => {
     onClickBack();
@@ -125,15 +129,21 @@ function NftItem ({ className, collectionId, collectionImage, data, onClickBack 
 
   const handleVideoError = useCallback(() => {
     setImageError(true);
-    setShowImage(true);
   }, []);
 
   const handleOnClick = useCallback(() => {
-    if (data.external_url) {
-      // eslint-disable-next-line no-void
-      void chrome.tabs.create({ url: data?.external_url, active: true }).then(() => console.log('redirecting'));
+    try {
+      if (data.external_url) {
+        // eslint-disable-next-line no-void
+        void chrome.tabs.create({ url: data?.external_url, active: true }).then(() => console.log('redirecting'));
+      } else if (!loading) {
+        // eslint-disable-next-line no-void
+        void chrome.tabs.create({ url: data?.image, active: true }).then(() => console.log('redirecting'));
+      }
+    } catch (e) {
+      console.log('redirecting to a new tab');
     }
-  }, [data]);
+  }, [data.external_url, data?.image, loading]);
 
   const getItemImage = useCallback(() => {
     if (data.image && !imageError) {
@@ -142,8 +152,15 @@ function NftItem ({ className, collectionId, collectionImage, data, onClickBack 
       return collectionImage;
     }
 
-    return logo;
-  }, [collectionImage, data, imageError]);
+    return themeContext.logo;
+  }, [collectionImage, data.image, imageError, themeContext.logo]);
+
+  const handleRightClick = useCallback((e: any) => {
+    if (loading) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+      e.preventDefault();
+    }
+  }, [loading]);
 
   return (
     <div className={className}>
@@ -184,29 +201,36 @@ function NftItem ({ className, collectionId, collectionImage, data, onClickBack 
                   alt={'item-img'}
                   className={'item-img'}
                   onClick={handleOnClick}
+                  onContextMenu={handleRightClick}
                   onError={handleImageError}
                   onLoad={handleOnLoad}
                   src={getItemImage()}
                   style={{ borderRadius: '5px' }}
                 />
-                : <video
-                  autoPlay
-                  height='416'
-                  loop={true}
-                  onError={handleVideoError}
-                  width='100%'
-                >
-                  <source
-                    src={getItemImage()}
-                    type='video/mp4'
+                : !imageError
+                  ? <video
+                    autoPlay
+                    height='416'
+                    loop={true}
+                    onError={handleVideoError}
+                    width='100%'
+                  >
+                    <source
+                      src={getItemImage()}
+                      type='video/mp4'
+                    />
+                  </video>
+                  : <img
+                    alt={'default-img'}
+                    className={'item-img'}
+                    src={themeContext.logo}
+                    style={{ borderRadius: '5px' }}
                   />
-                </video>
             }
           </div>
 
           {
-            // @ts-ignore
-            account.account.address !== 'ALL' &&
+            !_isAccountAll &&
             <div className={'send-container'}>
               <div
                 className={'send-button'}
@@ -306,7 +330,7 @@ export default React.memo(styled(NftItem)(({ theme }: ThemeProps) => `
 
   .send-button {
     margin-top: 5px;
-    background: #004BFF;
+    background: ${theme.secondaryColor};
     border-radius: 8px;
     display: flex;
     justify-content: center;

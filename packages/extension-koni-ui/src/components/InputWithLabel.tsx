@@ -1,12 +1,11 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import Label from '@subwallet/extension-koni-ui/components/Label';
+import { Input } from '@subwallet/extension-koni-ui/components/TextInputs';
+import Warning from '@subwallet/extension-koni-ui/components/Warning';
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
-
-import Label from '@polkadot/extension-koni-ui/components/Label';
-import { Input } from '@polkadot/extension-koni-ui/components/TextInputs';
-import Warning from '@polkadot/extension-koni-ui/components/Warning';
 
 import useTranslation from '../hooks/useTranslation';
 
@@ -19,6 +18,7 @@ interface Props {
   isReadOnly?: boolean;
   label: string;
   onBlur?: (value: string) => void;
+  onFocus?: (value: string) => void;
   onChange?: (value: string) => void;
   onEnter?: (value: string) => void;
   placeholder?: string;
@@ -27,7 +27,7 @@ interface Props {
   withoutMargin?: boolean;
 }
 
-function InputWithLabel ({ className, defaultValue, disabled, isError, isFocused, isReadOnly, label = '', onBlur, onChange, onEnter, placeholder, type = 'text', value, withoutMargin }: Props): React.ReactElement<Props> {
+function InputWithLabel ({ className, defaultValue, disabled, isError, isFocused, isReadOnly, label = '', onBlur, onChange, onEnter, onFocus, placeholder, type = 'text', value, withoutMargin }: Props): React.ReactElement<Props> {
   const [isCapsLock, setIsCapsLock] = useState(false);
   const { t } = useTranslation();
 
@@ -62,6 +62,13 @@ function InputWithLabel ({ className, defaultValue, disabled, isError, isFocused
     [onBlur]
   );
 
+  const _onFocus = useCallback(
+    ({ target: { value } }: React.FocusEvent<HTMLInputElement>): void => {
+      onFocus && onFocus(value);
+    },
+    [onFocus]
+  );
+
   return (
     <Label
       className={`${className || ''} ${withoutMargin ? 'withoutMargin' : ''}`}
@@ -75,6 +82,7 @@ function InputWithLabel ({ className, defaultValue, disabled, isError, isFocused
         disabled={disabled}
         onBlur={_onBlur}
         onChange={_onChange}
+        onFocus={_onFocus}
         onKeyPress={_checkKey}
         placeholder={placeholder}
         readOnly={isReadOnly}

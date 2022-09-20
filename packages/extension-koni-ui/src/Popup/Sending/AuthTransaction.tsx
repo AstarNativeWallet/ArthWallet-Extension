@@ -1,72 +1,390 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { useCallback, useState } from 'react';
+import { NetworkJson, RequestCheckTransfer, ResponseTransfer, TransferError, TransferStep } from '@subwallet/extension-base/background/KoniTypes';
+import { LedgerState } from '@subwallet/extension-base/signers/types';
+import { InputWithLabel, Warning } from '@subwallet/extension-koni-ui/components';
+import Button from '@subwallet/extension-koni-ui/components/Button';
+import DonateInputAddress from '@subwallet/extension-koni-ui/components/DonateInputAddress';
+import FormatBalance from '@subwallet/extension-koni-ui/components/FormatBalance';
+import InputAddress from '@subwallet/extension-koni-ui/components/InputAddress';
+import LedgerRequest from '@subwallet/extension-koni-ui/components/Ledger/LedgerRequest';
+import Modal from '@subwallet/extension-koni-ui/components/Modal';
+import QrRequest from '@subwallet/extension-koni-ui/components/Qr/QrRequest';
+import { BalanceFormatType } from '@subwallet/extension-koni-ui/components/types';
+import { SIGN_MODE } from '@subwallet/extension-koni-ui/constants/signing';
+import { ExternalRequestContext } from '@subwallet/extension-koni-ui/contexts/ExternalRequestContext';
+import { QrContext, QrContextState, QrStep } from '@subwallet/extension-koni-ui/contexts/QrContext';
+import { useRejectExternalRequest } from '@subwallet/extension-koni-ui/hooks/useRejectExternalRequest';
+import { useSignMode } from '@subwallet/extension-koni-ui/hooks/useSignMode';
+import useTranslation from '@subwallet/extension-koni-ui/hooks/useTranslation';
+import { getAccountMeta, makeTransfer, makeTransferLedger, makeTransferQr } from '@subwallet/extension-koni-ui/messaging';
+import { ThemeProps, TransferResultType } from '@subwallet/extension-koni-ui/types';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import Button from '@polkadot/extension-koni-ui/components/Button';
-import Modal from '@polkadot/extension-koni-ui/components/Modal';
-import Output from '@polkadot/extension-koni-ui/components/Output';
-import { useToggle } from '@polkadot/extension-koni-ui/hooks/useToggle';
-import useTranslation from '@polkadot/extension-koni-ui/hooks/useTranslation';
-import Address from '@polkadot/extension-koni-ui/Popup/Sending/parts/Address';
-import Tip from '@polkadot/extension-koni-ui/Popup/Sending/parts/Tip';
-import Transaction from '@polkadot/extension-koni-ui/Popup/Sending/parts/Transaction';
-import { AddressProxy, ThemeProps } from '@polkadot/extension-koni-ui/types';
-import { BN_ZERO } from '@polkadot/util';
+import { KeyringPair$Meta } from '@polkadot/keyring/types';
+import { BN } from '@polkadot/util';
 
 interface Props extends ThemeProps {
   className?: string;
   onCancel: () => void;
-  requestAddress: string;
-  extrinsic: never;
+  requestPayload: RequestCheckTransfer;
+  feeInfo: [string | null, number, string]; // fee, fee decimal, fee symbol
+  balanceFormat: BalanceFormatType; // decimal, symbol
+  networkMap: Record<string, NetworkJson>;
+  onChangeResult: (txResult: TransferResultType) => void;
+  isDonation?: boolean;
 }
 
-function AuthTransaction ({ className, extrinsic, onCancel, requestAddress }: Props): React.ReactElement<Props> | null {
+type RenderTotalArg = {
+  fee: string | null,
+  feeDecimals: number,
+  feeSymbol: string,
+  amount?: string,
+  amountDecimals: number,
+  amountSymbol: string
+}
+
+function renderTotal (arg: RenderTotalArg) {
+  const { amount, amountDecimals, amountSymbol, fee, feeDecimals, feeSymbol } = arg;
+
+  if (feeDecimals === amountDecimals && feeSymbol === amountSymbol) {
+    return (
+      <FormatBalance
+        format={[feeDecimals, feeSymbol]}
+        value={new BN(fee || '0').add(new BN(amount || '0'))}
+      />
+    );
+  }
+
+  return (
+    <>
+      <FormatBalance
+        format={[amountDecimals, amountSymbol]}
+        value={new BN(amount || '0')}
+      />
+      <span className={'value-separator'}>+</span>
+      <FormatBalance
+        format={[feeDecimals, feeSymbol]}
+        value={new BN(fee || '0')}
+      />
+    </>
+  );
+}
+
+function AuthTransaction ({ className, isDonation, feeInfo: [fee, feeDecimals, feeSymbol], balanceFormat, networkMap, onCancel, onChangeResult, requestPayload }: Props): React.ReactElement<Props> | null {
   const { t } = useTranslation();
-  const [isRenderError, toggleRenderError] = useToggle();
-  const [senderInfo, setSenderInfo] = useState<AddressProxy>(() => ({ isUnlockCached: false, signAddress: requestAddress, signPassword: '' }));
+  const { handlerReject } = useRejectExternalRequest();
+
+  const { cleanQrState, updateQrState } = useContext(QrContext);
+  const { clearExternalState, externalState, updateExternalState } = useContext(ExternalRequestContext);
+
+  const { externalId } = externalState;
+
   const [isBusy, setBusy] = useState(false);
-  // const [passwordError, setPasswordError] = useState<string | null>(null);
-  // const [callHash, setCallHash] = useState<string | null>(null);
-  // const [tip, setTip] = useState(BN_ZERO);
+  const [password, setPassword] = useState<string>('');
+  const [isKeyringErr, setKeyringErr] = useState<boolean>(false);
+  const [errorArr, setErrorArr] = useState<string[]>([]);
+  const [accountMeta, setAccountMeta] = useState<KeyringPair$Meta>({});
+  const networkPrefix = networkMap[requestPayload.networkKey].ss58Format;
+  const genesisHash = networkMap[requestPayload.networkKey].genesisHash;
 
-  const passwordError = null;
-  const [, setTip] = useState(BN_ZERO);
+  const signMode = useSignMode(accountMeta);
 
-  const _onCancel = useCallback(() => {
+  const _onCancel = useCallback(async () => {
+    if (externalId) {
+      await handlerReject(externalId);
+    }
+
     onCancel();
-  },
-  [onCancel]
-  );
+  }, [handlerReject, onCancel, externalId]);
 
-  const _doStart = useCallback(
-    (): void => {
-      setBusy(true);
+  const handlerCallbackResponseResult = useCallback((rs: ResponseTransfer) => {
+    if (!rs.isFinalized) {
+      if (rs.step === TransferStep.SUCCESS.valueOf()) {
+        onChangeResult({
+          isShowTxResult: true,
+          isTxSuccess: rs.step === TransferStep.SUCCESS.valueOf(),
+          extrinsicHash: rs.extrinsicHash
+        });
+        cleanQrState();
+        clearExternalState();
+        setBusy(false);
+      } else if (rs.step === TransferStep.ERROR.valueOf()) {
+        onChangeResult({
+          isShowTxResult: true,
+          isTxSuccess: rs.step === TransferStep.SUCCESS.valueOf(),
+          extrinsicHash: rs.extrinsicHash,
+          txError: rs.errors
+        });
+        cleanQrState();
+        clearExternalState();
+        setBusy(false);
+      }
+    }
+  }, [cleanQrState, onChangeResult, clearExternalState]);
 
-      // setTimeout((): void => {
-      //   const errorHandler = (error: Error): void => {
-      //     console.error(error);
-      //
-      //     setBusy(false);
-      //     setError(error);
-      //   };
-      //
-      //   _unlock()
-      //     .then((isUnlocked): void => {
-      //       if (isUnlocked) {
-      //         _onSend(txHandler, extrinsic, senderInfo).catch(errorHandler)
-      //       } else {
-      //         setBusy(false);
-      //       }
-      //     })
-      //     .catch((error): void => {
-      //       errorHandler(error as Error);
-      //     });
-      // }, 0);
-    },
-    []
-  );
+  const handlerResponseError = useCallback((errors: TransferError[]) => {
+    const errorMessage = errors.map((err) => err.message);
+
+    if (errors.find((err) => err.code === 'keyringError')) {
+      setKeyringErr(true);
+    }
+
+    setErrorArr(errorMessage);
+
+    if (errorMessage && errorMessage.length) {
+      setBusy(false);
+    }
+  }, []);
+
+  const _doStart = useCallback((): void => {
+    setBusy(true);
+    makeTransfer({
+      ...requestPayload,
+      password
+    }, handlerCallbackResponseResult).then(handlerResponseError)
+      .catch((e) => console.log('There is problem when makeTransfer', e));
+  }, [requestPayload, password, handlerCallbackResponseResult, handlerResponseError]);
+
+  const _doStartQr = useCallback((): void => {
+    setBusy(true);
+    makeTransferQr({
+      ...requestPayload
+    }, (rs) => {
+      if (rs.qrState) {
+        const state: QrContextState = {
+          ...rs.qrState,
+          step: QrStep.DISPLAY_PAYLOAD
+        };
+
+        updateQrState(state);
+        setBusy(false);
+      }
+
+      if (rs.externalState) {
+        updateExternalState(rs.externalState);
+      }
+
+      if (rs.isBusy && rs.step !== TransferStep.SUCCESS.valueOf()) {
+        updateQrState({ step: QrStep.SENDING_TX });
+        setBusy(true);
+      }
+
+      handlerCallbackResponseResult(rs);
+    }).then(handlerResponseError)
+      .catch((e) => console.log('There is problem when makeTransferQr', e));
+  }, [requestPayload, handlerCallbackResponseResult, handlerResponseError, updateQrState, updateExternalState]);
+
+  const _doSignLedger = useCallback((handlerSignLedger: (ledgerState: LedgerState) => void): void => {
+    setBusy(true);
+    makeTransferLedger({
+      ...requestPayload
+    }, (rs) => {
+      if (rs.externalState) {
+        updateExternalState(rs.externalState);
+      }
+
+      if (rs.ledgerState) {
+        handlerSignLedger(rs.ledgerState);
+      }
+
+      handlerCallbackResponseResult(rs);
+    }).then(handlerResponseError)
+      .catch((e) => console.log('There is problem when makeTransferLedger', e));
+  }, [updateExternalState, requestPayload, handlerCallbackResponseResult, handlerResponseError]);
+
+  const _onChangePass = useCallback((value: string): void => {
+    setPassword(value);
+    setErrorArr([]);
+    setKeyringErr(false);
+  }, []);
+
+  const renderError = useCallback(() => {
+    if (errorArr && errorArr.length) {
+      return errorArr.map((err) =>
+        (
+          <Warning
+            className='auth-transaction-error'
+            isDanger
+            key={err}
+          >
+            {t<string>(err)}
+          </Warning>
+        )
+      );
+    } else {
+      return <></>;
+    }
+  }, [errorArr, t]);
+
+  const handlerRenderInfo = useCallback(() => {
+    return (
+      <>
+        <InputAddress
+          className={'auth-transaction__input-address'}
+          defaultValue={requestPayload.from}
+          help={t<string>(isDonation ? 'The account you will donate from.' : 'The account you will send funds from.')}
+          isDisabled={true}
+          isSetDefaultValue={true}
+          label={t<string>(isDonation ? 'Donate from account' : 'Send from account')}
+          networkPrefix={networkPrefix}
+          type='account'
+          withEllipsis
+        />
+
+        {isDonation
+          ? (
+            <DonateInputAddress
+              className={'auth-transaction__input-address'}
+              defaultValue={requestPayload.to}
+              help={t<string>('The address you want to donate to.')}
+              isDisabled={true}
+              isSetDefaultValue={true}
+              label={t<string>('Donate to address')}
+              networkPrefix={networkPrefix}
+              type='allPlus'
+              withEllipsis
+            />
+          )
+          : (
+            <InputAddress
+              className={'auth-transaction__input-address'}
+              defaultValue={requestPayload.to}
+              help={t<string>('The address you want to send funds to.')}
+              isDisabled={true}
+              isSetDefaultValue={true}
+              label={t<string>('Send to address')}
+              networkPrefix={networkPrefix}
+              type='allPlus'
+              withEllipsis
+            />
+          )
+        }
+
+        <div className='auth-transaction__info'>
+          <div className='auth-transaction__info-text'>Amount</div>
+          <div className='auth-transaction__info-value'>
+            <FormatBalance
+              format={balanceFormat}
+              value={requestPayload.value}
+            />
+          </div>
+        </div>
+
+        <div className='auth-transaction__info'>
+          <div className='auth-transaction__info-text'>Estimated fee</div>
+          <div className='auth-transaction__info-value'>
+            <FormatBalance
+              format={[feeDecimals, feeSymbol]}
+              value={fee}
+            />
+          </div>
+        </div>
+
+        <div className='auth-transaction__info'>
+          <div className='auth-transaction__info-text'>Total (Amount + Fee)</div>
+          <div className='auth-transaction__info-value'>
+            {renderTotal({
+              fee,
+              feeDecimals,
+              feeSymbol,
+              amount: requestPayload.value,
+              amountDecimals: balanceFormat[0],
+              amountSymbol: balanceFormat[2] || balanceFormat[1]
+            })}
+          </div>
+        </div>
+      </>
+    );
+  }, [balanceFormat, fee, feeDecimals, feeSymbol, isDonation, networkPrefix, requestPayload, t]);
+
+  const handlerErrorQr = useCallback((error: Error) => {
+    setErrorArr([error.message]);
+  }, []);
+
+  const handlerClearError = useCallback(() => {
+    setErrorArr([]);
+  }, []);
+
+  const handlerRenderContent = useCallback(() => {
+    switch (signMode) {
+      case SIGN_MODE.QR:
+        return (
+          <QrRequest
+            clearError={handlerClearError}
+            errorArr={errorArr}
+            genesisHash={genesisHash}
+            handlerStart={_doStartQr}
+            isBusy={isBusy}
+            onError={handlerErrorQr}
+          >
+            { handlerRenderInfo() }
+          </QrRequest>
+        );
+
+      case SIGN_MODE.LEDGER:
+        return (
+          <LedgerRequest
+            accountMeta={accountMeta}
+            errorArr={errorArr}
+            genesisHash={genesisHash}
+            handlerSignLedger={_doSignLedger}
+            isBusy={isBusy}
+            setBusy={setBusy}
+            setErrorArr={setErrorArr}
+          >
+            { handlerRenderInfo() }
+          </LedgerRequest>
+        );
+      case SIGN_MODE.PASSWORD:
+      default:
+        return (
+          <div className='auth-transaction-body'>
+            { handlerRenderInfo() }
+            <div className='auth-transaction__separator' />
+            <InputWithLabel
+              isError={isKeyringErr}
+              label={t<string>('Unlock account with password')}
+              onChange={_onChangePass}
+              type='password'
+              value={password}
+            />
+            { renderError() }
+            <div className='auth-transaction__submit-wrapper'>
+              <Button
+                className={'auth-transaction__submit-btn'}
+                isBusy={isBusy}
+                isDisabled={!password || !!(errorArr && errorArr.length)}
+                onClick={_doStart}
+              >
+                {t<string>('Sign and Submit')}
+              </Button>
+            </div>
+          </div>
+        );
+    }
+  }, [signMode, handlerClearError, errorArr, genesisHash, _doStartQr, isBusy, handlerErrorQr, handlerRenderInfo, accountMeta, _doSignLedger, isKeyringErr, t, _onChangePass, password, renderError, _doStart]);
+
+  useEffect(() => {
+    let unmount = false;
+
+    const handler = async () => {
+      const { meta } = await getAccountMeta({ address: requestPayload.from });
+
+      if (!unmount) {
+        setAccountMeta(meta);
+      }
+    };
+
+    // eslint-disable-next-line no-void
+    void handler();
+
+    return () => {
+      unmount = true;
+    };
+  }, [requestPayload.from]);
 
   return (
     <div className={className}>
@@ -84,52 +402,15 @@ function AuthTransaction ({ className, extrinsic, onCancel, requestAddress }: Pr
               : (
                 <span
                   className={'auth-transaction-header__close-btn'}
+                  // eslint-disable-next-line @typescript-eslint/no-misused-promises
                   onClick={_onCancel}
                 >{t('Cancel')}</span>
               )
             }
           </div>
         </div>
-        <div className='auth-transaction-body'>
-          <div className='auth-transaction-info-block'>
-            <Transaction
-              accountId={senderInfo.signAddress}
-              extrinsic={extrinsic}
-              onError={toggleRenderError}
-            />
-          </div>
-          <Address
-            onChange={setSenderInfo}
-            onEnter={_doStart}
-            passwordError={passwordError}
-            requestAddress={requestAddress}
-          />
+        { handlerRenderContent() }
 
-          <Tip
-            className={'auth-transaction__tip-block'}
-            onChange={setTip}
-          />
-
-          <Output
-            className={'auth-transaction__call-hash'}
-            isDisabled
-            isTrimmed
-            label={t<string>('Call hash')}
-            value={'0x9d32effb1d8573d6ce02f6721bc5442c33a23eed88ea194815f473582550b508'}
-            withCopy
-          />
-
-          <div className='auth-transaction__submit-wrapper'>
-            <Button
-              className={'auth-transaction__submit-btn'}
-              isBusy={isBusy}
-              isDisabled={!senderInfo.signAddress || isRenderError}
-              onClick={_doStart}
-            >
-              {t<string>('Sign and Submit')}
-            </Button>
-          </div>
-        </div>
       </Modal>
     </div>
   );
@@ -147,6 +428,34 @@ export default React.memo(styled(AuthTransaction)(({ theme }: ThemeProps) => `
     display: flex;
     flex-direction: column;
     overflow: hidden;
+  }
+
+  .display-qr {
+    margin: 0 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .qr-content {
+      height: 324px;
+      width: 324px;
+      border: 2px solid ${theme.textColor};
+    }
+  }
+
+  .scan-qr {
+    margin: 0 20px;
+  }
+
+  .signer-modal {
+    .subwallet-modal {
+        border: 1px solid ${theme.extensionBorder};
+    }
+  }
+
+
+  .auth-transaction-error {
+    margin-top: 10px
   }
 
   .auth-transaction-header {
@@ -187,26 +496,18 @@ export default React.memo(styled(AuthTransaction)(({ theme }: ThemeProps) => `
     height: 40px;
     display: flex;
     align-items: center;
-    color: #04C1B7;
-    font-weight: 500;
+    color: ${theme.buttonTextColor2};
     cursor: pointer;
+    opacity: 0.85;
+  }
+
+  .auth-transaction-header__close-btn:hover {
+    opacity: 1;
   }
 
   .auth-transaction-header__close-btn.-disabled {
     cursor: not-allowed;
     opacity: 0.5;
-  }
-
-  .auth-transaction-info-block {
-    margin-bottom: 20px;
-  }
-
-  .auth-transaction__tip-block {
-    margin-top: 10px;
-  }
-
-  .auth-transaction__call-hash {
-    margin-top: 20px;
   }
 
   .auth-transaction__submit-wrapper {
@@ -217,5 +518,56 @@ export default React.memo(styled(AuthTransaction)(({ theme }: ThemeProps) => `
     margin-bottom: -15px;
     margin-right: -15px;
     background-color: ${theme.background};
+  }
+
+  .auth-transaction__input-address {
+    margin-bottom: 14px;
+  }
+
+  .auth-transaction__info {
+    display: flex;
+    width: 100%;
+    padding: 4px 0;
+    flex-wrap: wrap;
+  }
+
+  .auth-transaction__info-text, auth-transaction__info-value {
+    font-size: 15px;
+    line-height: 26px;
+    font-weight: 500;
+  }
+
+  .auth-transaction__info-text {
+    color: ${theme.textColor2};
+    flex: 1;
+  }
+
+  .auth-transaction__info-value {
+    color: ${theme.textColor};
+    flex: 1;
+    text-align: right;
+  }
+
+  .auth-transaction__info-value .format-balance__front-part {
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 160px;
+    text-overflow: ellipsis;
+    display: inline-block;
+    vertical-align: top;
+  }
+
+  .auth-transaction__separator {
+    padding-top: 24px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid ${theme.menuItemsBorder};
+  }
+
+  .auth-transaction__info-value .value-separator {
+    margin: 0 4px;
+  }
+
+  .auth-transaction__info-value .format-balance {
+    display: inline-block;
   }
 `));

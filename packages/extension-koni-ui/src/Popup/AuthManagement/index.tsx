@@ -1,18 +1,17 @@
-// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import type { ThemeProps } from '../../types';
 
+import { AuthUrlInfo, AuthUrls } from '@subwallet/extension-base/background/handlers/State';
+import ConfirmModal from '@subwallet/extension-koni-ui/components/ConfirmModal';
+import Header from '@subwallet/extension-koni-ui/partials/Header';
 import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import { AuthUrlInfo, AuthUrls } from '@polkadot/extension-base/background/handlers/State';
-import ConfirmModal from '@polkadot/extension-koni-ui/components/ConfirmModal';
-import Header from '@polkadot/extension-koni-ui/partials/Header';
-
+import { InputFilter } from '../../components';
 import useTranslation from '../../hooks/useTranslation';
 import { changeAuthorization, changeAuthorizationAll, forgetAllSite, getAuthListV2 } from '../../messaging';
-import { InputFilter } from './../../components';
 import WebsiteEntry from './WebsiteEntry';
 
 interface Props extends ThemeProps {

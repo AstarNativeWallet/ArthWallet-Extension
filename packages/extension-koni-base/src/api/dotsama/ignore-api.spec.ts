@@ -1,9 +1,10 @@
-// Copyright 2019-2022 @polkadot/extension-koni-base authors & contributors
+// Copyright 2019-2022 @subwallet/extension-koni-base authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { ApiProps } from '@polkadot/extension-base/background/KoniTypes';
-import { initApi } from '@polkadot/extension-koni-base/api/dotsama/api';
-import NETWORKS from '@polkadot/extension-koni-base/api/endpoints';
+import { ApiProps } from '@subwallet/extension-base/background/KoniTypes';
+import { initApi } from '@subwallet/extension-koni-base/api/dotsama/api';
+import NETWORKS from '@subwallet/extension-koni-base/api/endpoints';
+
 import { AccountInfo } from '@polkadot/types/interfaces';
 
 jest.setTimeout(50000);
@@ -16,7 +17,7 @@ describe('test DotSama APIs', () => {
     const networkList = ['moonbase'];
 
     const promList = networkList.map((networkKey) => {
-      return initApi(networkKey, NETWORKS[networkKey].provider).isReady;
+      return initApi(networkKey, NETWORKS[networkKey].provider, true).isReady;
     });
 
     const apiPropsList = await Promise.all(promList);
